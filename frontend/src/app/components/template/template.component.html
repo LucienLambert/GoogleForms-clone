@@ -1,0 +1,11 @@
+﻿<app-nav-bar title="Template" class="toolbar-actions">
+    
+</app-nav-bar>
+<div class="body">
+    <h2>Liste des users</h2>
+    @for(user of users; track user.id) {
+        <div>
+            {{user.email}} - {{user.password}} - {{user.roleAsString}}
+        </div>
+    }
+</div>

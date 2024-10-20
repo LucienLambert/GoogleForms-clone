@@ -1,0 +1,22 @@
+@import "@angular/material/prebuilt-themes/azure-blue.css";
+html,
+body {
+    height: 100%;
+    width: 100%;
+}
+
+body {
+    font-family: Roboto, "Helvetica Neue", sans-serif;
+}
+
+.toolbar-actions button:disabled mat-icon {
+    color: gray;
+}
+
+.toolbar-actions button mat-icon {
+    color: white;
+}
+
+.body {
+    padding: 66px 10px 10px 10px;
+}

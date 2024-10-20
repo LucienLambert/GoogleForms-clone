@@ -1,0 +1,32 @@
+mat-toolbar * {
+    color: white;
+}
+
+mat-toolbar {
+    position: fixed;
+    top: 0;
+    z-index: 1000;
+    /*width: 100%;*/
+    height: 56px;
+    padding: 0;
+    margin: 0 0 10px 0;
+    background-color: #3f51b5;
+    overflow-x: hidden;
+}
+
+.spacer {
+    flex: 1 1 auto;
+}
+
+.title {
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.actions * {
+    color: white;
+}
+
+.userFullName {
+    font-size: small;
+}

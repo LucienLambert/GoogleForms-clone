@@ -1,0 +1,47 @@
+{
+  "name": "prid-2425-a01",
+  "version": "0.0.0",
+  "scripts": {
+    "ng": "ng",
+    "start": "ng serve",
+    "build": "ng build --output-path ../publish/wwwroot/frontend",
+    "build:ssr": "ng run prid-2425-a01:server:dev",
+    "watch": "ng build --watch --configuration development",
+    "test": "ng test"
+  },
+  "private": true,
+  "dependencies": {
+    "@angular/animations": "18.2.3",
+    "@angular/cdk": "18.2.3",
+    "@angular/common": "18.2.3",
+    "@angular/compiler": "18.2.3",
+    "@angular/core": "18.2.3",
+    "@angular/forms": "18.2.3",
+    "@angular/material": "18.2.3",
+    "@angular/material-date-fns-adapter": "18.2.3",
+    "@angular/platform-browser": "18.2.3",
+    "@angular/platform-browser-dynamic": "18.2.3",
+    "@angular/platform-server": "18.2.3",
+    "@angular/router": "18.2.3",
+    "bootstrap": "5.3.3",
+    "class-transformer": "0.5.1",
+    "date-fns": "3.6.0",
+    "jquery": "3.7.1",
+    "lodash-es": "4.17.21",
+    "oidc-client": "1.11.5",
+    "popper.js": "1.16.1",
+    "reflect-metadata": "0.2.2",
+    "run-script-os": "1.1.6",
+    "rxjs": "7.8.1",
+    "ts-cacheable": "1.0.10",
+    "tslib": "2.7.0",
+    "zone.js": "0.14.10"
+  },
+  "devDependencies": {
+    "@angular-devkit/build-angular": "18.2.3",
+    "@angular/cli": "18.2.3",
+    "@angular/compiler-cli": "18.2.3",
+    "@types/lodash-es": "4.17.12",
+    "typescript": "5.5.4"
+  }
+}
