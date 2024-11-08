@@ -8,8 +8,13 @@ public class FormContext : DbContext
     }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder) {
-        base.OnModelCreating(modelBuilder);
         
+        base.OnModelCreating(modelBuilder);
+        //liaison des composite Key pour le model Form
+        modelBuilder.Entity<User_Form_Access>().HasKey(f => new { f.IdUser, f.IdForm });
+        //liaison des composite Key pour le model Instance
+        modelBuilder.Entity<Instance>().HasKey(i => new { i.IdUser, i.IdForm });
+
         modelBuilder.Entity<User>().HasData(
             new User { Id=1, Email = "ben@epfc.eu", Password = "Password1,", Role = Role.User, FirstName = "Benoit", LastName = "Penelle" },
             new User { Id=2, Email = "bruno@epfc.eu", Password = "Password1,", Role = Role.User, FirstName = "Bruno", LastName = "Lacroix" },
