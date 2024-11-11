@@ -1,8 +1,9 @@
 using FluentValidation;
 using Microsoft.EntityFrameworkCore;
+
 using prid_2425_a01.Models;
 
-namespace prid_tuto.Models;
+namespace prid_2425_a01.Models;
 
 public class UserValidator : AbstractValidator<User>
 {

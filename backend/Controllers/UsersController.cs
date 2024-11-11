@@ -2,12 +2,12 @@ using AutoMapper;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.AspNetCore.Authorization;
-using prid_2425_a01.Models;
-using prid_tuto.Models;
+using prid_2425_a01.Helpers;
 
+using prid_2425_a01.Models;
 namespace prid_2425_a01.Controllers;
 
-[Authorize]
+//[Authorize]
 [Route("api/[controller]")]
 [ApiController]
 public class UsersController : ControllerBase
@@ -20,15 +20,12 @@ public class UsersController : ControllerBase
         _mapper = mapper;
     }
     
-    [AllowAnonymous]
+    //[AllowAnonymous]
     [HttpGet]
     public async Task<ActionResult<IEnumerable<UserDTO>>> GetAll() {
         // Récupère une liste de tous les users et utilise le mapper pour les transformer en leur DTO
         return _mapper.Map<List<UserDTO>>(await _context.Users.ToListAsync());
     }
-    
-    //getOne
-    //getById
 
     [HttpGet("{id}")]
     public async Task<ActionResult<UserDTO>> GetOneById(int id) {

@@ -9,8 +9,9 @@ public class FormDTO {
     public int Id { get; set; }
     public string Title { get; set; } = null!;
     public string? Description { get; set; }
+    public int IdOwner { get; set; }
     public User Owner { get; set; } = null!;
-    public bool isPublic { get; set; }
+    public bool IsPublic { get; set; }
 
     
 }
