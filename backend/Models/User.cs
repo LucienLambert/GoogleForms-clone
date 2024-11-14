@@ -16,7 +16,10 @@ public class User {
     public string Password { get; set; } = null!;
     public string? FirstName { get; set; }
     public string? LastName { get; set; }
-    public Role Role { get; set; }
+    //Guest is the default user
+    public Role Role { get; set; } = Role.Guest;
+    [NotMapped]
+    public string? Token { get; set; }
     public DateTimeOffset? BirthDate { get; set; }
 
     public int? Age {
@@ -29,9 +32,6 @@ public class User {
         return age;
         }
     }
-       
-    [NotMapped]
-    public string? Token { get; set; }
     
     public ICollection<Form> ListForms{ get; set; } = new List<Form>();
     public ICollection<Instance> ListInstances{ get; set; } = new List<Instance>();

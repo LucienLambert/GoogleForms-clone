@@ -1,6 +1,6 @@
 using FluentValidation;
 using Microsoft.EntityFrameworkCore;
-
+using prid_2425_a01.Helpers;
 using prid_2425_a01.Models;
 
 namespace prid_2425_a01.Models;
@@ -12,7 +12,7 @@ public class UserValidator : AbstractValidator<User>
     public UserValidator(FormContext context) {
         _context = context;
 
-        //TODO A check pour voir si elle correspond au validation métier de l'itération 1.
+        // Les règles ci-après sont conformes aux validations métier à implémenter lors de l'itération 1.
         RuleFor(u => u.Email)
             .NotEmpty()
                 .WithMessage("Email is required.")
@@ -63,6 +63,14 @@ public class UserValidator : AbstractValidator<User>
             })
                 .WithMessage("The age must be included between 18 and 125.");
 
+        RuleFor(u => u.Role)
+            .IsInEnum();
+        
+        //Validation uniquement pour la connexion d'un utilisateur
+        RuleSet("authenticate", () => {
+            RuleFor(u => u.Token)
+                .NotNull().OverridePropertyName("Password").WithMessage("Incorrect password.");
+        });
     }
 
     private async Task<bool> BeUniqueEmail(string email, CancellationToken token) {
@@ -75,4 +83,9 @@ public class UserValidator : AbstractValidator<User>
             !await _context.Users.AnyAsync(u => u.FirstName == firstName && u.LastName == lastName, token);
     }
 
+    public async Task<FluentValidation.Results.ValidationResult> ValidateForAuthenticate(User? user) {
+        if (user == null)
+            return ValidatorHelper.CustomError("User not found", "Email");
+        return await this.ValidateAsync(user, o => o.IncludeRuleSets("authenticate"));
+    }
 }
