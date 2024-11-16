@@ -4,7 +4,7 @@ import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 
 import { AuthenticationService } from '../../services/authentication.service';
 
-@Component({ templateUrl: 'login.component.html' })
+@Component({ templateUrl: 'login.component.html', styleUrl: 'login.component.css' })
 export class LoginComponent implements OnInit, AfterViewInit {
     loginForm!: FormGroup;
     loading = false;    // utilisé en HTML pour désactiver le bouton pendant la requête de login
@@ -95,5 +95,25 @@ export class LoginComponent implements OnInit, AfterViewInit {
                     this.loading = false;
                 }
             });
+    }
+
+    //Pre-filled data method for debug login
+    loginAs(email: string, password: string) {
+        this.loginForm.patchValue({
+            email: email,
+            password: password
+        });
+        
+        this.onSubmit();
+    }
+
+    // Method for Login as guest
+    loginAsGuest() {
+        this.loginForm.patchValue({
+            email: 'guest@epfc.eu',
+            password: 'N/A'
+        });
+
+        this.onSubmit();
     }
 }
