@@ -1,12 +1,22 @@
 <mat-toolbar>
+    <!-- bouton du menu déroulant-->
     <button mat-icon-button class="example-icon" [matMenuTriggerFor]="menu">
         <mat-icon>menu</mat-icon>
     </button>
+    <!-- affichage du titre de la page-->
     <span class="title">{{ title }}</span>
-    <span class="spacer"></span>
     <!-- pour mettre des éléments à droite -->
+    <span class="spacer"></span>
+    <!--barre de recheche-->
+    <mat-form-field class="search-field" appearance="outline">
+        <input matInput type="text" placeholder="search...">
+        <button mat-icon-button matSuffix>
+            <mat-icon>search</mat-icon>
+        </button>
+    </mat-form-field>
     <ng-content/>
 </mat-toolbar>
+<!--Menu déroulant quand on click dessus-->
 <mat-menu #menu="matMenu">
     <button mat-menu-item routerLink="/">
         <mat-icon>home</mat-icon>
