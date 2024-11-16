@@ -1,7 +1,6 @@
 ﻿namespace prid_2425_a01.Models;
 
-public class UserDTO
-{
+public class UserDTO {
     public int Id { get; set; }
     public string Email { get; set; } = null!;
     public string? FirstName { get; set; }
@@ -14,6 +13,6 @@ public class UserDTO
 }
 
 public class User_With_PasswordDTO {
-
+    public string Email { get; set; } = null!;
     public string Password { get; set; } = null!;
 }

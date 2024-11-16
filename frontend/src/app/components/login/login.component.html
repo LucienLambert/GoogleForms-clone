@@ -1,0 +1,53 @@
+<head>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-icons/1.10.0/font/bootstrap-icons.min.css" rel="stylesheet">
+</head>
+
+<div class="login-container">
+    <h1>Sign in</h1>
+    <form [formGroup]="loginForm" (ngSubmit)="onSubmit()" class="login-form">
+        <div class="form-group mb-3">
+            <div class="input-group">
+                <div class="input-group-text">
+                    <i class="bi bi-person"></i>
+                </div>
+                <input #email type="text" formControlName="email" class="form-control" placeholder="Email*" [ngClass]="{ 'is-invalid': submitted && f.email.errors }" />
+            </div>
+            <div *ngIf="submitted && f.email.errors?.required" class="invalid-feedback">
+                Email is required
+            </div>
+        </div>
+
+        <div class="form-group mb-3">
+            <div class="input-group">
+                <div class="input-group-text">
+                    <i class="bi bi-key"></i>
+                </div>
+                <input type="password" formControlName="password" class="form-control" placeholder="Password*" [ngClass]="{ 'is-invalid': submitted && f.password.errors }" />
+            </div>
+            <div *ngIf="submitted && f.password.errors?.required" class="invalid-feedback">
+                Password is required
+            </div>
+        </div>
+        
+        <div class="form-group mb-3">
+            <button [disabled]="loading" type="submit" class="btn btn-primary w-100">Login</button>
+            <div *ngIf="loading">
+                <img class="pl-2" src="data:image/gif;base64,..."/>
+            </div>
+        </div>
+        
+        <div class="form-group mb-3">
+            <button [disabled]="loading" type="button" class="btn btn-outline-primary w-100" (click)="loginAsGuest()">Login as guest</button>
+        </div>
+        <div *ngIf="error" class="form-group mb-3">
+            <div class="alert alert-danger">{{ error }}</div>
+        </div>
+    </form>
+
+    <!-- Debug Links (for easy testing with hardcoded user credentials) -->
+    <h2><strong>For Debug Purpose</strong></h2>
+    <a href="#" (click)="loginAs('admin@epfc.eu', 'Password1,')">Login as <strong>admin&#64;epfc.eu</strong></a>
+    <a href="#" (click)="loginAs('ben@epfc.eu', 'Password1,')">Login as <strong>ben&#64;epfc.eu</strong></a>
+    <a href="#" (click)="loginAs('boris@epfc.eu', 'Password1,')">Login as <strong>boris&#64;epfc.eu</strong></a>
+    <a href="#" (click)="loginAs('bruno@epfc.eu', 'Password1,')">Login as <strong>bruno&#64;epfc.eu</strong></a>
+</div>
