@@ -1,0 +1,26 @@
+<app-nav-bar title="My Forms" class="toolbar-actions"></app-nav-bar>
+
+<div class="row">
+    <div class="col-sm-12">
+        <h1>Forms</h1>
+    </div>
+</div>
+<div class="row">
+    <div class="col-sm-12">
+        <h3>List Form :</h3>
+    </div>
+</div>
+<!--Div qui gère la boucle pour lister et afficher tout les formulaires du CurrentUser-->
+<div *ngIf="forms.length > 0; else noForms">
+    <h2>Vos Formulaires</h2>
+    <ul>
+      <li *ngFor="let form of forms">
+        <h3>{{ form.title }}</h3>
+        <p>{{ form.description }}</p>
+      </li>
+    </ul>
+</div>
+<!--Affiche une erreur ou un message pour préciser qu'il n'y a pas de formulaire à afficher-->
+<ng-template #noForms>
+    <p>{{ errorMessage || 'Aucun formulaire trouvé.' }}</p>
+</ng-template>

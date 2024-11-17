@@ -5,10 +5,11 @@ using Microsoft.AspNetCore.Authorization;
 using prid_2425_a01.Helpers;
 
 using prid_2425_a01.Models;
+using System.Security.Claims;
 namespace prid_2425_a01.Controllers;
 
 
-//[Authorize]
+[Authorize]
 [Route("api/[controller]")]
 [ApiController]
 public class FormsController : ControllerBase {
@@ -55,6 +56,7 @@ public class FormsController : ControllerBase {
         return _mapper.Map<FormDTO>(form);
     }
 
+    //TO FIX : fonctionne mais la modification du form est trop complexe et donc illisible
     [HttpPut]
     public async Task<IActionResult> PutForm(FormDTO dto) {
         var form = await _context.Forms.FindAsync(dto.Id);
@@ -71,5 +73,36 @@ public class FormsController : ControllerBase {
 
         await _context.SaveChangesAsync();
         return NoContent();
+    }
+    [Authorize]
+    [HttpGet("User/forms")]
+    public async Task<ActionResult<IEnumerable<FormDTO>>> GetUserForms(){
+        // Récupérer l'ID de l'utilisateur connecté
+        var userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+
+        if (string.IsNullOrEmpty(userId) || !int.TryParse(userId, out int userIdInt)){
+            return Unauthorized("User ID is missing or invalid in the claims.");
+        }
+
+        // récup l'utilisateur avec ses formulaires
+        var userWithForms = await _context.Users
+            .Include(u => u.ListForms) // add les formulaires dans ICollection ListForms
+            .FirstOrDefaultAsync(u => u.Id == userIdInt);
+
+        if (userWithForms == null){
+            return NotFound("Utilisateur introuvable.");
+        }
+
+        if (userWithForms.ListForms == null || !userWithForms.ListForms.Any()){
+            return NotFound("Aucun formulaire trouvé pour cet utilisateur.");
+        }
+
+        return Ok(_mapper.Map<List<FormDTO>>(userWithForms.ListForms.Select(f => new FormDTO {
+            Id = f.Id,
+            Title = f.Title,
+            Description = f.Description,
+            IdOwner = f.IdOwner,
+            IsPublic = f.IsPublic
+        }).ToList()));
     }
 }

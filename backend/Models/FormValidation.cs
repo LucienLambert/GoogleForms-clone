@@ -15,7 +15,7 @@ public class FormValidation : AbstractValidator<Form> {
         RuleFor(f => f.Title)
             .NotEmpty().WithMessage("Un titre est requis")
             .MinimumLength(3).WithMessage("Le titre doit faire min 3 caractères")
-            .MustAsync(BeUniqueTitleForOwner).WithMessage("il existe déjà un form portant se nom pour cet user");
+            .MustAsync(BeUniqueTitleForOwner).WithMessage("il existe déjà un form portant se titre pour cet user");
 
         RuleFor(f => f.Description)
             .MaximumLength(3).When(form => form.Description != null)

@@ -1,0 +1,37 @@
+﻿id;form;idx;title;description;type;required;option_list
+1;1;1;Your last name?;Your last name;short;1;
+2;1;2;Your first name?;Your first name;short;1;
+3;1;3;Your date of birth?;Your date of birth;date;1;
+4;1;4;Your place of birth?;Your place of birth;short;0;
+5;1;5;Your nationality?;Your nationality;combo;1;4
+6;1;6;Your address?;Your address;short;0;
+7;1;7;Your postal code?;Your postal code;short;0;
+8;1;8;Your city?;Your city of residence;short;0;
+9;1;9;Your country?;Your country of residence;combo;0;4
+10;1;10;Your phone number?;Your phone number;short;0;
+11;1;11;Your email address?;Your email address;email;1;
+12;1;12;Your gender?;Your gender;radio;1;1
+13;1;13;Your marital status?;Your marital status;combo;1;2
+14;1;14;How many children do you have?;Number of dependent children;combo;1;3
+15;1;15;Your profession?;Your profession;short;0;
+16;1;16;Do you have any comments for us?;;long;0;
+17;2;1;Your favorite programming languages;;check;0;5
+18;2;2;The programming languages you dislike the most;;check;1;5
+19;14;1;Question 1;;short;1;
+20;14;2;Question 2;;long;1;
+21;14;3;Question 3;;radio;1;6
+22;14;4;Question 4;;check;1;6
+23;14;5;Question 5;;combo;1;6
+24;14;6;Question 6;;date;1;
+26;14;8;Question 8;;email;1;
+28;14;10;Question 10;;short;0;
+29;14;11;Question 11;;long;0;
+30;14;12;Question 12;;radio;0;6
+31;14;13;Question 13;;check;0;6
+32;14;14;Question 14;;combo;0;6
+33;14;15;Question 15;;date;0;
+35;14;17;Question 17;;email;0;
+37;15;1;Gender;required for statistical purposes;radio;1;1
+38;15;2;Age group;required for statistical purposes;combo;1;7
+39;15;3;Favorite animal;in lowercase, please;short;0;
+40;15;4;Favorite fruits;;check;0;6

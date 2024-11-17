@@ -18,8 +18,15 @@
 </mat-toolbar>
 <!--Menu déroulant quand on click dessus-->
 <mat-menu #menu="matMenu">
-    <button mat-menu-item routerLink="/">
+    <!-- Redirection vers la page Home-->
+    <button mat-menu-item routerLink="/home">
         <mat-icon>home</mat-icon>
-        <span>My Forms</span>
+        <span>Accueil</span>
+    </button>
+    <!-- Redirection vers la page de login-->
+    <!--il faut surement déplacer la logique du logout dans le nav-bar.comporent.ts au lieu de home.component.ts (à vérifier)-->
+    <button mat-menu-item routerLink="/login">
+        <mat-icon>Logout</mat-icon>
+        <span>Logout</span>
     </button>
 </mat-menu>
