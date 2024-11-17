@@ -1,11 +1,30 @@
-import {Routes, RouterModule} from '@angular/router';
+import { Routes, RouterModule } from '@angular/router';
 
-import {TemplateComponent} from '../components/template/template.component';
-import {UnknownComponent} from "../components/unknown/unknown.component";
+import { HomeComponent } from '../components/home/home.component';
+//import { CounterComponent } from '../components/counter/counter.component';
+//import { FetchDataComponent } from '../components/fetch-data/fetch-data.component';
+//import { MemberListComponent } from '../components/memberlist/memberlist.component';
+import { RestrictedComponent } from '../components/restricted/restricted.component';
+import { LoginComponent } from '../components/login/login.component';
+import { UnknownComponent } from '../components/unknown/unknown.component';
+import { AuthGuard } from '../services/auth.guard';
+import { Role } from '../models/user';
 
 const appRoutes: Routes = [
-    {path: '', component: TemplateComponent, pathMatch: 'full'},
-    {path: '**', component: UnknownComponent}
+    //{ path: '', component: HomeComponent, pathMatch: 'full' },
+    //{ path: 'counter', component: CounterComponent },
+    //{ path: 'fetch-data', component: FetchDataComponent },
+   /* {
+        path: 'user',
+        component: MemberListComponent,
+        canActivate: [AuthGuard],
+        data: { roles: [Role.Admin] }
+    },*/
+    { path: '', component: LoginComponent, pathMatch: 'full' },
+    { path: 'login', component: LoginComponent },
+    { path: 'restricted', component: RestrictedComponent },
+    { path: 'home', component: HomeComponent, canActivate: [AuthGuard] },
+    { path: '**', component: UnknownComponent }
 ];
 
 export const AppRoutes = RouterModule.forRoot(appRoutes);
