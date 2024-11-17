@@ -74,6 +74,7 @@ public class FormsController : ControllerBase {
         await _context.SaveChangesAsync();
         return NoContent();
     }
+
     [Authorize]
     [HttpGet("User/forms")]
     public async Task<ActionResult<IEnumerable<FormDTO>>> GetUserForms(){
@@ -81,28 +82,22 @@ public class FormsController : ControllerBase {
         var userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
 
         if (string.IsNullOrEmpty(userId) || !int.TryParse(userId, out int userIdInt)){
-            return Unauthorized("User ID is missing or invalid in the claims.");
+            return Unauthorized("User ID est manquant dans le token.");
         }
 
-        // récup l'utilisateur avec ses formulaires
-        var userWithForms = await _context.Users
-            .Include(u => u.ListForms) // add les formulaires dans ICollection ListForms
-            .FirstOrDefaultAsync(u => u.Id == userIdInt);
+        // Charger directement les formulaires de l'utilisateur connecté avec leur propriétaire
+        var forms = await _context.Forms
+            .Where(f => f.IdOwner == userIdInt)
+            .Include(f => f.Owner) // Inclure les données du propriétaire
+            .OrderBy(f => f.Title) // Trier par titre
+            .ToListAsync();
 
-        if (userWithForms == null){
-            return NotFound("Utilisateur introuvable.");
-        }
-
-        if (userWithForms.ListForms == null || !userWithForms.ListForms.Any()){
+        // Vérifier si aucun formulaire n'est trouvé
+        if (forms == null || !forms.Any()){
             return NotFound("Aucun formulaire trouvé pour cet utilisateur.");
         }
 
-        return Ok(_mapper.Map<List<FormDTO>>(userWithForms.ListForms.Select(f => new FormDTO {
-            Id = f.Id,
-            Title = f.Title,
-            Description = f.Description,
-            IdOwner = f.IdOwner,
-            IsPublic = f.IsPublic
-        }).ToList()));
+        // Mapper directement les formulaires en FormDTO
+        return Ok(_mapper.Map<List<FormDTO>>(forms));
     }
 }

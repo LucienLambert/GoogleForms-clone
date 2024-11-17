@@ -33,11 +33,13 @@ public class FormContext : DbContext
 
         // Ajout des 5 formulaires pour les tests
             modelBuilder.Entity<Form>().HasData(
-                new Form { Id = 1, Title = "Formulaire de test 1", Description = "Description pour le formulaire 1", IdOwner = 1, IsPublic = true },
-                new Form { Id = 2, Title = "Formulaire de test 2", Description = "Description pour le formulaire 2", IdOwner = 1, IsPublic = true },
-                new Form { Id = 3, Title = "Formulaire de test 3", Description = "Description pour le formulaire 3", IdOwner = 2, IsPublic = false },
-                new Form { Id = 4, Title = "Formulaire de test 4", Description = "Description pour le formulaire 4", IdOwner = 3, IsPublic = false },
-                new Form { Id = 5, Title = "Formulaire de test 5", Description = "Description pour le formulaire 5", IdOwner = 2, IsPublic = true }
+                new Form { Id = 1, Title = "ZBCD", Description = "Description TEST", IdOwner = 1, IsPublic = false },
+                new Form { Id = 2, Title = "BCDE", Description = "Trie alphabetique", IdOwner = 1, IsPublic = true },
+                new Form { Id = 3, Title = "CDEF", Description = "", IdOwner = 1, IsPublic = true },
+                new Form { Id = 4, Title = "Formulaire de test 3", Description = "Description pour le formulaire 3", IdOwner = 2, IsPublic = false },
+                new Form { Id = 5, Title = "Formulaire de test 4", Description = "Description pour le formulaire 4", IdOwner = 3, IsPublic = false },
+                new Form { Id = 6, Title = "Formulaire de test 5", Description = "Description pour le formulaire 5", IdOwner = 2, IsPublic = true }
+
             );
     }
     //permet le mapping entre la backend et la DB (liaison)

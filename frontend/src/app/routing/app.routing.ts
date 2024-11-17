@@ -1,6 +1,6 @@
 import { Routes, RouterModule } from '@angular/router';
 
-import { View_forms } from '../components/view-forms/view-forms.component';
+import { ViewFormsComponent } from '../components/view-forms/view-forms.component';
 //import { CounterComponent } from '../components/counter/counter.component';
 //import { FetchDataComponent } from '../components/fetch-data/fetch-data.component';
 //import { MemberListComponent } from '../components/memberlist/memberlist.component';
@@ -23,7 +23,7 @@ const appRoutes: Routes = [
     { path: '', component: LoginComponent, pathMatch: 'full' },
     { path: 'login', component: LoginComponent },
     { path: 'restricted', component: RestrictedComponent },
-    { path: 'home', component: View_forms, canActivate: [AuthGuard] },
+    { path: 'home', component: ViewFormsComponent, canActivate: [AuthGuard] },
     { path: '**', component: UnknownComponent }
 ];
 
