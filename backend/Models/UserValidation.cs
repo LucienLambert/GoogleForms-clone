@@ -5,11 +5,11 @@ using prid_2425_a01.Models;
 
 namespace prid_2425_a01.Models;
 
-public class UserValidator : AbstractValidator<User>
+public class UserValidation : AbstractValidator<User>
 {
     private readonly FormContext _context;
 
-    public UserValidator(FormContext context) {
+    public UserValidation(FormContext context) {
         _context = context;
 
         //TODO A check pour voir si elle correspond au validation métier de l'itération 1.

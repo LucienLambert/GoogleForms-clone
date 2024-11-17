@@ -64,7 +64,7 @@ public class UsersController : ControllerBase
 
         _mapper.Map<UserDTO, User>(dto, user);
 
-        var result = await new UserValidator(_context).ValidateAsync(user);
+        var result = await new UserValidation(_context).ValidateAsync(user);
 
         if (!result.IsValid)
             return BadRequest(result);

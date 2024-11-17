@@ -12,8 +12,9 @@ public class FormContext : DbContext
         base.OnModelCreating(modelBuilder);
         //liaison des composite Key pour le model Form
         modelBuilder.Entity<User_Form_Access>().HasKey(f => new { f.IdUser, f.IdForm });
-        //liaison des composite Key pour le model Instance
-        modelBuilder.Entity<Instance>().HasKey(i => new { i.IdUser, i.IdForm });
+
+        modelBuilder.Entity<Answer>()
+            .HasKey(a => new { a.InstanceId, a.QuestionId, a.Idx });
 
         //liaison entre Form et User.
         modelBuilder.Entity<Form>()
@@ -21,6 +22,30 @@ public class FormContext : DbContext
             .WithMany(u => u.ListForms)         //Un user possède plusieur Form
             .HasForeignKey(f => f.IdOwner)      //indique que la clé étrangère est représenté par Owner dans Form
             .OnDelete(DeleteBehavior.Cascade);  //si le user est Del on supprime tous les formulaires lié. 
+
+
+        //liaisons instances , à tester et se mettre d'accord
+        modelBuilder.Entity<Instance>(i =>
+        {
+            i.HasOne(i => i.Form)
+                    .WithMany(f => f.Instances)
+                    .HasForeignKey(i => i.FormId)
+                    .OnDelete(DeleteBehavior.Cascade); // Si le Form est supprimé, supprime les instances en cascade
+
+            i.HasOne(i => i.User)
+                    .WithMany(u => u.ListInstances)
+                    .HasForeignKey(i => i.UserId)
+                    .OnDelete(DeleteBehavior.Cascade); // Si le User est supprimé, supprime les instances en cascade
+                    
+            i.HasMany(i => i.ListAnswers)
+                    .WithOne(a => a.Instance)
+                    .HasForeignKey(a => a.InstanceId)
+                    .OnDelete(DeleteBehavior.Cascade); // Si une Instance est supprimée, supprime les réponses en relation, parait inversé car c'est le possesseur de la collection qui est visé par la règle
+        });
+
+
+
+
 
         modelBuilder.Entity<User>().HasData(
             new User { Id=1, Email = "ben@epfc.eu", Password = "Password1,", Role = Role.User, FirstName = "Benoit", LastName = "Penelle" },
@@ -32,16 +57,31 @@ public class FormContext : DbContext
         );
 
         // Ajout des 5 formulaires pour les tests
-            modelBuilder.Entity<Form>().HasData(
-                new Form { Id = 1, Title = "Formulaire de test 1", Description = "Description pour le formulaire 1", IdOwner = 1, IsPublic = true },
-                new Form { Id = 2, Title = "Formulaire de test 2", Description = "Description pour le formulaire 2", IdOwner = 1, IsPublic = true },
-                new Form { Id = 3, Title = "Formulaire de test 3", Description = "Description pour le formulaire 3", IdOwner = 2, IsPublic = false },
-                new Form { Id = 4, Title = "Formulaire de test 4", Description = "Description pour le formulaire 4", IdOwner = 3, IsPublic = false },
-                new Form { Id = 5, Title = "Formulaire de test 5", Description = "Description pour le formulaire 5", IdOwner = 2, IsPublic = true }
-            );
+        modelBuilder.Entity<Form>().HasData(
+            new Form { Id = 1, Title = "Formulaire de test 1", Description = "Description pour le formulaire 1", IdOwner = 1, IsPublic = true },
+            new Form { Id = 2, Title = "Formulaire de test 2", Description = "Description pour le formulaire 2", IdOwner = 1, IsPublic = true },
+            new Form { Id = 3, Title = "Formulaire de test 3", Description = "Description pour le formulaire 3", IdOwner = 2, IsPublic = false },
+            new Form { Id = 4, Title = "Formulaire de test 4", Description = "Description pour le formulaire 4", IdOwner = 3, IsPublic = false },
+            new Form { Id = 5, Title = "Formulaire de test 5", Description = "Description pour le formulaire 5", IdOwner = 2, IsPublic = true }
+        );
+
+
+        modelBuilder.Entity<Instance>().HasData(
+            new Instance { Id = 1, FormId = 1, UserId = 2, Started = DateTime.UtcNow.AddDays(-2), Completed = DateTime.UtcNow.AddDays(-1) },
+            new Instance { Id = 2, FormId = 2, UserId = 2, Started = DateTime.UtcNow.AddDays(-5), Completed = null },
+            new Instance { Id = 3, FormId = 3, UserId = 1, Started = DateTime.UtcNow.AddDays(-10), Completed = null },
+            new Instance { Id = 4, FormId = 4, UserId = 4, Started = DateTime.UtcNow.AddDays(-3), Completed = DateTime.UtcNow.AddDays(-2) },
+            new Instance { Id = 5, FormId = 5, UserId = 3, Started = DateTime.UtcNow.AddDays(-1), Completed = null }
+        );
+
+
     }
     //permet le mapping entre la backend et la DB (liaison)
     //sans ça impossible de manipuler les objets de la DB "CRUD".
     public DbSet<User> Users => Set<User>();
     public DbSet<Form> Forms => Set<Form>();
+    public DbSet<Instance> Instances => Set<Instance>();
+    public DbSet<Answer> Answers => Set<Answer>();
+    public DbSet<Question> Questions => Set<Question>();
+    //...
 }

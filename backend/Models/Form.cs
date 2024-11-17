@@ -11,4 +11,9 @@ public class Form {
     public int IdOwner { get; set; }
     public User Owner { get; set; } = null!;
     public bool IsPublic { get; set; }
+
+
+
+    public ICollection<Instance> Instances { get; set; } = new List<Instance>();
+
 }
