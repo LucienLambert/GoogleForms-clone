@@ -3,12 +3,11 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.AspNetCore.Authorization;
 using prid_2425_a01.Helpers;
-using Microsoft.AspNetCore.Authorization;
 using System.IdentityModel.Tokens.Jwt;
 using System.Text;
 using Microsoft.IdentityModel.Tokens;
 using System.Security.Claims;
-using prid_2425_a01.Helpers;
+
 
 using prid_2425_a01.Models;
 namespace prid_2425_a01.Controllers;
@@ -85,7 +84,7 @@ public class UsersController : ControllerBase {
     public async Task<ActionResult<UserDTO>> Authenticate(User_With_PasswordDTO dto) {
         var user = await Authenticate(dto.Email, dto.Password);
 
-        var result = await new UserValidator(_context).ValidateForAuthenticate(user);
+        var result = await new UserValidation(_context).ValidateForAuthenticate(user);
         if (!result.IsValid)
             return BadRequest(result);
 
