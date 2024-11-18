@@ -17,4 +17,10 @@ export class FormService {
         return this.http.get<Form[]>(`${this.baseUrl}api/forms/User/forms`)
           .pipe(map(res => res.map(m => new Form(m))));
     }
+
+    //récupération des formulaires Public
+    getPublicFoms(): Observable<Form[]>{
+        return this.http.get<Form[]>(`${this.baseUrl}api/forms/Public/forms`)
+            .pipe(map(res => res.map(m => new Form(m))));
+    }
 }

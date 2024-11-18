@@ -38,8 +38,9 @@ public class FormContext : DbContext
                 new Form { Id = 3, Title = "CDEF", Description = "", IdOwner = 1, IsPublic = true },
                 new Form { Id = 4, Title = "Formulaire de test 3", Description = "Description pour le formulaire 3", IdOwner = 2, IsPublic = false },
                 new Form { Id = 5, Title = "Formulaire de test 4", Description = "Description pour le formulaire 4", IdOwner = 3, IsPublic = false },
-                new Form { Id = 6, Title = "Formulaire de test 5", Description = "Description pour le formulaire 5", IdOwner = 2, IsPublic = true }
-
+                new Form { Id = 6, Title = "Formulaire de test 5", Description = "Description pour le formulaire 5", IdOwner = 2, IsPublic = true },
+                new Form { Id = 7, Title = "Admin Form", Description = "Description Admin", IdOwner = 4, IsPublic = true },
+                new Form { Id = 8, Title = "Admin Form Bis", Description = "", IdOwner = 4, IsPublic = false }
             );
     }
     //permet le mapping entre la backend et la DB (liaison)

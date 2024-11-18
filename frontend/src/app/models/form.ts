@@ -1,5 +1,3 @@
-import { User } from "oidc-client";
-
 export class Form {
     id: number;
     title: string;
