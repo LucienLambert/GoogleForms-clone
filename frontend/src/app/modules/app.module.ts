@@ -17,7 +17,7 @@ import {UnknownComponent} from "../components/unknown/unknown.component";
 import {TemplateComponent} from "../components/template/template.component";
 import {LoginComponent} from "../components/login/login.component";
 import {RestrictedComponent} from "../components/restricted/restricted.component";
-import {HomeComponent} from '../components/home/home.component';
+import {ViewFormsComponent} from '../components/view-forms/view-forms.component';
 
 @NgModule({
     declarations: [
@@ -28,7 +28,7 @@ import {HomeComponent} from '../components/home/home.component';
         NavBarComponent,
         LoginComponent,
         RestrictedComponent,
-        HomeComponent
+        ViewFormsComponent
     ],
     imports: [
         BrowserModule.withServerTransition({appId: 'ng-cli-universal'}),

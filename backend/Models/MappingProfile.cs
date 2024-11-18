@@ -23,8 +23,6 @@ public class MappingProfile : Profile
 
         CreateMap<Instance, InstanceDTO>();
         CreateMap<InstanceDTO, Instance>();
-
-        
     }
     
 }
