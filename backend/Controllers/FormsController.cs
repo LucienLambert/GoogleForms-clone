@@ -84,7 +84,7 @@ public class FormsController : ControllerBase {
         if (string.IsNullOrEmpty(userId) || !int.TryParse(userId, out int userIdInt)){
             return Unauthorized("User ID est manquant dans le token.");
         }
-
+        
         // Charger directement les formulaires de l'utilisateur connecté avec leur propriétaire
         var forms = await _context.Forms
             .Where(f => f.IdOwner == userIdInt)
