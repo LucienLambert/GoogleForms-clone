@@ -1,0 +1,16 @@
+﻿id;title;description;owner;is_public
+1;Data sheet;This form is intended to collect your administrative information.;1;1
+2;Form 01;Test form 1;1;0
+3;Form 02;Test form 2;2;0
+4;Form 03;Test form 3;1;0
+5;Form 04;Test form 4;1;0
+6;Form 05;Test form 5;1;0
+7;Form 06;Test form 6;1;0
+8;Form 07;Test form 7;1;0
+9;Form 08;Test form 8;1;0
+10;Form 09;Test form 9;1;0
+11;Form 10;Test form 10;1;0
+12;Form 11;Test form 11;1;0
+13;Form 12;Test form 12;1;0
+14;Abc;Test form;1;0
+15;Aaa;Short test form;1;1

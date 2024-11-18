@@ -9,6 +9,7 @@ public class UserDTO {
     public DateTimeOffset? BirthDate { get; set; }
     public string? Token { get; set; }
 
+    public ICollection<FormDTO> ListFormsDTO { get; set; } = new HashSet<FormDTO>();
     
 }
 

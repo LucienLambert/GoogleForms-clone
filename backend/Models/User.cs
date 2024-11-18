@@ -33,7 +33,9 @@ public class User {
         }
     }
     
-    public ICollection<Form> ListForms{ get; set; } = new List<Form>();
+    //prévilégie les HashSet par la suite. plus adapté que les List standard.
+    public ICollection<Form> ListForms{ get; set; } = new HashSet<Form>();
+    
     public ICollection<Instance> ListInstances{ get; set; } = new List<Instance>();
     public ICollection<User_Form_Access> ListUsers_Forms_Accesses { get; set; } = new List<User_Form_Access>();
     //il faut encore créer la class (Itération 2);

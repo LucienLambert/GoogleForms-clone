@@ -56,16 +56,6 @@ public class FormContext : DbContext
             new User { Id=6, Email = "xavier@epfc.eu", Password = "Password1,", Role = Role.User, FirstName = "Xavier", LastName = "Pigeolet" }
         );
 
-        // Ajout des 5 formulaires pour les tests
-        modelBuilder.Entity<Form>().HasData(
-            new Form { Id = 1, Title = "Formulaire de test 1", Description = "Description pour le formulaire 1", IdOwner = 1, IsPublic = true },
-            new Form { Id = 2, Title = "Formulaire de test 2", Description = "Description pour le formulaire 2", IdOwner = 1, IsPublic = true },
-            new Form { Id = 3, Title = "Formulaire de test 3", Description = "Description pour le formulaire 3", IdOwner = 2, IsPublic = false },
-            new Form { Id = 4, Title = "Formulaire de test 4", Description = "Description pour le formulaire 4", IdOwner = 3, IsPublic = false },
-            new Form { Id = 5, Title = "Formulaire de test 5", Description = "Description pour le formulaire 5", IdOwner = 2, IsPublic = true }
-        );
-
-
         modelBuilder.Entity<Instance>().HasData(
             new Instance { Id = 1, FormId = 1, UserId = 2, Started = DateTime.UtcNow.AddDays(-2), Completed = DateTime.UtcNow.AddDays(-1) },
             new Instance { Id = 2, FormId = 2, UserId = 2, Started = DateTime.UtcNow.AddDays(-5), Completed = null },
@@ -74,7 +64,16 @@ public class FormContext : DbContext
             new Instance { Id = 5, FormId = 5, UserId = 3, Started = DateTime.UtcNow.AddDays(-1), Completed = null }
         );
 
-
+        modelBuilder.Entity<Form>().HasData(
+            new Form { Id = 1, Title = "ZBCD", Description = "Description TEST", IdOwner = 1, IsPublic = false },
+            new Form { Id = 2, Title = "BCDE", Description = "Trie alphabetique", IdOwner = 1, IsPublic = true },
+            new Form { Id = 3, Title = "CDEF", Description = "", IdOwner = 1, IsPublic = true },
+            new Form { Id = 4, Title = "Formulaire de test 3", Description = "Description pour le formulaire 3", IdOwner = 2, IsPublic = false },
+            new Form { Id = 5, Title = "Formulaire de test 4", Description = "Description pour le formulaire 4", IdOwner = 3, IsPublic = false },
+            new Form { Id = 6, Title = "Formulaire de test 5", Description = "Description pour le formulaire 5", IdOwner = 2, IsPublic = true },
+            new Form { Id = 7, Title = "Admin Form", Description = "Description Admin", IdOwner = 4, IsPublic = true },
+            new Form { Id = 8, Title = "Admin Form Bis", Description = "", IdOwner = 4, IsPublic = false }
+        );
     }
     //permet le mapping entre la backend et la DB (liaison)
     //sans ça impossible de manipuler les objets de la DB "CRUD".

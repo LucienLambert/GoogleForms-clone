@@ -1,0 +1,244 @@
+﻿option_list;idx;label
+1;1;Female
+1;2;Male
+1;3;Other
+2;3;Divorced
+2;2;Married
+2;1;Single
+2;4;Widowed
+3;2;1
+3;3;2
+3;4;3
+3;5;4
+3;6;5
+3;7;More than 5
+3;1;None
+4;1;Afghanistan
+4;2;Albania
+4;3;Algeria
+4;4;Andorra
+4;5;Angola
+4;6;Antigua and Barbuda
+4;7;Argentina
+4;8;Armenia
+4;9;Australia
+4;10;Austria
+4;11;Azerbaijan
+4;12;Bahamas
+4;13;Bahrain
+4;14;Bangladesh
+4;15;Barbados
+4;16;Belarus
+4;17;Belgium
+4;18;Belize
+4;19;Benin
+4;20;Bhutan
+4;21;Bolivia
+4;22;Bosnia and Herzegovina
+4;23;Botswana
+4;24;Brazil
+4;25;Brunei
+4;26;Bulgaria
+4;27;Burkina Faso
+4;28;Burundi
+4;29;Cabo Verde
+4;30;Cambodia
+4;31;Cameroon
+4;32;Canada
+4;33;Central African Republic
+4;34;Chad
+4;35;Chile
+4;36;China
+4;37;Colombia
+4;38;Comoros
+4;39;Congo
+4;40;Costa Rica
+4;41;Croatia
+4;42;Cuba
+4;43;Cyprus
+4;44;Czech Republic
+4;45;Denmark
+4;46;Djibouti
+4;47;Dominica
+4;48;Dominican Republic
+4;49;Ecuador
+4;50;Egypt
+4;51;El Salvador
+4;52;Equatorial Guinea
+4;53;Eritrea
+4;54;Estonia
+4;55;Eswatini
+4;56;Ethiopia
+4;57;Fiji
+4;58;Finland
+4;59;France
+4;60;Gabon
+4;61;Gambia
+4;62;Georgia
+4;63;Germany
+4;64;Ghana
+4;65;Greece
+4;66;Grenada
+4;67;Guatemala
+4;68;Guinea
+4;69;Guinea-Bissau
+4;70;Guyana
+4;71;Haiti
+4;72;Honduras
+4;73;Hungary
+4;74;Iceland
+4;75;India
+4;76;Indonesia
+4;77;Iran
+4;78;Iraq
+4;79;Ireland
+4;80;Israel
+4;81;Italy
+4;82;Ivory Coast
+4;83;Jamaica
+4;84;Japan
+4;85;Jordan
+4;86;Kazakhstan
+4;87;Kenya
+4;88;Kiribati
+4;89;Kuwait
+4;90;Kyrgyzstan
+4;91;Laos
+4;92;Latvia
+4;93;Lebanon
+4;94;Lesotho
+4;95;Liberia
+4;96;Libya
+4;97;Liechtenstein
+4;98;Lithuania
+4;99;Luxembourg
+4;100;Madagascar
+4;101;Malawi
+4;102;Malaysia
+4;103;Maldives
+4;104;Mali
+4;105;Malta
+4;106;Marshall Islands
+4;107;Mauritania
+4;108;Mauritius
+4;109;Mexico
+4;110;Micronesia
+4;111;Moldova
+4;112;Monaco
+4;113;Mongolia
+4;114;Montenegro
+4;115;Morocco
+4;116;Mozambique
+4;117;Myanmar
+4;118;Namibia
+4;119;Nauru
+4;120;Nepal
+4;121;Netherlands
+4;122;New Zealand
+4;123;Nicaragua
+4;124;Niger
+4;125;Nigeria
+4;126;North Korea
+4;127;North Macedonia
+4;128;Norway
+4;129;Oman
+4;130;Pakistan
+4;131;Palau
+4;132;Panama
+4;133;Papua New Guinea
+4;134;Paraguay
+4;135;Peru
+4;136;Philippines
+4;137;Poland
+4;138;Portugal
+4;139;Qatar
+4;140;Romania
+4;141;Russia
+4;142;Rwanda
+4;143;Saint Kitts and Nevis
+4;144;Saint Lucia
+4;145;Saint Vincent and the Grenadines
+4;146;Samoa
+4;147;San Marino
+4;148;Sao Tome and Principe
+4;149;Saudi Arabia
+4;150;Senegal
+4;151;Serbia
+4;152;Seychelles
+4;153;Sierra Leone
+4;154;Singapore
+4;155;Slovakia
+4;156;Slovenia
+4;157;Solomon Islands
+4;158;Somalia
+4;159;South Korea
+4;160;South Sudan
+4;161;Spain
+4;162;Sri Lanka
+4;163;Sudan
+4;164;Suriname
+4;165;Sweden
+4;166;Switzerland
+4;167;Syria
+4;168;Tajikistan
+4;169;Tanzania
+4;170;Thailand
+4;171;Timor-Leste
+4;172;Togo
+4;173;Tonga
+4;174;Trinidad and Tobago
+4;175;Tunisia
+4;176;Turkey
+4;177;Turkmenistan
+4;178;Tuvalu
+4;179;Uganda
+4;180;Ukraine
+4;181;United Arab Emirates
+4;182;United Kingdom
+4;183;United States
+4;184;Uruguay
+4;185;Uzbekistan
+4;186;Vanuatu
+4;187;Vatican
+4;188;Venezuela
+4;189;Vietnam
+4;190;Yemen
+4;191;Zambia
+4;192;Zimbabwe
+5;1;C
+5;2;C#
+5;3;C++
+5;4;Dart
+5;5;Go
+5;6;Java
+5;7;JavaScript
+5;8;Kotlin
+5;9;MATLAB
+5;10;Objective-C
+5;11;Perl
+5;12;PHP
+5;13;Python
+5;14;R
+5;15;Ruby
+5;16;Rust
+5;17;Scala
+5;18;SQL
+5;19;Swift
+5;20;TypeScript
+6;1;Apple
+6;2;Banana
+6;3;Cherry
+6;4;Clementine
+6;5;Currant
+6;6;Kiwi
+6;7;Mandarin
+6;8;Melon
+6;9;Orange
+6;10;Pear
+6;11;Pineapple
+6;12;Strawberry
+7;1;0 - 5
+7;3;nov-20
+7;4;21 - 50
+7;5;51 or more
+7;2;06-oct
