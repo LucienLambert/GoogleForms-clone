@@ -1,39 +1,11 @@
-<head>
-  <!-- Charger Bootstrap Icons via CDN -->
-  <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-icons/1.10.0/font/bootstrap-icons.min.css" rel="stylesheet">
-</head>
-
 <app-nav-bar title="My Forms" class="toolbar-actions"></app-nav-bar>
 
 <div class="container my-4">
-  <!-- Div qui gère la boucle pour lister les formulaires -->
-  <div *ngIf="allFormsSorted.length > 0; else noForms">
+  <div *ngIf="forms.length > 0; else noForms">
     <h2 class="mb-4">Vos Formulaires</h2>
     <div class="row">
-      <!-- Boucle sur les formulaires -->
-      <div *ngFor="let form of allFormsSorted" class="col-md-6 col-lg-4 mb-4">
-        <mat-card class="form-card">
-          <mat-card-header>
-            <ng-container *ngIf="form.isPublic; else privateContent">
-              <i class="bi bi-globe-americas"></i>
-            </ng-container>
-            <ng-template #privateContent>
-              <span id="barré">
-                <i class="bi bi-globe-americas"></i>
-              </span>
-            </ng-template>
-            <mat-card-title>{{ form.title }}</mat-card-title>
-            <mat-card-subtitle>{{ form.description || 'No description'}}</mat-card-subtitle>
-          </mat-card-header>
-          <mat-card-content>
-            <p>by <strong>{{ form.owner.firstName }} {{ form.owner.lastName }}</strong></p>
-          </mat-card-content>
-          <mat-card-actions>
-            <button mat-raised-button color="primary" (click)="openForm(form)">Open</button>
-          </mat-card-actions>
-          <mat-card-footer>
-          </mat-card-footer>
-        </mat-card>
+      <div *ngFor="let form of forms">
+        <app-form-card [form]="form" (openFormEvent)="openForm($event)"></app-form-card>
       </div>
     </div>
   </div>
@@ -43,7 +15,7 @@
     <mat-card class="no-forms-card">
       <mat-card-content class="text-center">
         <mat-icon color="warn">warning</mat-icon>
-        <p>{{ errorMessage || 'Aucun formulaire trouvé.' }}</p>
+        <p>{{ errorMessage || 'aucun formulaire trouvé.' }}</p>
       </mat-card-content>
     </mat-card>
   </ng-template>

@@ -1,0 +1,76 @@
+/* Style pour le titre de chaque carte */
+mat-card-title {
+    font-weight: bold;
+    color: #3f51b5; /* Couleur primaire du thème Material */
+}
+
+/* Style pour le sous-titre (description) */
+mat-card-subtitle {
+    color: #757575; /* Couleur grise douce */
+    font-size: 0.9rem;
+}
+
+/*Style pour le texte du footer*/
+mat-card-footer {
+    padding-top: 10px;
+    text-align: end;
+    font-size: 0.85rem;
+    color: gray;
+}
+
+/* Style des icônes dans le footer */
+mat-card-footer mat-icon {
+    font-size: 20px;
+    margin-left: 5px;
+    cursor: pointer;
+    color: #616161; /* Couleur grise */
+}
+
+/* Appliquer des marges autour des cartes */
+.form-card {
+    margin: 10px;
+    border-radius: 8px; /* Coins arrondis */
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* Ombre douce */
+    transition: transform 0.2s ease, box-shadow 0.2s ease; /* Transition au survol */
+}
+
+/*icone de la mappemonde barré dans le cas ou le formulaire n'est pas public */
+#barré {
+    position: relative; /* Nécessaire pour positionner la ligne par rapport à l'icône */
+}
+  
+#barré i {
+    font-size: 17px; /* Ajuster la taille de l'icône si nécessaire */
+}
+  
+#barré::before {
+    content: ''; /* Crée une ligne vide */
+    position: absolute;
+    left: -2px;
+    top: 12px; /* Commencer à partir du coin supérieur gauche */
+    width: 130%;
+    height: 2px; /* Épaisseur de la ligne */
+    background-color: black; /* Couleur de la ligne traversante */
+        
+    /* Rotation de la ligne pour qu'elle traverse l'icône en diagonale */
+    transform: rotate(45deg);
+    transform-origin: center; /* L'angle de rotation se fait autour du centre de la ligne */
+}
+
+/* Boutons d'action */
+mat-card-actions button {
+    margin-right: 10px;
+    font-size: 0.85rem;
+}
+
+
+
+/* Effet de survol sur les cartes */
+.form-card:hover {
+    transform: translateY(-5px); /* Légère élévation */
+    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.2); /* Ombre plus marquée */
+}
+
+mat-card-footer mat-icon:hover {
+    color: #3f51b5; /* Accentuer au survol */
+}
