@@ -82,7 +82,12 @@ namespace prid_2425_a01.Models
             Map(i => i.FormId).Name("form");
             Map(i => i.UserId).Name("user");
             Map(i => i.Started).Name("started");
-            Map(i => i.Completed).Name("completed");
+            Map(i => i.Completed).Name("completed")
+            .Convert(data => { 
+                var completedValue = data.Row.GetField("completed"); 
+                return string.IsNullOrEmpty(completedValue) ? null : DateTime.Parse(completedValue); 
+            });
+
         }
     }
 
