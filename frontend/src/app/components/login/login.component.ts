@@ -111,7 +111,7 @@ export class LoginComponent implements OnInit, AfterViewInit {
     loginAsGuest() {
         this.loginForm.patchValue({
             email: 'guest@epfc.eu',
-            password: 'N/A'
+            password: '(on s\'en fout puisqu\'on ne doit pas pouvoir se connecter avec ce password)'
         });
 
         this.onSubmit();

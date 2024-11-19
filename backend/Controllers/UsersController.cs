@@ -98,7 +98,7 @@ public class UsersController : ControllerBase {
         if (user == null)
             return null;
 
-        if (user.Password == password) {
+        if (user.Password == TokenHelper.GetPasswordHash(password)) {
             // authentication successful so generate jwt token
             var tokenHandler = new JwtSecurityTokenHandler();
             var key = Encoding.ASCII.GetBytes("my-super-secret-key my-super-secret-key");

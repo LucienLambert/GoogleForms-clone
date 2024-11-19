@@ -87,7 +87,7 @@ public class FormsController : ControllerBase {
         
         // Charger directement les formulaires de l'utilisateur connecté avec leur propriétaire
         var forms = await _context.Forms
-            .Where(f => f.IdOwner == userIdInt)
+            .Where(f => f.OwnerId == userIdInt)
             .Include(f => f.Owner) // Inclure les données du propriétaire
             .OrderBy(f => f.Title) // Trier par titre
             .ToListAsync();

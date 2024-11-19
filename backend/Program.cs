@@ -123,6 +123,13 @@ else
     context?.Database.EnsureDeleted();
 context?.Database.EnsureCreated();
 
+
+// Seed the database
+var seedData = new SeedData(context!);
+seedData.Seed();
+
+
+
 app.UseAuthentication();
 app.UseAuthorization();
 

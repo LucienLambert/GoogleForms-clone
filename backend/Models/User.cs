@@ -37,7 +37,7 @@ public class User {
     public ICollection<Form> ListForms{ get; set; } = new HashSet<Form>();
     
     public ICollection<Instance> ListInstances{ get; set; } = new List<Instance>();
-    public ICollection<User_Form_Access> ListUsers_Forms_Accesses { get; set; } = new List<User_Form_Access>();
+    public ICollection<UserFormAccess> ListUsers_Forms_Accesses { get; set; } = new List<UserFormAccess>();
     //il faut encore créer la class (Itération 2);
     //public ICollection<OptionsList> ListOptionsLists{ get; set; } = new List<OptionList>();
 

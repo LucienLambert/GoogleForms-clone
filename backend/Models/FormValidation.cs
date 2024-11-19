@@ -32,6 +32,6 @@ public class FormValidation : AbstractValidator<Form> {
         return !await _context.Forms
             //on vérifie si un form portant le titre appartenant au user dont l'id du form est différent.
             //en gros si un form déjà existant pour le même titre que le form qu'on crée.
-            .AnyAsync(f => f.Title == title && f.IdOwner == form.IdOwner && f.Id != form.Id, cancellationToken);
+            .AnyAsync(f => f.Title == title && f.OwnerId == form.OwnerId && f.Id != form.Id, cancellationToken);
     }
 }
