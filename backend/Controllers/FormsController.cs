@@ -20,11 +20,16 @@ public class FormsController : ControllerBase {
         _context = context;
         _mapper = mapper;
     }
-    
+
+    [Authorized(Role.Admin)]
     [HttpGet]
     //récupère la liste des formulaires
     public async Task<ActionResult<IEnumerable<FormDTO>>> GetAll() {
-        return _mapper.Map<List<FormDTO>>(await _context.Forms.ToListAsync());
+        var allForms = await _context.Forms
+            .OrderBy(f => f.Title)
+            .Include(f => f.Owner)
+            .ToListAsync();
+        return _mapper.Map<List<FormDTO>>(allForms);
     }
 
     [HttpGet("{title}")]

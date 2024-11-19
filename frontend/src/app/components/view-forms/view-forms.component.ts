@@ -6,7 +6,7 @@ import {RedirectCommand} from "@angular/router";
 
 import { FormService } from '../../services/form.service';
 import { Form } from '../../models/form';
-import { forEach } from 'lodash-es';
+import { FormCardComponent } from './form-card/form-card.component';
 
 @Component({
     selector: 'app-view-forms',
@@ -31,16 +31,28 @@ export class ViewFormsComponent implements OnInit {
         } else {
             this.user = this.authService.currentUser;
             console.log("L'utilisateur est bien connecté:", this.user);
+                    
+            if(this.user?.role == 2){
+                this.formService.getAllForm().subscribe({
+                    next: (data) => {
+                        this.forms = data;
+                    },
+                    error: (err) => {
+                    this.errorMessage = "Erreur de récupération des formulaires.";
+                    }
+                });
+            } else {
+                //ajout le résultat de la requête dans la list forms[]
+                this.formService.getOwnerPublicAccessForm().subscribe({
+                    next: (data) => {
+                        this.forms = data;
+                    },
+                    error: (err) => {
+                    this.errorMessage = "Erreur de récupération des formulaires.";
+                    }
+                });
+            }  
         }
-
-        //ajout le résultat de la requête dans la list forms[]
-        this.formService.getOwnerPublicAccessForm().subscribe({
-            next: (data) => {
-                this.forms = data;
-            }
-            
-        });
-        
     }
 
     openForm(form: Form){
