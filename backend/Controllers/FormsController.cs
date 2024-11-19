@@ -135,7 +135,7 @@ public class FormsController : ControllerBase {
         }
 
         var allForms = await _context.Forms
-            .Where(f => f.IdOwner == userIdInt || (f.IsPublic == true && f.IdOwner != userIdInt))
+            .Where(f => f.OwnerId == userIdInt || (f.IsPublic == true && f.OwnerId != userIdInt))
             .Include(f => f.Owner)
             .ToListAsync();
 
