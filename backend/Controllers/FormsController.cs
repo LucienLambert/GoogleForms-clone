@@ -100,6 +100,7 @@ public class FormsController : ControllerBase {
         // Mapper directement les formulaires en FormDTO
         return Ok(_mapper.Map<List<FormDTO>>(forms));
     }
+
     [Authorize]
     [HttpGet("Public/forms")]
     public async Task<ActionResult<IEnumerable<FormDTO>>> GetPublicForm(){
@@ -113,7 +114,38 @@ public class FormsController : ControllerBase {
         if(listPublicForm == null || !listPublicForm.Any()){
             return NotFound("Aucun Formulaire avec le statut Public n'a été trouvé");
         }
+
         //return et convertie la listePublicForm en Objet DTO
         return Ok(_mapper.Map<List<FormDTO>>(listPublicForm));
+    }
+
+    [Authorize]
+    [HttpGet("Owner_Public_Access/forms")]
+    public async Task<ActionResult<IEnumerable<FormDTO>>> GetOwnerPublicAccessForm(){
+        //recup l'ID du CurrentUser
+        var userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+        
+        if (string.IsNullOrEmpty(userId) || !int.TryParse(userId, out int userIdInt)){
+            return Unauthorized("User Unfound");
+        }
+
+        var allForms = await _context.Forms
+            .Where(f => f.IdOwner == userIdInt || (f.IsPublic == true && f.IdOwner != userIdInt))
+            .Include(f => f.Owner)
+            .ToListAsync();
+
+
+        // Vérifier si aucun formulaire n'est trouvé
+        if (allForms == null || !allForms.Any()) {
+            return NotFound("Aucun formulaire trouvé.");
+        }
+
+        var formsDTO = _mapper.Map<List<FormDTO>>(allForms)
+            .GroupBy(f => f.Id) // Supprimer les doublons basés sur l'Id
+            .Select(f => f.First()) // Conserver le premier de chaque groupe
+            .OrderBy(f => f.Title) // Trier par titre
+            .ToList();
+
+        return Ok(formsDTO);
     }
 }

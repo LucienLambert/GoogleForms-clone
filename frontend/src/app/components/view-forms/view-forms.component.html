@@ -7,11 +7,11 @@
 
 <div class="container my-4">
   <!-- Div qui gère la boucle pour lister les formulaires -->
-  <div *ngIf="allFormsSorted.length > 0; else noForms">
+  <div *ngIf="forms.length > 0; else noForms">
     <h2 class="mb-4">Vos Formulaires</h2>
     <div class="row">
       <!-- Boucle sur les formulaires -->
-      <div *ngFor="let form of allFormsSorted" class="col-md-6 col-lg-4 mb-4">
+      <div *ngFor="let form of forms" class="col-md-6 col-lg-4 mb-4">
         <mat-card class="form-card">
           <mat-card-header>
             <ng-container *ngIf="form.isPublic; else privateContent">
