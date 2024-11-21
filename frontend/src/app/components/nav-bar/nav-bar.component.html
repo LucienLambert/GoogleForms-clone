@@ -9,7 +9,7 @@
     <span class="spacer"></span>
     <!--barre de recheche-->
     <mat-form-field class="search-field" appearance="outline">
-        <input matInput type="text" placeholder="search...">
+        <input matInput type="text" placeholder="search..." (input)="onSearchChange($event)">
         <button mat-icon-button matSuffix>
             <mat-icon>search</mat-icon>
         </button>

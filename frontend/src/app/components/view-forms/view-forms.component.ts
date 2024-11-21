@@ -15,6 +15,7 @@ import { FormCardComponent } from './form-card/form-card.component';
 })
 export class ViewFormsComponent implements OnInit {
     forms: Form[] = []; //Liste des formulaire CurrentUser.
+    filteredForms: Form[] = [];
     errorMessage: string = ''; // permet de stocket les éventuelles erreurs lors du chargement des objets de la liste.
     user?: User;
 
@@ -46,6 +47,7 @@ export class ViewFormsComponent implements OnInit {
                 this.formService.getOwnerPublicAccessForm().subscribe({
                     next: (data) => {
                         this.forms = data;
+                        this.filteredForms = data;
                     },
                     error: (err) => {
                     this.errorMessage = "Erreur de récupération des formulaires.";
@@ -53,6 +55,13 @@ export class ViewFormsComponent implements OnInit {
                 });
             }  
         }
+    }
+
+    filterForms(searchText: string) {
+        const lowerSearchText = searchText.toLowerCase();
+        this.filteredForms = this.forms.filter((form) =>
+            form.title.toLowerCase().includes(lowerSearchText)
+        );
     }
 
     openForm(form: Form){
