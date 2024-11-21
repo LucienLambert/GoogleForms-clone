@@ -46,6 +46,11 @@ public class FormContext : DbContext
                     .OnDelete(DeleteBehavior.Cascade); // Si une Instance est supprimée, supprime les réponses en relation, parait inversé car c'est le possesseur de la collection qui est visé par la règle
         });
 
+        //TODO ADD LIAISON ENTRE
+        //ANSWER -> QUESTION
+        //FORM -> QUESTION
+        
+
     }
     //permet le mapping entre la backend et la DB (liaison)
     //sans ça impossible de manipuler les objets de la DB "CRUD".
