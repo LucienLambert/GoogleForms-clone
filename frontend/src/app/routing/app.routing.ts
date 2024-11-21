@@ -9,6 +9,7 @@ import { LoginComponent } from '../components/login/login.component';
 import { UnknownComponent } from '../components/unknown/unknown.component';
 import { AuthGuard } from '../services/auth.guard';
 import { Role } from '../models/user';
+import { ViewInstanceComponent } from '../components/view-instance/view-instance.component';
 
 const appRoutes: Routes = [
     //{ path: '', component: HomeComponent, pathMatch: 'full' },
@@ -24,6 +25,7 @@ const appRoutes: Routes = [
     { path: 'login', component: LoginComponent },
     { path: 'restricted', component: RestrictedComponent },
     { path: 'home', component: ViewFormsComponent, canActivate: [AuthGuard] },
+    { path: 'view-instance/:id', component: ViewInstanceComponent, canActivate: [AuthGuard] },
     { path: '**', component: UnknownComponent }
 ];
 

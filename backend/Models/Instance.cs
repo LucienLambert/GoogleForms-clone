@@ -14,8 +14,8 @@ public class Instance {
     [Required]
     public int UserId { get; set; }
     
-    public DateTime? Started { get; set; }
-    public DateTime? Completed { get; set; } = null!;
+    public DateTime Started { get; set; }
+    public DateTime? Completed { get; set; }
 
 
     [ForeignKey(nameof(FormId))]

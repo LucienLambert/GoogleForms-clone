@@ -36,14 +36,14 @@ public class Question {
     [Required]
     public bool Required { get; set; }
 
-    // public int? OptionListId { get; set; }
+    public int? OptionListId { get; set; }
     
 
     [ForeignKey(nameof(FormId))]
     public Form Form { get; set; } = null!;
 
-    // [ForeignKey(nameof(OptionListId))]
-    // public OptionList? OptionList { get; set; }
+    [ForeignKey(nameof(OptionListId))]
+    public OptionList? OptionList { get; set; }
 
 
 
