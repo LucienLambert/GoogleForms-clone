@@ -1,7 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { AuthenticationService } from '../../services/authentication.service';
 import { User } from '../../models/user';
-import { Router } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 import {RedirectCommand} from "@angular/router";
 
 import { FormService } from '../../services/form.service';
@@ -58,6 +58,7 @@ export class ViewFormsComponent implements OnInit {
     openForm(form: Form){
         if(form != null && (form.owner.id == this.user?.id || this.user?.role == 2)){
             console.log('Formulaire sélectionné:', form);
+            this.router.navigate(['view-instance', form.id]);
         } else {
             console.log("Vous n'avez pas les droits pour ouvrir ce formulaire");
         }
