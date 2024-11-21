@@ -7,7 +7,7 @@ using prid_2425_a01.Models;
 
 namespace prid_2425_a01.Controllers;
 
-// [Authorize]
+[Authorize]
 [Route("api/[controller]")]
 [ApiController]
 public class InstancesController : ControllerBase {
