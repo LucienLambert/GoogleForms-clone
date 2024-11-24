@@ -1,4 +1,4 @@
-import {Component, Input, Output, EventEmitter} from '@angular/core';
+import {Component, Input, Output, EventEmitter, ElementRef, ViewChild} from '@angular/core';
 import {Router} from "@angular/router";
 
 @Component({
@@ -10,8 +10,20 @@ export class NavBarComponent {
     @Input() title: string = '<undefined>';
     @Output() searchEvent = new EventEmitter<string>(); // Emits search input to parent
 
+    @ViewChild('searchInput') searchInput!: ElementRef<HTMLInputElement>;
+    searchVisible: boolean = false;
 
     constructor(private router: Router) {
+    }
+
+    toggleSearch() {
+        if (this.searchVisible) {
+            this.searchEvent.emit('');
+            if (this.searchInput) {
+                this.searchInput.nativeElement.value = '';
+            }
+        }
+        this.searchVisible = !this.searchVisible;
     }
 
     onSearchChange(event: Event) {

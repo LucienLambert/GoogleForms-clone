@@ -73,6 +73,21 @@ export class ViewFormsComponent implements OnInit {
         }
     }
 
+    handleSearch(term: string) {
+        if (term.trim() === '') {
+            // Reset to show all forms
+            this.filteredForms = this.forms;
+        } else {
+            // Filter forms based on the search term
+            this.filteredForms = this.forms.filter(form =>
+                form.title.toLowerCase().includes(term.toLowerCase()) ||
+                form.description!.toLowerCase().includes(term.toLowerCase()) ||
+                form.owner?.firstName!.toLowerCase().includes(term.toLowerCase()) ||
+                form.owner?.lastName!.toLowerCase().includes(term.toLowerCase())
+            );
+        }
+    }
+
     logout() {
         this.authService.logout()
         this.router.navigate(['/login']);
