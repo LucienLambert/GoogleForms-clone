@@ -42,4 +42,9 @@ public class User {
     //public ICollection<OptionsList> ListOptionsLists{ get; set; } = new List<OptionList>();
 
 
+    public bool IsInRole(Role role){
+        return role == this.Role;
+    }
+
+
 }

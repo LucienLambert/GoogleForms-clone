@@ -1,11 +1,13 @@
-import { Component, EventEmitter, OnInit } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { AuthenticationService } from '../../services/authentication.service';
 import { User } from '../../models/user';
 import { ActivatedRoute, Router } from '@angular/router';
 import {RedirectCommand} from "@angular/router";
 
 import { InstanceService } from '../../services/instance.service';
+import { FormService } from '../../services/form.service';
 import { Form } from '../../models/form';
+import { Instance } from '../../models/instance';
 
 @Component({
     selector: 'app-view-instance',
@@ -16,6 +18,7 @@ export class ViewInstanceComponent implements OnInit {
 
     user?: User;
     form?: Form;
+    instance?: Instance;
 
     constructor(private authService: AuthenticationService, private router: Router,
         private instanceService: InstanceService, private route: ActivatedRoute) {
@@ -24,16 +27,20 @@ export class ViewInstanceComponent implements OnInit {
     }
 
     ngOnInit() {
-        const formId = this.route.snapshot.paramMap.get('id');
-        const number = +formId!; 
-        // console.log(number);
-        // this.instanceService.getOneById(number).subscribe({
-        //     next: (data) => {
-        //         this.form=data;
-        //     }
-
-        // });
-        // console.log(form);
+        
+        //TODO: security
+        
+        const formId = Number(this.route.snapshot.paramMap.get('id'));
+        
+        this.instanceService.getFormByFormId(formId).subscribe({
+            next: (data) => {
+                this.form=data;
+                console.log("form fetched:",this.form);
+            },
+            error: (err) => {
+                console.log(err);
+            }
+        })
 
         
         
