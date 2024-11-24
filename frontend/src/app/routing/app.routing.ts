@@ -10,6 +10,7 @@ import { UnknownComponent } from '../components/unknown/unknown.component';
 import { AuthGuard } from '../services/auth.guard';
 import { Role } from '../models/user';
 import { ViewInstanceComponent } from '../components/view-instance/view-instance.component';
+import {CreateEditFormComponent} from "../components/create-edit-form/create-edit-form.component";
 
 const appRoutes: Routes = [
     //{ path: '', component: HomeComponent, pathMatch: 'full' },
@@ -26,6 +27,7 @@ const appRoutes: Routes = [
     { path: 'restricted', component: RestrictedComponent },
     { path: 'home', component: ViewFormsComponent, canActivate: [AuthGuard] },
     { path: 'view-instance/:id', component: ViewInstanceComponent, canActivate: [AuthGuard] },
+    { path: 'create-edit-form', component: CreateEditFormComponent, canActivate: [AuthGuard] },
     { path: '**', component: UnknownComponent }
 ];
 
