@@ -1,0 +1,16 @@
+<app-nav-bar title="New Form" [isSaveVisible]="isSaveVisible" [isSearchVisible]="isSearchVisible"
+             [isAddVisible]="isAddVisible" [backButtonVisible]="backButtonVisible" class="toolbar-actions"
+             (saveEvent)="onSave()"></app-nav-bar>
+
+<form [formGroup]="form" class="input-container">
+    <input id="title" type="text" formControlName="title" class="form-control" name="title" placeholder="Title*" required/>
+
+    <input id="description" type="text" formControlName="description" class="form-control" name="description" placeholder="Description"/>
+
+    <input id="owner" type="text" formControlName="owner" class="form-control" name="additionalInfo"/>
+
+    <label for="checkbox">
+        <input id="checkbox" type="checkbox" formControlName="checkbox" name="isPublic"/>
+        Is Public
+    </label>
+</form>

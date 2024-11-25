@@ -19,8 +19,7 @@ import {LoginComponent} from "../components/login/login.component";
 import {RestrictedComponent} from "../components/restricted/restricted.component";
 import {ViewFormsComponent} from '../components/view-forms/view-forms.component';
 import { FormCardComponent } from '../components/view-forms/form-card/form-card.component';
-import { ViewInstanceComponent } from '../components/view-instance/view-instance.component';
-
+import {ViewInstanceComponent} from "../components/view-instance/view-instance.component";
 
 @NgModule({
     declarations: [
