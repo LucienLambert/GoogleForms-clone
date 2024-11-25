@@ -20,3 +20,8 @@ body {
 .body {
     padding: 66px 10px 10px 10px;
 }
+
+:root {
+    --navbar-height: 56px;
+    --navbar-margin: calc(var(--navbar-height) + 10px);
+}

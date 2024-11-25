@@ -19,6 +19,10 @@ export class ViewFormsComponent implements OnInit {
     errorMessage: string = ''; // permet de stocket les éventuelles erreurs lors du chargement des objets de la liste.
     user?: User;
 
+    isSaveVisible: boolean = false;
+    isSearchVisible: boolean = true;
+    isAddVisible: boolean = true;
+
     constructor(private authService: AuthenticationService, private router: Router,
         private formService: FormService) {
 
