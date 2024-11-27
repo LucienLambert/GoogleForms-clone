@@ -31,6 +31,16 @@ public class UsersController : ControllerBase {
         return _mapper.Map<List<UserDTO>>(await _context.Users.ToListAsync());
     }
 
+    
+    [HttpGet("logged_user")]
+    public async Task<ActionResult<UserDTO>> GetLoggedUser() {
+        var userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+        var user = await _context.Users.FirstOrDefaultAsync(u => u.Id == int.Parse(userId));
+        if (user == null)
+            return NotFound();
+        return _mapper.Map<UserDTO>(user);
+    }
+    
     [HttpGet("{id}")]
     public async Task<ActionResult<UserDTO>> GetOneById(int id) {
         var user = await _context.Users.FindAsync(id);
@@ -118,4 +128,6 @@ public class UsersController : ControllerBase {
 
         return user;
     }
+    
+    
 }

@@ -20,6 +20,7 @@ import {RestrictedComponent} from "../components/restricted/restricted.component
 import {ViewFormsComponent} from '../components/view-forms/view-forms.component';
 import { FormCardComponent } from '../components/view-forms/form-card/form-card.component';
 import {ViewInstanceComponent} from "../components/view-instance/view-instance.component";
+import {CreateEditFormComponent} from "../components/create-edit-form/create-edit-form.component";
 
 @NgModule({
     declarations: [
@@ -32,7 +33,8 @@ import {ViewInstanceComponent} from "../components/view-instance/view-instance.c
         RestrictedComponent,
         ViewFormsComponent,
         FormCardComponent,
-        ViewInstanceComponent
+        ViewInstanceComponent,
+        CreateEditFormComponent
     ],
     imports: [
         BrowserModule.withServerTransition({appId: 'ng-cli-universal'}),

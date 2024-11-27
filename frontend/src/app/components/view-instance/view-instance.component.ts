@@ -18,32 +18,63 @@ export class ViewInstanceComponent implements OnInit {
 
     user?: User;
     form?: Form;
-    instance?: Instance;
-
+    instance?: Instance | null;
+    //TODO:refactor
+    backButtonVisible: boolean = true;
+    isSearchVisible: boolean = false;
+    isAddVisible: boolean = false;
+    isSaveVisible: boolean = false;
+    
     constructor(private authService: AuthenticationService, private router: Router,
-        private instanceService: InstanceService, private route: ActivatedRoute) {
+                private instanceService: InstanceService, private formService: FormService, private route: ActivatedRoute) {
 
-            
     }
-
+    
+    
     ngOnInit() {
         
         //TODO: security
         
         const formId = Number(this.route.snapshot.paramMap.get('id'));
         
-        this.instanceService.getFormByFormId(formId).subscribe({
+        
+        
+        this.formService.getFormByFormId(formId).subscribe({
             next: (data) => {
                 this.form=data;
                 console.log("form fetched:",this.form);
             },
             error: (err) => {
                 console.log(err);
+                this.router.navigate(['/unknown']);
             }
         })
-
+        
+        this.instanceService.getInstanceByFormId(formId).subscribe({
+            next: (data) => {
+                this.instance=data;
+                console.log("instance fetched:",this.instance);
+            },
+            error: (err) => {  
+                // ...
+                switch (err.status) {
+                    case 404:
+                        
+                }
+            }
+            
+        })
         
         
-
     }
+    //TODO:DEBUG
+    isCompleted(completedDate: string | null | undefined): boolean {
+        const defaultDate = '01/01/0001-01T00:00:00:00Z';
+        return completedDate != null && completedDate != defaultDate;
+    }
+
+    onSave() {
+        console.log("saved button pressed");
+    }
+
 }

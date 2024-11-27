@@ -2,7 +2,9 @@ using AutoMapper;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.IdentityModel.Tokens;
 using prid_2425_a01.Helpers;
+using System.Security.Claims;
 using prid_2425_a01.Models;
 
 namespace prid_2425_a01.Controllers;
@@ -33,6 +35,27 @@ public class InstancesController : ControllerBase {
         if (instance == null)
             return NotFound();
         return _mapper.Map<InstanceDTO>(instance);
+    }
+    
+    [HttpGet("by_form/{id}")]
+    public async Task<ActionResult<IEnumerable<InstanceDTO>>> GetInstanceByFormId(int id) {
+        // Logged user
+        var userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+        var user = await _context.Users.FirstOrDefaultAsync(u => u.Id == int.Parse(userId));
+
+        if (user != null && !user.IsInRole(Role.Guest)) {
+            var instance = await _context.Instances.Where(i => i.FormId == id && i.UserId == user.Id)
+                .FirstOrDefaultAsync();
+
+            if (instance != null) {
+                return Ok(_mapper.Map<InstanceDTO>(instance));
+            }
+            
+            return NotFound();
+        }
+
+        return Unauthorized("unlogged user or guest");
+
     }
 
 }

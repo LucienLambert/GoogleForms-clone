@@ -15,10 +15,10 @@ export class InstanceService {
 
 
 
-    getFormByFormId(id: number): Observable<Form> {
-        console.log(this.http.get<Form>(`${this.baseUrl}api/forms/id/${id}`));
-        return this.http.get<Form>(`${this.baseUrl}api/forms/id/${id}`)
-            .pipe(map(res => new Form(res)))
+    getInstanceByFormId(id: number): Observable<Instance> {
+        return this.http.get<Instance>(`${this.baseUrl}api/instances/by_form/${id}`)
+            .pipe(map(res => new Instance(res))
+            );
     }
 
 

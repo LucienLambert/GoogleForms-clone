@@ -24,6 +24,11 @@ export class FormService {
             .pipe(map(res => res.map(m => new Form(m))));
     }
 
+    getFormByFormId(id: number): Observable<Form> {
+        return this.http.get<Form>(`${this.baseUrl}api/forms/id/${id}`)
+            .pipe(map(res => new Form(res)))
+    }
+
     //récupération de la requete getOwnerPublicAccessForm
     //du FormController pour récupérer les formulaires que le currentUser doit afficher
     getOwnerPublicAccessForm() : Observable<Form[]> {
