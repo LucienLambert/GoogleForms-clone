@@ -8,6 +8,7 @@ import { InstanceService } from '../../services/instance.service';
 import { FormService } from '../../services/form.service';
 import { Form } from '../../models/form';
 import { Instance } from '../../models/instance';
+import { parseISO } from 'date-fns';
 
 @Component({
     selector: 'app-view-instance',
@@ -19,11 +20,16 @@ export class ViewInstanceComponent implements OnInit {
     user?: User;
     form?: Form;
     instance?: Instance | null;
+    
+    isCompleted: boolean = false;
+    
+    
     //TODO:refactor
     backButtonVisible: boolean = true;
     isSearchVisible: boolean = false;
     isAddVisible: boolean = false;
     isSaveVisible: boolean = false;
+    
     
     constructor(private authService: AuthenticationService, private router: Router,
                 private instanceService: InstanceService, private formService: FormService, private route: ActivatedRoute) {
@@ -46,9 +52,18 @@ export class ViewInstanceComponent implements OnInit {
             },
             error: (err) => {
                 console.log(err);
-                this.router.navigate(['/unknown']);
+                switch (err.status) {
+                    case 404:
+                        this.router.navigate(['/unknown']);
+                        break;
+                    case 401:
+                        this.router.navigate(['/restricted']);
+                        break;
+                    default:
+                        this.router.navigate(['/unknown']);
+                }
             }
-        })
+        });
         
         this.instanceService.getInstanceByFormId(formId).subscribe({
             next: (data) => {
@@ -63,14 +78,12 @@ export class ViewInstanceComponent implements OnInit {
                 }
             }
             
-        })
+        });
         
         
     }
-    //TODO:DEBUG
-    isCompleted(completedDate: string | null | undefined): boolean {
-        const defaultDate = '01/01/0001-01T00:00:00:00Z';
-        return completedDate != null && completedDate != defaultDate;
+    isInProgress(): boolean {
+        return !this.instance?.completed;
     }
 
     onSave() {

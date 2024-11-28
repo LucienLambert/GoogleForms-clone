@@ -39,23 +39,43 @@ public class InstancesController : ControllerBase {
     
     [HttpGet("by_form/{id}")]
     public async Task<ActionResult<IEnumerable<InstanceDTO>>> GetInstanceByFormId(int id) {
-        // Logged user
+        // Returns an instance for the formid - logged user combinaison. If not found, returns a fresh instance
         var userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
         var user = await _context.Users.FirstOrDefaultAsync(u => u.Id == int.Parse(userId));
-
-        if (user != null && !user.IsInRole(Role.Guest)) {
-            var instance = await _context.Instances.Where(i => i.FormId == id && i.UserId == user.Id)
-                .FirstOrDefaultAsync();
-
-            if (instance != null) {
-                return Ok(_mapper.Map<InstanceDTO>(instance));
-            }
-            
-            return NotFound();
+        
+        var form = await _context.Forms.FirstOrDefaultAsync(f => f.Id == id);
+        
+        if (user == null) {
+            return Unauthorized();
         }
 
-        return Unauthorized("unlogged user or guest");
+        if (form == null) {
+            return NotFound();
+        }
+        
+        Instance freshInstance = new() {
+            FormId = id,
+            UserId = user.Id,
+            Started = DateTime.Now, 
+            Completed = null
+        };
 
-    }
+        if (user.IsInRole(Role.Guest)) {
+            _context.Instances.Add(freshInstance);
+            await _context.SaveChangesAsync();
+            return Ok(_mapper.Map<InstanceDTO>(freshInstance));
+        }
+        
+        var instance = await _context.Instances.Where(i => i.FormId == id && i.UserId == user.Id)
+                .FirstOrDefaultAsync();
 
+        if (instance == null) {
+            _context.Instances.Add(freshInstance);
+            await _context.SaveChangesAsync();
+            return Ok(_mapper.Map<InstanceDTO>(freshInstance));
+        }
+        
+        return Ok(_mapper.Map<InstanceDTO>(instance));
+}
+    
 }

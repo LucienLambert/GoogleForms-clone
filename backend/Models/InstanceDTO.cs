@@ -8,7 +8,7 @@ public class InstanceDTO {
     public int FormId { get; set; }
     public int UserId { get; set; }
     public DateTime Started { get; set; }
-    public DateTime Completed { get; set; }
+    public DateTime? Completed { get; set; }
     
 }
 

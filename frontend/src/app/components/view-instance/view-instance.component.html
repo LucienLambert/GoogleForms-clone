@@ -17,8 +17,8 @@
             <div class="form-value">{{ instance?.started | date:'dd/MM/yyyy HH:mm:ss' }}</div>
         </div>
         <div class="form-item">
-            <div class="form-label" *ngIf="instance?.completed; else inProgress">Completed:</div>
-            <div class="form-value" *ngIf="instance?.completed;">
+            <div class="form-label" *ngIf="!isInProgress(); else inProgress">Completed:</div>
+            <div class="form-value" *ngIf="!isInProgress();">
                 {{ instance?.completed | date:'dd/MM/yyyy HH:mm:ss' }} </div>
             
                 <ng-template #inProgress>
