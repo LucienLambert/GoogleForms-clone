@@ -15,6 +15,9 @@ public class Form {
     public User Owner { get; set; } = null!;
 
 
-    public ICollection<Instance> ListInstances { get; set; } = new List<Instance>();
+    public ICollection<Instance> ListInstances { get; set; } = new HashSet<Instance>();
+    public ICollection<Question> ListQuestions { get; set; } = new HashSet<Question>();
+    public ICollection<UserFormAccess> ListUserFormAccesses { get; set; } = new HashSet<UserFormAccess>();
+    
 
 }

@@ -37,9 +37,9 @@ public class InstancesController : ControllerBase {
         return _mapper.Map<InstanceDTO>(instance);
     }
     
-    [HttpGet("by_form/{id}")]
-    public async Task<ActionResult<IEnumerable<InstanceDTO>>> GetInstanceByFormId(int id) {
-        // Returns an instance for the formid - logged user combinaison. If not found, returns a fresh instance
+    [HttpGet("by_form_or_fresh/{id}")]
+    public async Task<ActionResult<IEnumerable<InstanceDTO>>> GetExistingOrFreshInstanceByFormId(int id) {
+        // Returns an instance for the formid - logged user combinaison. /!\ If not found, returns a fresh instance
         var userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
         var user = await _context.Users.FirstOrDefaultAsync(u => u.Id == int.Parse(userId));
         

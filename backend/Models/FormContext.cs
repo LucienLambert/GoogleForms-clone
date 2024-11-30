@@ -25,26 +25,35 @@ public class FormContext : DbContext
             .WithMany(u => u.ListForms)         //Un user possède plusieur Form
             .HasForeignKey(f => f.OwnerId)      //indique que la clé étrangère est représenté par Owner dans Form
             .OnDelete(DeleteBehavior.Cascade);  //si le user est Del on supprime tous les formulaires lié. 
+            
 
-
-        //liaisons instances , à tester et se mettre d'accord
-        modelBuilder.Entity<Instance>(i =>
-        {
+        //liaisons Instance
+        modelBuilder.Entity<Instance>(i => {
             i.HasOne(i => i.Form)
-                    .WithMany(f => f.ListInstances)
-                    .HasForeignKey(i => i.FormId)
-                    .OnDelete(DeleteBehavior.Cascade); // Si le Form est supprimé, supprime les instances en cascade
+                .WithMany(f => f.ListInstances)
+                .HasForeignKey(i => i.FormId)
+                .OnDelete(DeleteBehavior.Cascade); // Si le Form est supprimé, supprime les instances en cascade
 
             i.HasOne(i => i.User)
-                    .WithMany(u => u.ListInstances)
-                    .HasForeignKey(i => i.UserId)
-                    .OnDelete(DeleteBehavior.Cascade); // Si le User est supprimé, supprime les instances en cascade
-                    
+                .WithMany(u => u.ListInstances)
+                .HasForeignKey(i => i.UserId)
+                .OnDelete(DeleteBehavior.Cascade); // Si le User est supprimé, supprime les instances en cascade
+
             i.HasMany(i => i.ListAnswers)
-                    .WithOne(a => a.Instance)
-                    .HasForeignKey(a => a.InstanceId)
-                    .OnDelete(DeleteBehavior.Cascade); // Si une Instance est supprimée, supprime les réponses en relation, parait inversé car c'est le possesseur de la collection qui est visé par la règle
+                .WithOne(a => a.Instance)
+                .HasForeignKey(a => a.InstanceId)
+                .OnDelete(DeleteBehavior
+                    .Cascade); // Si une Instance est supprimée, supprime les réponses en relation, parait inversé car c'est le possesseur de la collection qui est visé par la règle
         });
+        //liaisons OptionValue
+        modelBuilder.Entity<OptionValue>(ov => {
+            ov.HasOne(ov => ov.OptionList)
+                .WithMany(ol => ol.ListOptionValues)
+                .HasForeignKey(ol => ol.OptionListId)
+                .OnDelete(DeleteBehavior.Cascade);
+        });
+        
+
 
     }
     //permet le mapping entre la backend et la DB (liaison)

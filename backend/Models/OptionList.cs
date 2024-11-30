@@ -14,9 +14,7 @@ public class OptionList {
 
     [ForeignKey(nameof(OwnerId))]
     public User Owner { get; set; }= null!;
+    
 
-
-
-
-    public ICollection<OptionValue> ListOptionValues { get; set; } = new List<OptionValue>();
+    public ICollection<OptionValue> ListOptionValues { get; set; } = new HashSet<OptionValue>();
 }
