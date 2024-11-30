@@ -1,7 +1,8 @@
+import { Question } from './question';
 export class Form {
     id: number;
     title: string;
-    description?: string | null; //dans le cas ou la description peut-être null
+    description?: string | null;
     isPublic: boolean;
     owner: {
         id: number;
@@ -9,6 +10,7 @@ export class Form {
         firstName?: string;
         lastName?: string;
     };
+    questions: Question[];
 
     constructor(data: any) {
         this.id = data.id;
@@ -16,5 +18,7 @@ export class Form {
         this.description = data.description;
         this.owner = data.owner;
         this.isPublic = data.isPublic;
+        
+        this.questions = data.listQuestions ? data.listQuestions.map( (q: Question) => new Question(q)) : [];
     }
 }

@@ -7,7 +7,7 @@ public class FormDTO {
     public int Id { get; set; }
     public string Title { get; set; } = null!;
     public string? Description { get; set; }
-    public int IdOwner { get; set; }
+    public int OwnerId { get; set; }
     public UserDTO Owner { get; set; } = null!;
     public bool IsPublic { get; set; }
 }
@@ -16,10 +16,9 @@ public class Form_With_QuestionsDTO {
     public int Id { get; set; }
     public string Title { get; set; } = null!;
     public string? Description { get; set; }
-    public int IdOwner { get; set; }
-    public UserDTO Owner { get; set; } = null!;
+    public int OwnerId { get; set; }
     public bool IsPublic { get; set; }
 
-    public ICollection<QuestionDTO> ListQuestionDTOs { get; set; } = new List<QuestionDTO>();
+    public ICollection<Question_CompleteDTO> ListQuestions { get; set; } = new List<Question_CompleteDTO>();
 
 }

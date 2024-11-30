@@ -1,15 +1,15 @@
 import { Component, OnInit } from '@angular/core';
 import { AuthenticationService } from '../../services/authentication.service';
-import { User } from '../../models/user';
 import { ActivatedRoute, Router } from '@angular/router';
 import {RedirectCommand} from "@angular/router";
 
 import { InstanceService } from '../../services/instance.service';
 import { FormService } from '../../services/form.service';
+import { User } from '../../models/user';
 import { Form } from '../../models/form';
+import { Question } from '../../models/question';
+import { QuestionType } from '../../models/question';
 import { Instance } from '../../models/instance';
-import { parseISO } from 'date-fns';
-
 @Component({
     selector: 'app-view-instance',
     templateUrl: './view-instance.component.html',
@@ -19,7 +19,8 @@ export class ViewInstanceComponent implements OnInit {
 
     user?: User;
     form?: Form;
-    instance?: Instance | null;
+    questions: Question[] = new Array<Question>();
+    instance?: Instance;
     
     isCompleted: boolean = false;
     
@@ -43,12 +44,11 @@ export class ViewInstanceComponent implements OnInit {
         
         const formId = Number(this.route.snapshot.paramMap.get('id'));
         
-        
-        
-        this.formService.getFormByFormId(formId).subscribe({
+        this.formService.getFormWithQuestions(formId).subscribe({
             next: (data) => {
                 this.form=data;
-                console.log("form fetched:",this.form);
+                this.questions=this.form.questions;
+                // console.log("form fetched:",this.form);
             },
             error: (err) => {
                 console.log(err);
@@ -68,7 +68,7 @@ export class ViewInstanceComponent implements OnInit {
         this.instanceService.getInstanceByFormId(formId).subscribe({
             next: (data) => {
                 this.instance=data;
-                console.log("instance fetched:",this.instance);
+                // console.log("instance fetched:",this.instance);
             },
             error: (err) => {  
                 // ...
@@ -90,4 +90,5 @@ export class ViewInstanceComponent implements OnInit {
         console.log("saved button pressed");
     }
 
+    protected readonly QuestionType = QuestionType;
 }

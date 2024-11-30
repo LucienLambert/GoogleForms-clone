@@ -1,7 +1,4 @@
-﻿import {Type} from "@angular/core";
-import { Form } from './form';
-
-export enum Role {
+﻿export enum Role {
     Admin=2,
     User=1,
     Guest=0

@@ -1,10 +1,14 @@
 import { Form } from './form';
 import { OptionList } from './optionList' ;
-enum questionType {
-    text,
-    number,
-    date,
-    boolean
+export enum QuestionType {
+    Short,
+    Long,
+    Date,
+    Email,
+    Integer,
+    Check,  // le seul qui permette à l'utilisateur de choisir plusieurs valeurs.
+    Combo,
+    Radio
 }
 export class Question {
     
@@ -12,7 +16,7 @@ export class Question {
     form: Form; 
     title: string;
     description?: string;
-    questionType: questionType;
+    questionType: QuestionType;
     required: boolean;
     optionList: OptionList;
 

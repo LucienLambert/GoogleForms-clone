@@ -8,8 +8,8 @@ using prid_2425_a01.Models;
 using System.Security.Claims;
 namespace prid_2425_a01.Controllers;
 
-
-[Authorize]
+//
+// [Authorize]
 [Route("api/[controller]")]
 [ApiController]
 public class FormsController : ControllerBase {
@@ -40,7 +40,7 @@ public class FormsController : ControllerBase {
         }
         return _mapper.Map<FormDTO>(form);
     }
-
+    
     [HttpGet("id/{id:int}")]
     public async Task<ActionResult<FormDTO>> GetOneById(int id){
         var form = await _context.Forms.FirstOrDefaultAsync(f => f.Id == id);
@@ -49,6 +49,20 @@ public class FormsController : ControllerBase {
         }
         return _mapper.Map<FormDTO>(form);
     }
+    
+    [HttpGet("{id:int}/questions")]
+    public async Task<ActionResult<Form_With_QuestionsDTO>> GetOneByIdWithQuestions(int id){
+        var form = await _context.Forms
+            .Include(f=>f.ListQuestions)
+            .ThenInclude(q=>q.OptionList)
+            .ThenInclude(ol=>ol.ListOptionValues)
+            .FirstOrDefaultAsync(f => f.Id == id);
+        if(form == null) {
+            return NotFound();
+        }
+        return Ok(_mapper.Map<Form_With_QuestionsDTO>(form));
+    }
+
 
     [HttpDelete("{id}")]
     public async Task<ActionResult<FormDTO>> DeleteForm(int id){

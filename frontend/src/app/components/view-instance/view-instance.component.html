@@ -25,5 +25,10 @@
                     In Progress
                 </ng-template>
         </div>
+        <div *ngIf="questions.length > 0">
+            <div *ngFor="let question of questions" class="form-item">
+                <div class="form-label">{{ question.title }}</div>
+            </div>
+        </div>
     </div>
 </div>
