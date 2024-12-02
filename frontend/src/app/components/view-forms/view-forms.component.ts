@@ -25,36 +25,51 @@ export class ViewFormsComponent implements OnInit {
     }
 
     ngOnInit() {
-        // Vérifier si l'utilisateur est connecté
+        if(this.authentification()) {
+            if(this.user?.role == 2) {
+                console.log("Admin");
+                this.getAllForm();
+            }else {
+                console.log("user or guest");
+                this.getOwnerPublicAccessForm();
+            }
+        }
+    }
+
+    authentification() {
         if (!this.authService.currentUser) {
             console.log("L'utilisateur n'est pas connecté.");
             this.router.navigate(['/login']);
+            return false;
         } else {
             this.user = this.authService.currentUser;
             console.log("L'utilisateur est bien connecté:", this.user);
-                    
-            if(this.user?.role == 2){
-                this.formService.getAllForm().subscribe({
-                    next: (data) => {
-                        this.forms = data;
-                    },
-                    error: (err) => {
-                    this.errorMessage = "Erreur de récupération des formulaires.";
-                    }
-                });
-            } else {
-                //ajout le résultat de la requête dans la list forms[]
-                this.formService.getOwnerPublicAccessForm().subscribe({
-                    next: (data) => {
-                        this.forms = data;
-                        this.filteredForms = data;
-                    },
-                    error: (err) => {
-                    this.errorMessage = "Erreur de récupération des formulaires.";
-                    }
-                });
-            }  
+            return true;
         }
+    }
+
+    getAllForm(){
+        this.formService.getAllForm().subscribe({
+            next: (data) => {
+                this.forms = data;
+                this.filteredForms = data;
+            },
+            error: (err) => {
+            this.errorMessage = "Erreur de récupération des formulaires.";
+            }
+        });
+    }
+
+    getOwnerPublicAccessForm(){
+        this.formService.getOwnerPublicAccessForm().subscribe({
+            next: (data) => {
+                this.forms = data;
+                this.filteredForms = data;
+            },
+            error: (err) => {
+            this.errorMessage = "Erreur de récupération des formulaires.";
+            }
+        });
     }
 
     filterForms(searchText: string) {
