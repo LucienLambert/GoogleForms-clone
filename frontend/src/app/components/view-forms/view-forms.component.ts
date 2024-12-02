@@ -65,6 +65,7 @@ export class ViewFormsComponent implements OnInit {
             next: (data) => {
                 this.forms = data;
                 this.filteredForms = data;
+                console.log(this.forms);
             },
             error: (err) => {
             this.errorMessage = "Erreur de récupération des formulaires.";

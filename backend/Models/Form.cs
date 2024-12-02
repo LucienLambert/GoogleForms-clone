@@ -16,5 +16,6 @@ public class Form {
 
 
     public ICollection<Instance> ListInstances { get; set; } = new List<Instance>();
+    public ICollection<UserFormAccess> ListUsers_Forms_Accesses { get; set; } = new List<UserFormAccess>();
 
 }

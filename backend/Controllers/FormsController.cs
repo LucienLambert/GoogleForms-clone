@@ -124,33 +124,46 @@ public class FormsController : ControllerBase {
         return Ok(_mapper.Map<List<FormDTO>>(listPublicForm));
     }
 
-    [Authorize]
-    [HttpGet("Owner_Public_Access/forms")]
-    public async Task<ActionResult<IEnumerable<FormDTO>>> GetOwnerPublicAccessForm(){
-        //recup l'ID du CurrentUser
-        var userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
-        
-        if (string.IsNullOrEmpty(userId) || !int.TryParse(userId, out int userIdInt)){
-            return Unauthorized("User Unfound");
-        }
-
-        var allForms = await _context.Forms
-            .Where(f => f.OwnerId == userIdInt || (f.IsPublic == true && f.OwnerId != userIdInt))
-            .Include(f => f.Owner)
-            .ToListAsync();
-
-
-        // Vérifier si aucun formulaire n'est trouvé
-        if (allForms == null || !allForms.Any()) {
-            return NotFound("Aucun formulaire trouvé.");
-        }
-
-        var formsDTO = _mapper.Map<List<FormDTO>>(allForms)
-            .GroupBy(f => f.Id) // Supprimer les doublons basés sur l'Id
-            .Select(f => f.First()) // Conserver le premier de chaque groupe
-            .OrderBy(f => f.Title) // Trier par titre
-            .ToList();
-
-        return Ok(formsDTO);
+[Authorize]
+[HttpGet("Owner_Public_Access/forms")]
+public async Task<ActionResult<IEnumerable<FormDTO>>> GetOwnerPublicAccessForm(){
+    var userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+    
+    if (string.IsNullOrEmpty(userId) || !int.TryParse(userId, out int userIdInt)){
+        return Unauthorized("User Unfound");
     }
+
+    // Récupère les formulaires publics ou appartenant à l'utilisateur
+    var ownedOrPublicForms = await _context.Forms
+        .Where(f => f.OwnerId == userIdInt || (f.IsPublic == true && f.OwnerId != userIdInt))
+        .Include(f => f.Owner)
+        .ToListAsync();
+
+    // Récupère les formulaires auxquels l'utilisateur a accès, avec leurs propriétaires
+    var accessibleForm = await _context.UserFormAccesses
+        .Where(ufa => ufa.UserId == userIdInt)
+        .Include(ufa => ufa.Form)  // Inclure d'abord la navigation vers Form
+        .ThenInclude(f => f.Owner) // Inclure ensuite la navigation vers l'Owner
+        .ToListAsync();
+
+    // Ajoute les formulaires accessibles à la liste
+    ownedOrPublicForms.AddRange(accessibleForm.Select(ufa => ufa.Form));
+
+    // Filtre les doublons en fonction de l'ID du formulaire et trie par titre
+    var allForms = ownedOrPublicForms
+        .GroupBy(f => f.Id)
+        .Select(g => g.First())  // Gardez le premier de chaque groupe (pas de doublons)
+        .OrderBy(f => f.Title)   // Trie par titre
+        .ToList();
+
+    // Vérifie si aucun formulaire n'a été trouvé
+    if (!allForms.Any()) {
+        return NotFound("Aucun formulaire trouvé.");
+    }
+
+    // Mappe les formulaires en DTO et retourne la réponse
+    var formsDTO = _mapper.Map<List<FormDTO>>(allForms);
+    return Ok(formsDTO);
+}
+
 }
