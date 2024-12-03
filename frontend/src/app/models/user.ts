@@ -15,6 +15,7 @@ export class User {
     token?: string;
     role: Role = Role.User;
     refreshToken?: string;
+    
     //Liste de nos formulaire du user.
     forms: Form[] = [];
 

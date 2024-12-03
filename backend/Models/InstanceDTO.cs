@@ -13,3 +13,8 @@ public class InstanceDTO {
     public DateTime Completed { get; set; }
     
 }
+
+public class Instance_only_DateDTO {
+    public DateTime started { get; set; }
+    public DateTime Completed {get; set;}
+}

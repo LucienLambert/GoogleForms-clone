@@ -124,6 +124,7 @@ public class FormsController : ControllerBase {
         return Ok(_mapper.Map<List<FormDTO>>(listPublicForm));
     }
 
+//refactor pour faire en sorte que je n'ai qu'une seul requête pour récupérer et trie la liste des formulaires.
 [Authorize]
 [HttpGet("Owner_Public_Access/forms")]
 public async Task<ActionResult<IEnumerable<FormDTO>>> GetOwnerPublicAccessForm(){
@@ -133,29 +134,15 @@ public async Task<ActionResult<IEnumerable<FormDTO>>> GetOwnerPublicAccessForm()
         return Unauthorized("User Unfound");
     }
 
-    // Récupère les formulaires publics et/ou les siens
-    var ownedOrPublicForms = await _context.Forms
-        .Where(f => f.OwnerId == userIdInt || (f.IsPublic == true && f.OwnerId != userIdInt))
+    var allForms = await _context.Forms
+        .Where(f => f.OwnerId == userIdInt ||f.IsPublic == true ||_context.UserFormAccesses
+        .Any(ufa => ufa.FormId == userIdInt && ufa.FormId == f.Id))
         .Include(f => f.Owner)
-        .ToListAsync();
-
-    // Récupère les formulaires auxquels l'utilisateur a accès
-    var accessibleForm = await _context.UserFormAccesses
-        .Where(ufa => ufa.UserId == userIdInt)
-        .Include(ufa => ufa.Form)
-        .ThenInclude(f => f.Owner)
-        .ToListAsync();
-
-    // Ajoute les formulaires accessibles à la liste
-    ownedOrPublicForms.AddRange(accessibleForm.Select(ufa => ufa.Form));
-
-    // Filtre les doublons en fonction de l'ID du formulaire et trie par titre
-    var allForms = ownedOrPublicForms
-        .GroupBy(f => f.Id)
-        .Select(g => g.First())
+        //trier les instance par Id pour récupérer la dèrnièrey
+        // .Include(f => f.ListInstances.Where(i => i.Id ))
         .OrderBy(f => f.Title)
-        .ToList();
-
+        .ToListAsync();
+        
     if (!allForms.Any()) {
         return NotFound("Aucun formulaire trouvé.");
     }

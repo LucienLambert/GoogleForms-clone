@@ -9,11 +9,16 @@ public class UserDTO {
     public DateTimeOffset? BirthDate { get; set; }
     public string? Token { get; set; }
 
-    public ICollection<FormDTO> ListFormsDTO { get; set; } = new HashSet<FormDTO>();
+    //public ICollection<FormDTO> ListFormsDTO { get; set; } = new HashSet<FormDTO>();
     
 }
 
 public class User_With_PasswordDTO {
     public string Email { get; set; } = null!;
     public string Password { get; set; } = null!;
+}
+
+public class User_With_ListFormDTO : UserDTO {
+
+    public ICollection<FormDTO> ListFormsDTO { get; set; } = new HashSet<FormDTO>();
 }
