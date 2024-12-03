@@ -19,6 +19,10 @@ export class ViewFormsComponent implements OnInit {
     errorMessage: string = ''; // permet de stocket les éventuelles erreurs lors du chargement des objets de la liste.
     user?: User;
 
+    isSaveVisible: boolean = false;
+    isSearchVisible: boolean = true;
+    isAddVisible: boolean = true;
+
     constructor(private authService: AuthenticationService, private router: Router,
         private formService: FormService) {
 
@@ -86,6 +90,21 @@ export class ViewFormsComponent implements OnInit {
             this.router.navigate(['view-instance', form.id]);
         } else {
             console.log("Vous n'avez pas les droits pour ouvrir ce formulaire");
+        }
+    }
+
+    handleSearch(term: string) {
+        if (term.trim() === '') {
+            // Reset to show all forms
+            this.filteredForms = this.forms;
+        } else {
+            // Filter forms based on the search term
+            this.filteredForms = this.forms.filter(form =>
+                form.title.toLowerCase().includes(term.toLowerCase()) ||
+                form.description!.toLowerCase().includes(term.toLowerCase()) ||
+                form.owner?.firstName!.toLowerCase().includes(term.toLowerCase()) ||
+                form.owner?.lastName!.toLowerCase().includes(term.toLowerCase())
+            );
         }
     }
 

@@ -6,11 +6,20 @@ public class InstanceDTO {
 
     public int Id { get; set; }
     public int FormId { get; set; }
-    public Form Form { get; set; } = null!;
     public int UserId { get; set; }
-    public User User{ get; set; } = null!;
     public DateTime Started { get; set; }
-    public DateTime Completed { get; set; }
+    public DateTime? Completed { get; set; }
+    
+}
+public class Instance_With_AnswersDTO {
+
+    public int Id { get; set; }
+    public int FormId { get; set; }
+    public int UserId { get; set; }
+    public DateTime Started { get; set; }
+    public DateTime? Completed { get; set; }
+    
+    public ICollection<AnswerDTO> ListAnswers { get; set; } = new HashSet<AnswerDTO>();
     
 }
 

@@ -35,11 +35,14 @@ public class User {
     
     //prévilégie les HashSet par la suite. plus adapté que les List standard.
     public ICollection<Form> ListForms{ get; set; } = new HashSet<Form>();
-    
-    public ICollection<Instance> ListInstances{ get; set; } = new List<Instance>();
-    public ICollection<UserFormAccess> ListUsers_Forms_Accesses { get; set; } = new List<UserFormAccess>();
-    //il faut encore créer la class (Itération 2);
-    //public ICollection<OptionsList> ListOptionsLists{ get; set; } = new List<OptionList>();
+    public ICollection<Instance> ListInstances{ get; set; } = new HashSet<Instance>();
+    public ICollection<UserFormAccess> ListUserFormAccesses { get; set; } = new HashSet<UserFormAccess>();
+    public ICollection<OptionList> ListOptionLists{ get; set; } = new HashSet<OptionList>();
+
+
+    public bool IsInRole(Role role){
+        return role == this.Role;
+    }
 
 
 }

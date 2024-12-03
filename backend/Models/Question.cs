@@ -47,5 +47,5 @@ public class Question {
 
 
 
-    public ICollection<Answer> ListAnswers { get; set; } = new List<Answer>();
+    public ICollection<Answer> ListAnswers { get; set; } = new HashSet<Answer>();
 }

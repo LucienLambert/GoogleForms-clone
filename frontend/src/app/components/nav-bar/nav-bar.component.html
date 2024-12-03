@@ -1,21 +1,43 @@
 <mat-toolbar>
     <!-- bouton du menu déroulant-->
-    <button mat-icon-button class="example-icon" [matMenuTriggerFor]="menu">
+    <button mat-icon-button class="example-icon" [matMenuTriggerFor]="menu" *ngIf="!backButtonVisible">
         <mat-icon>menu</mat-icon>
     </button>
+
+    <button mat-icon-button *ngIf="backButtonVisible" (click)="backClicked()">
+        <mat-icon>arrow_back</mat-icon>
+    </button>
+    
     <!-- affichage du titre de la page-->
     <span class="title">{{ title }}</span>
+    
     <!-- pour mettre des éléments à droite -->
     <span class="spacer"></span>
-    <!--barre de recheche-->
-    <mat-form-field class="search-field" appearance="outline">
-        <input matInput type="text" placeholder="search..." (input)="onSearchChange($event)">
-        <button mat-icon-button matSuffix>
-            <mat-icon>search</mat-icon>
+    
+    <!-- Search Bar -->
+    <mat-form-field *ngIf="searchVisible" class="search-field" appearance="outline">
+        <input #searchInput matInput type="text" placeholder="search..." (input)="onSearchChange($event)">
+        <button mat-icon-button matSuffix (click)="toggleSearch()">
+            <mat-icon>close</mat-icon>
         </button>
     </mat-form-field>
-    <ng-content/>
+    
+    <!-- Search button -->
+    <button mat-icon-button *ngIf="isSearchVisible" (click)="toggleSearch()">
+        <mat-icon>search</mat-icon>
+    </button>
+    
+    <!-- Add button -->
+    <button mat-icon-button *ngIf="isAddVisible" (click)="createForm()">
+        <mat-icon>add</mat-icon>
+    </button>
+
+    <!-- Save button -->
+    <button mat-icon-button *ngIf="isSaveVisible" (click)="onSave()">
+        <mat-icon>save</mat-icon>
+    </button>
 </mat-toolbar>
+
 <!--Menu déroulant quand on click dessus-->
 <mat-menu #menu="matMenu">
     <!-- Redirection vers la page Home-->

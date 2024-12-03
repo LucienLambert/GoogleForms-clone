@@ -1,0 +1,29 @@
+<app-nav-bar title="Answer Form" [isSaveVisible]="isSaveVisible" [isSearchVisible]="isSearchVisible"
+             [isAddVisible]="isAddVisible" [backButtonVisible]="backButtonVisible" class="toolbar-actions"
+             (saveEvent)="onSave()"></app-nav-bar>
+
+<div class="instance-container">
+    <div class="form-container">
+        <div class="form-item">
+            <div class="form-label">Title:</div>
+            <div class="form-value">{{ form?.title }}</div>
+        </div>
+        <div class="form-item">
+            <div class="form-label">Description:</div>
+            <div class="form-value">{{ form?.description }}</div>
+        </div>
+        <div class="form-item">
+            <div class="form-label">Started:</div>
+            <div class="form-value">{{ instance?.started | date:'dd/MM/yyyy HH:mm:ss' }}</div>
+        </div>
+        <div class="form-item">
+            <div class="form-label" *ngIf="!isInProgress(); else inProgress">Completed:</div>
+            <div class="form-value" *ngIf="!isInProgress();">
+                {{ instance?.completed | date:'dd/MM/yyyy HH:mm:ss' }} </div>
+            
+                <ng-template #inProgress>
+                    In Progress
+                </ng-template>
+        </div>
+    </div>
+</div>

@@ -3,6 +3,7 @@ html,
 body {
     height: 100%;
     width: 100%;
+    overflow: auto;
 }
 
 body {
@@ -19,4 +20,9 @@ body {
 
 .body {
     padding: 66px 10px 10px 10px;
+}
+
+:root {
+    --navbar-height: 56px;
+    --navbar-margin: calc(var(--navbar-height) + 10px);
 }

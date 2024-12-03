@@ -1,4 +1,5 @@
-<app-nav-bar title="My Forms" class="toolbar-actions" (searchEvent)="filterForms($event)"></app-nav-bar>
+<app-nav-bar title="My Forms"   [isSaveVisible]="isSaveVisible" [isSearchVisible]="isSearchVisible"
+             [isAddVisible]="isAddVisible" class="toolbar-actions" (searchEvent)="handleSearch($event)"></app-nav-bar>
 
 <div class="container my-4">
   <div *ngIf="forms.length > 0; else noForms">

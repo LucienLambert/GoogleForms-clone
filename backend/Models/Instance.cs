@@ -24,6 +24,6 @@ public class Instance {
     [ForeignKey(nameof(UserId))]
     public User User { get; set; } = null!;
 
-    public ICollection<Answer> ListAnswers { get; set; } = new List<Answer>();
+    public ICollection<Answer> ListAnswers { get; set; } = new HashSet<Answer>();
 
 }

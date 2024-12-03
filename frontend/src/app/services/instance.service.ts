@@ -14,10 +14,14 @@ export class InstanceService {
     }
 
 
-    
-    getOneById(id: number): Observable<Form[]> {
-        return this.http.get<Form[]>(`${this.baseUrl}api/forms/id`)
-          .pipe(map(res => res.map(m => new Form(m))));
+
+    getInstanceByFormId(id: number): Observable<Instance> {
+        return this.http.get<Instance>(`${this.baseUrl}api/instances/by_form_or_fresh/${id}`)
+            .pipe(map(res => new Instance(res))
+            );
     }
+
+
+
 
 }
