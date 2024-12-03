@@ -2,11 +2,8 @@ import { Component, OnInit } from '@angular/core';
 import { AuthenticationService } from '../../services/authentication.service';
 import { User } from '../../models/user';
 import { ActivatedRoute, Router } from '@angular/router';
-import {RedirectCommand} from "@angular/router";
-
 import { FormService } from '../../services/form.service';
 import { Form } from '../../models/form';
-import { FormCardComponent } from './form-card/form-card.component';
 
 @Component({
     selector: 'app-view-forms',
@@ -57,6 +54,7 @@ export class ViewFormsComponent implements OnInit {
             next: (data) => {
                 this.forms = data;
                 this.filteredForms = data;
+                console.log(this.forms);
             },
             error: (err) => {
             this.errorMessage = "Erreur de récupération des formulaires.";
@@ -84,6 +82,7 @@ export class ViewFormsComponent implements OnInit {
         );
     }
 
+    // Le bouton "Open" ne doit pas être visible si le formulaire ne contient pas de questions.
     openForm(form: Form){
         if(form != null && (form.owner.id == this.user?.id || this.user?.role == 2)){
             console.log('Formulaire sélectionné:', form);
@@ -91,6 +90,12 @@ export class ViewFormsComponent implements OnInit {
         } else {
             console.log("Vous n'avez pas les droits pour ouvrir ce formulaire");
         }
+    }
+    /*Le bouton "Manage" permet d'ouvrir le formulaire en tant qu'éditeur,
+    en vue d'en modifier la définition et les questions. Ce bouton n'est 
+    visible que si l'utilisateur a accès au formulaire en mode d'édition */
+    manageForm(form: Form){
+
     }
 
     handleSearch(term: string) {

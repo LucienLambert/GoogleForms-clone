@@ -5,24 +5,37 @@
 
 <mat-card class="form-card">
     <mat-card-header>
-      <ng-container *ngIf="form.isPublic; else privateContent">
-        <i class="bi bi-globe-americas"></i>
-      </ng-container>
-      <ng-template #privateContent>
-        <span id="barré">
+      <mat-card-title>{{ form.title }}
+        <ng-container *ngIf="form.isPublic; else privateContent">
           <i class="bi bi-globe-americas"></i>
-        </span>
-      </ng-template>
-      <mat-card-title>{{ form.title }}</mat-card-title>
-      <mat-card-subtitle>{{ form.description || 'No description' }}</mat-card-subtitle>
+        </ng-container>
+        <ng-template #privateContent>
+          <span id="barré">
+            <i class="bi bi-globe-americas"></i>
+          </span>
+        </ng-template>
+      </mat-card-title>
     </mat-card-header>
     <mat-card-content>
+      <mat-card-subtitle>{{ form.description || 'No description' }}</mat-card-subtitle>
       <p>by <strong>{{ form.owner.firstName }} {{ form.owner.lastName }}</strong></p>
-      <p>Started : <strong> </strong></p>
-      <p>Completed : <strong> </strong></p>
+      <ng-container *ngIf="form.lastInstance?.started && user?.role !== 0">
+        <p>Started: <strong>{{ form.lastInstance.started | date:'dd/MM/yyyy HH:mm:ss' }}</strong></p>
+        <p> {{ user }}</p>
+        <!-- Si completed == null-->
+        <p *ngIf="!form.lastInstance?.completed">
+          Completed: <strong>In Progress</strong>
+        </p>
+        
+        <!-- Si completed != null -->
+        <p *ngIf="form.lastInstance?.completed">
+          Completed: <strong>{{ form.lastInstance.completed | date:'dd/MM/yyyy HH:mm:ss' }}</strong>
+        </p>
+      </ng-container>
     </mat-card-content>
     <mat-card-actions>
       <button mat-raised-button color="primary" (click)="openForm()">Open</button>
+      <button mat-raised-button color="primary">Manage</button>
     </mat-card-actions>
     <mat-card-footer>
     </mat-card-footer>

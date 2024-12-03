@@ -22,12 +22,12 @@ public class FormContext : DbContext
             ufa.HasKey(ufa => new { ufa.UserId, ufa.FormId });
 
             ufa.HasOne(ufa => ufa.Form)
-                .WithMany(f => f.ListUsers_Forms_Accesses)
+                .WithMany(f => f.ListUserFormAccesses)
                 .HasForeignKey(ufa => ufa.FormId)
                 .OnDelete(DeleteBehavior.Cascade);
 
             ufa.HasOne(ufa => ufa.User)
-                .WithMany(u => u.ListUsers_Forms_Accesses)
+                .WithMany(u => u.ListUserFormAccesses)
                 .HasForeignKey(ufa => ufa.UserId)
                 .OnDelete(DeleteBehavior.Cascade);
         });

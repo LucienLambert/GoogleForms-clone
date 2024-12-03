@@ -24,6 +24,6 @@ public class Instance_With_AnswersDTO {
 }
 
 public class Instance_only_DateDTO {
-    public DateTime started { get; set; }
-    public DateTime Completed {get; set;}
+    public DateTime Started { get; set; }
+    public DateTime? Completed {get; set;}
 }

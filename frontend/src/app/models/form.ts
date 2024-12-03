@@ -8,7 +8,13 @@ export class Form {
         email: string;
         firstName?: string;
         lastName?: string;
+        role: number;
     };
+    lastInstance: {
+        started: Date;
+        completed?: Date;
+    }
+
 
     constructor(data: any) {
         this.id = data.id;
@@ -16,5 +22,6 @@ export class Form {
         this.description = data.description;
         this.owner = data.owner;
         this.isPublic = data.isPublic;
+        this.lastInstance = data.lastInstance;
     }
 }

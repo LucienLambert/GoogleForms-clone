@@ -10,6 +10,8 @@ public class FormDTO {
     public int IdOwner { get; set; }
     public UserDTO Owner { get; set; } = null!;
     public bool IsPublic { get; set; }
+    //référence la dernière instance du form
+    public Instance_only_DateDTO? LastInstance { get; set; }
 }
 
 public class Form_With_QuestionsDTO {

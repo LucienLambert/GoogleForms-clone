@@ -26,10 +26,28 @@ public class FormsController : ControllerBase {
     //récupère la liste des formulaires
     public async Task<ActionResult<IEnumerable<FormDTO>>> GetAll() {
         var allForms = await _context.Forms
-            .OrderBy(f => f.Title)
             .Include(f => f.Owner)
+            .Include(f => f.ListInstances)
+            .OrderBy(f => f.Title)
             .ToListAsync();
-        return _mapper.Map<List<FormDTO>>(allForms);
+
+        var formsDTO = allForms.Select(f => {
+            var lastInstance = f.ListInstances.OrderByDescending(i => i.Id).FirstOrDefault();
+            var formDTO = _mapper.Map<FormDTO>(f);
+
+            if (lastInstance != null)
+            {
+                formDTO.LastInstance = new Instance_only_DateDTO
+                {
+                    Started = lastInstance.Started,
+                    Completed = lastInstance.Completed
+                };
+            }
+
+            return formDTO;
+        }).ToList();
+
+        return Ok(formsDTO);
     }
 
     [HttpGet("{title}")]
@@ -124,31 +142,44 @@ public class FormsController : ControllerBase {
         return Ok(_mapper.Map<List<FormDTO>>(listPublicForm));
     }
 
-//refactor pour faire en sorte que je n'ai qu'une seul requête pour récupérer et trie la liste des formulaires.
-[Authorize]
-[HttpGet("Owner_Public_Access/forms")]
-public async Task<ActionResult<IEnumerable<FormDTO>>> GetOwnerPublicAccessForm(){
-    var userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
-    
-    if (string.IsNullOrEmpty(userId) || !int.TryParse(userId, out int userIdInt)){
-        return Unauthorized("User Unfound");
-    }
-
-    var allForms = await _context.Forms
-        .Where(f => f.OwnerId == userIdInt ||f.IsPublic == true ||_context.UserFormAccesses
-        .Any(ufa => ufa.FormId == userIdInt && ufa.FormId == f.Id))
-        .Include(f => f.Owner)
-        //trier les instance par Id pour récupérer la dèrnièrey
-        // .Include(f => f.ListInstances.Where(i => i.Id ))
-        .OrderBy(f => f.Title)
-        .ToListAsync();
+    //refactor pour faire en sorte que je n'ai qu'une seul requête pour récupérer et trie la liste des formulaires.
+    [Authorize]
+    [HttpGet("Owner_Public_Access/forms")]
+    public async Task<ActionResult<IEnumerable<FormDTO>>> GetOwnerPublicAccessForm(){
+        var userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
         
-    if (!allForms.Any()) {
-        return NotFound("Aucun formulaire trouvé.");
-    }
+        if (string.IsNullOrEmpty(userId) || !int.TryParse(userId, out int userIdInt)){
+            return Unauthorized("User Unfound");
+        }
 
-    var formsDTO = _mapper.Map<List<FormDTO>>(allForms);
-    return Ok(formsDTO);
-}
+        var allForms = await _context.Forms
+            .Where(f => f.OwnerId == userIdInt || f.IsPublic == true || _context.UserFormAccesses
+            .Any(ufa => ufa.FormId == userIdInt && ufa.FormId == f.Id))
+            .Include(f => f.Owner)
+            .Include(f => f.ListInstances)
+            .OrderBy(f => f.Title)
+            .ToListAsync();
+            
+        if (!allForms.Any()) {
+            return NotFound("Aucun formulaire trouvé.");
+        }
+
+        var formsDTO = allForms.Select(f => {
+            var lastInstance = f.ListInstances.OrderByDescending(i => i.Id).FirstOrDefault();
+            var formDTO = _mapper.Map<FormDTO>(f);
+
+            if (lastInstance != null) {
+                formDTO.LastInstance = new Instance_only_DateDTO
+                {
+                    Started = lastInstance.Started,
+                    Completed = lastInstance.Completed
+                };
+            }
+
+            return formDTO;
+        }).ToList();
+
+        return Ok(formsDTO);
+    }
 
 }

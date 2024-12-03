@@ -2,29 +2,71 @@
 mat-card-title {
     font-weight: bold;
     color: #3f51b5; /* Couleur primaire du thème Material */
-}
-
-/* Style pour le sous-titre (description) */
-mat-card-subtitle {
-    color: #757575; /* Couleur grise douce */
+    text-align: left; /* Garde le titre à gauche */
+    margin-bottom: 4px; /* Réduit l'espace sous le titre */
+  }
+  
+  /* Style pour le sous-titre (description) */
+  mat-card-subtitle {
+    color: #757575;
     font-size: 0.9rem;
-}
-
-/*Style pour le texte du footer*/
-mat-card-footer {
-    padding-top: 10px;
-    text-align: end;
+    text-align: center; /* Garde le sous-titre à gauche */
+    margin-bottom: 8px; /* Réduit l'espace sous le sous-titre */
+  }
+  
+  /* Appliquer Flexbox pour centrer le contenu dans mat-card-content */
+  mat-card-content {
+    display: flex;
+    flex-direction: column;
+    justify-content: center; /* Centre verticalement */
+    align-items: center; /* Centre horizontalement */
+    padding: 8px; /* Réduit l'espacement interne */
+  }
+  
+  /* Style pour les éléments de texte dans mat-card-content */
+  mat-card-content p {
+    margin-bottom: 4px; /* Réduit l'espace entre les paragraphes */
+    text-align: center; /* Centre les paragraphes */
+  }
+  
+  /* Footer avec des marges ajustées */
+  mat-card-footer {
+    padding-top: 8px;
+    text-align: center; /* Centre le texte dans le footer */
     font-size: 0.85rem;
     color: gray;
-}
-
-/* Style des icônes dans le footer */
-mat-card-footer mat-icon {
-    font-size: 20px;
-    margin-left: 5px;
-    cursor: pointer;
-    color: #616161; /* Couleur grise */
-}
+  }
+  
+  /* Réduire l'espace autour du bouton dans mat-card-actions */
+  mat-card-actions {
+    display: flex;
+    justify-content: center; /* Centre les actions (bouton) horizontalement */
+    margin-top: 10px;
+  }
+  
+  mat-card-actions button {
+    margin-right: 10px;
+    font-size: 0.85rem;
+  }
+  
+  /* Appliquer des marges autour des cartes */
+  .form-card {
+    margin: 10px;
+    border-radius: 8px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+  }
+  
+  /* Effet de survol sur les cartes */
+  .form-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.2);
+  }
+  
+  mat-card-footer mat-icon:hover {
+    color: #3f51b5; /* Accentuer au survol */
+  }
+  
 
 /* Appliquer des marges autour des cartes */
 .form-card {
