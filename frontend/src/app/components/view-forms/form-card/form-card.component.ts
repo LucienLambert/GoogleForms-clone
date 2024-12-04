@@ -1,5 +1,8 @@
 import { Component, Input, Output, EventEmitter } from '@angular/core';
 import { Form } from '../../../models/form';
+import { User } from '../../../models/user';
+import { AuthenticationService } from '../../../services/authentication.service';
+
 
 @Component({
   selector: 'app-form-card',
@@ -9,9 +12,18 @@ import { Form } from '../../../models/form';
 export class FormCardComponent {
     //objet form récupérer grâce à la vue view-form (parent)
     @Input() form!: Form;
+    user?: User;
 
     //renvoie le formulaire sur lequel on à clické grâce à la fonction openForm()
     @Output() openFormEvent = new EventEmitter<Form>();
+
+    constructor(private authService: AuthenticationService) {
+
+    }
+    
+    ngOnInit(){
+      this.user = this.authService.currentUser;
+    }
 
     //permet à la form-card (enfant) de récupérer le formulaire sur lequel on à clické
     openForm() {

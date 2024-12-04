@@ -1,15 +1,15 @@
 import { Component, OnInit } from '@angular/core';
 import { AuthenticationService } from '../../services/authentication.service';
-import { User } from '../../models/user';
 import { ActivatedRoute, Router } from '@angular/router';
 import {RedirectCommand} from "@angular/router";
 
 import { InstanceService } from '../../services/instance.service';
 import { FormService } from '../../services/form.service';
+import { User } from '../../models/user';
 import { Form } from '../../models/form';
+import { Question } from '../../models/question';
 import { Instance } from '../../models/instance';
-import { parseISO } from 'date-fns';
-
+import {forEach} from "lodash-es";
 @Component({
     selector: 'app-view-instance',
     templateUrl: './view-instance.component.html',
@@ -19,8 +19,10 @@ export class ViewInstanceComponent implements OnInit {
 
     user?: User;
     form?: Form;
-    instance?: Instance | null;
-    
+    instance?: Instance;
+    questions: Question[] = new Array<Question>();
+    currentQuestion?: Question;
+    questionTracker: number = 1;
     isCompleted: boolean = false;
     
     
@@ -43,32 +45,31 @@ export class ViewInstanceComponent implements OnInit {
         
         const formId = Number(this.route.snapshot.paramMap.get('id'));
         
-        
-        
-        this.formService.getFormByFormId(formId).subscribe({
+        this.formService.getFormWithQuestions(formId).subscribe({
             next: (data) => {
                 this.form=data;
-                console.log("form fetched:",this.form);
+                this.questions=this.form.listQuestion;
+                this.currentQuestion=this.questions[0];
             },
             error: (err) => {
                 console.log(err);
-                switch (err.status) {
-                    case 404:
-                        this.router.navigate(['/unknown']);
-                        break;
-                    case 401:
-                        this.router.navigate(['/restricted']);
-                        break;
-                    default:
-                        this.router.navigate(['/unknown']);
-                }
+                // switch (err.status) {
+                //     case 404:
+                //         this.router.navigate(['/unknown']);
+                //         break;
+                //     case 401:
+                //         this.router.navigate(['/restricted']);
+                //         break;
+                //     default:
+                //         this.router.navigate(['/unknown']);
+                // }
             }
         });
         
-        this.instanceService.getInstanceByFormId(formId).subscribe({
+        this.instanceService.getExistingOrFreshInstanceByFormId(formId).subscribe({
             next: (data) => {
                 this.instance=data;
-                console.log("instance fetched:",this.instance);
+                // console.log("instance fetched:",this.instance);
             },
             error: (err) => {  
                 // ...
@@ -82,6 +83,14 @@ export class ViewInstanceComponent implements OnInit {
         
         
     }
+    
+    switchQuestion(nb: number) {
+        if (nb > 0 && nb <= this.questions.length) {
+            this.currentQuestion = this.questions[nb-1];
+            this.questionTracker = nb;
+        }
+        
+    }
     isInProgress(): boolean {
         return !this.instance?.completed;
     }
@@ -89,5 +98,4 @@ export class ViewInstanceComponent implements OnInit {
     onSave() {
         console.log("saved button pressed");
     }
-
 }

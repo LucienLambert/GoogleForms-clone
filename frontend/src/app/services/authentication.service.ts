@@ -37,10 +37,15 @@ export class AuthenticationService {
         // logged user from the backend
         return this.http.get<any>(`${this.baseUrl}api/logged_user`).pipe()
     }
+
     logout() {
         // remove user from local storage to log user out
         sessionStorage.removeItem('currentUser');
         this.currentUser = undefined;
+    }
+
+    getCurrentUser() {
+        return this.currentUser;
     }
     
 }

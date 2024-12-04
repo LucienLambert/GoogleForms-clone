@@ -36,6 +36,9 @@ public class MappingProfile : Profile
         CreateMap<Question, QuestionDTO>();
         CreateMap<QuestionDTO, Question>();
         
+        CreateMap<Question, Question_CompleteDTO>();
+        CreateMap<Question_CompleteDTO, Question>();
+        
         CreateMap<OptionList, OptionListDTO>();
         CreateMap<OptionListDTO, OptionList>();
         

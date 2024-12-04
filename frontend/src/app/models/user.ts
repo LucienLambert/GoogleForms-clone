@@ -1,7 +1,4 @@
-﻿import {Type} from "@angular/core";
-import { Form } from './form';
-
-export enum Role {
+﻿export enum Role {
     Admin=2,
     User=1,
     Guest=0
@@ -10,6 +7,8 @@ export enum Role {
 export class User {
     id: number = 0;
     email?: string = '';
+    firstName: string = '';
+    lastName: string = '';
     fullName: string = '';
     password?: string = '';
     token?: string;

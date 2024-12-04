@@ -1,10 +1,16 @@
 import { Form } from './form';
 import { OptionList } from './optionList' ;
-enum questionType {
-    text,
-    number,
-    date,
-    boolean
+import {User} from "./user";
+import {OptionValue} from "./optionValue";
+export enum QuestionType {
+    Short,
+    Long,
+    Date,
+    Email,
+    Integer,
+    Check,  // le seul qui permette à l'utilisateur de choisir plusieurs valeurs.
+    Combo,
+    Radio
 }
 export class Question {
     
@@ -12,9 +18,9 @@ export class Question {
     form: Form; 
     title: string;
     description?: string;
-    questionType: questionType;
+    questionType: QuestionType;
     required: boolean;
-    optionList: OptionList;
+    optionList?: OptionList;
 
     constructor(data: any) {
         this.id = data.id;
@@ -23,6 +29,6 @@ export class Question {
         this.description = data.description;
         this.questionType = data.questionType;
         this.required = data.required;
-        this.optionList = data.optionList;
+        this.optionList = data.optionList ? new OptionList(data.optionList) : undefined;
     }
 }

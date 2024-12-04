@@ -22,12 +22,11 @@ namespace prid_2425_a01.Models
         public int? OptionListId { get; set; }
     }
     
-    public class QuestionCompleteDTO
+    public class Question_CompleteDTO
     {
         public int Id { get; set; }
 
         public int FormId { get; set; }
-        public FormDTO Form { get; set; } = null!;
         
         public int Idx { get; set; }
         
@@ -42,8 +41,6 @@ namespace prid_2425_a01.Models
         public int? OptionListId { get; set; }
         
         
-        public OptionListDTO OptionList { get; set; }
-        
-        public ICollection<AnswerDTO> ListAnswers { get; set; } = new List<AnswerDTO>();
+        public OptionList_With_OptionValuesDTO? OptionList { get; set; }
     }
 }

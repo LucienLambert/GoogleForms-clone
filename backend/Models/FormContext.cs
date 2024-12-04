@@ -8,16 +8,29 @@ public class FormContext : DbContext
     }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder) {
-        
         base.OnModelCreating(modelBuilder);
-        //liaison des composite Key pour le model Form
-        modelBuilder.Entity<UserFormAccess>().HasKey(f => new { f.UserId, f.FormId });
 
         modelBuilder.Entity<OptionValue>()
             .HasKey(o => new { o.Idx, o.OptionListId });
 
         modelBuilder.Entity<Answer>()
             .HasKey(a => new { a.InstanceId, a.QuestionId, a.Idx });
+            
+        //liaison des composite Key pour le model UserFormAccess
+        modelBuilder.Entity<UserFormAccess>(ufa => {
+
+            ufa.HasKey(ufa => new { ufa.UserId, ufa.FormId });
+
+            ufa.HasOne(ufa => ufa.Form)
+                .WithMany(f => f.ListUserFormAccesses)
+                .HasForeignKey(ufa => ufa.FormId)
+                .OnDelete(DeleteBehavior.Cascade);
+
+            ufa.HasOne(ufa => ufa.User)
+                .WithMany(u => u.ListUserFormAccesses)
+                .HasForeignKey(ufa => ufa.UserId)
+                .OnDelete(DeleteBehavior.Cascade);
+        });
 
         //liaison entre Form et User.
         modelBuilder.Entity<Form>()
@@ -54,6 +67,11 @@ public class FormContext : DbContext
         });
         
 
+
+        //TODO ADD LIAISON ENTRE
+        //ANSWER -> QUESTION
+        //FORM -> QUESTION
+        
 
     }
     //permet le mapping entre la backend et la DB (liaison)
