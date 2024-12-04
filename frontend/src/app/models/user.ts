@@ -10,6 +10,8 @@ export enum Role {
 export class User {
     id: number = 0;
     email?: string = '';
+    firstName: string = '';
+    lastName: string = '';
     fullName: string = '';
     password?: string = '';
     token?: string;

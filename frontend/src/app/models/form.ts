@@ -1,19 +1,15 @@
+import { Instance } from "./instance";
+import { User } from "./user";
+import { Question } from "./question";
+
 export class Form {
     id: number;
     title: string;
     description?: string | null; //dans le cas ou la description peut-être null
     isPublic: boolean;
-    owner: {
-        id: number;
-        email: string;
-        firstName?: string;
-        lastName?: string;
-        role: number;
-    };
-    lastInstance: {
-        started: Date;
-        completed?: Date;
-    }
+    owner: User;
+    lastInstance: Instance;
+    listQuestion: Question [];
 
 
     constructor(data: any) {
@@ -23,5 +19,6 @@ export class Form {
         this.owner = data.owner;
         this.isPublic = data.isPublic;
         this.lastInstance = data.lastInstance;
+        this.listQuestion = data.ListQuestions ? data.ListQuestions.map( (q: Question) => new Question(q)) : [];
     }
 }

@@ -91,6 +91,7 @@ export class ViewFormsComponent implements OnInit {
             console.log("Vous n'avez pas les droits pour ouvrir ce formulaire");
         }
     }
+
     /*Le bouton "Manage" permet d'ouvrir le formulaire en tant qu'éditeur,
     en vue d'en modifier la définition et les questions. Ce bouton n'est 
     visible que si l'utilisateur a accès au formulaire en mode d'édition */

@@ -12,9 +12,7 @@ export class InstanceService {
     constructor(private http: HttpClient, @Inject('BASE_URL') private baseUrl: string) {
 
     }
-
-
-
+    
     getInstanceByFormId(id: number): Observable<Instance> {
         return this.http.get<Instance>(`${this.baseUrl}api/instances/by_form_or_fresh/${id}`)
             .pipe(map(res => new Instance(res))

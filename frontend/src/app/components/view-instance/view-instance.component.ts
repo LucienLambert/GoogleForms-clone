@@ -52,16 +52,16 @@ export class ViewInstanceComponent implements OnInit {
             },
             error: (err) => {
                 console.log(err);
-                switch (err.status) {
-                    case 404:
-                        this.router.navigate(['/unknown']);
-                        break;
-                    case 401:
-                        this.router.navigate(['/restricted']);
-                        break;
-                    default:
-                        this.router.navigate(['/unknown']);
-                }
+                // switch (err.status) {
+                //     case 404:
+                //         this.router.navigate(['/unknown']);
+                //         break;
+                //     case 401:
+                //         this.router.navigate(['/restricted']);
+                //         break;
+                //     default:
+                //         this.router.navigate(['/unknown']);
+                // }
             }
         });
         
