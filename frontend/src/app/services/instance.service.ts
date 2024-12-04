@@ -15,7 +15,7 @@ export class InstanceService {
 
 
 
-    getInstanceByFormId(id: number): Observable<Instance> {
+    getExistingOrFreshInstanceByFormId(id: number): Observable<Instance> {
         return this.http.get<Instance>(`${this.baseUrl}api/instances/by_form_or_fresh/${id}`)
             .pipe(map(res => new Instance(res))
             );

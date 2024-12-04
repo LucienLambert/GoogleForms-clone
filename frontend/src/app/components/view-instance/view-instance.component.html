@@ -19,16 +19,20 @@
         <div class="form-item">
             <div class="form-label" *ngIf="!isInProgress(); else inProgress">Completed:</div>
             <div class="form-value" *ngIf="!isInProgress();">
-                {{ instance?.completed | date:'dd/MM/yyyy HH:mm:ss' }} </div>
-            
+                {{ instance?.completed | date:'dd/MM/yyyy HH:mm:ss' }} 
+            </div>
                 <ng-template #inProgress>
                     In Progress
                 </ng-template>
         </div>
-        <div *ngIf="questions.length > 0">
-            <div *ngFor="let question of questions" class="form-item">
-                <div class="form-label">{{ question.title }}</div>
-            </div>
+        <div *ngIf="questions.length > 0; else noQuestion">
+            <mat-icon (click)="switchQuestion(questionTracker-1)"><</mat-icon>
+            <mat-icon (click)="switchQuestion(questionTracker+1)">></mat-icon>
+            <p>Question {{questionTracker}}/{{questions.length}}</p>
+        <app-instance-question-card [question]="currentQuestion"></app-instance-question-card>
         </div>
+        <ng-template #noQuestion>
+            This form doesn't have any question!
+        </ng-template>
     </div>
 </div>

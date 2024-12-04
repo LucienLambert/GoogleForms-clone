@@ -7,7 +7,6 @@ export class OptionValue {
     value: string;
     
     constructor(data:any) {
-        
         this.idx = data.idx;
         this.optionList = data.optionList;
         this.value = data.value;
