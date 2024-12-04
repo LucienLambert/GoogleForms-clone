@@ -36,7 +36,7 @@ public class InstancesController : ControllerBase {
             return NotFound();
         return _mapper.Map<InstanceDTO>(instance);
     }
-    
+
     [HttpGet("by_form_or_fresh/{id}")]
     public async Task<ActionResult<IEnumerable<InstanceDTO>>> GetExistingOrFreshInstanceByFormId(int id) {
         // Returns an instance for the formid - logged user combinaison. /!\ If not found, returns a fresh instance

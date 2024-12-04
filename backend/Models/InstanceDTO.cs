@@ -1,5 +1,3 @@
-using Microsoft.EntityFrameworkCore.Metadata.Internal;
-
 namespace prid_2425_a01.Models;
 
 public class InstanceDTO {
