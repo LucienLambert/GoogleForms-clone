@@ -33,7 +33,7 @@ public class FormsController : ControllerBase {
 
         var formsDTO = allForms.Select(f => {
             var lastInstance = f.ListInstances.OrderByDescending(i => i.Id).FirstOrDefault();
-            var formDTO = _mapper.Map<FormDTO>(f);
+            var formDTO = _mapper.Map<Form_with_LastInstanceDTO>(f);
 
             if (lastInstance != null)
             {
@@ -156,7 +156,6 @@ public class FormsController : ControllerBase {
         return Ok(_mapper.Map<List<FormDTO>>(listPublicForm));
     }
 
-    //refactor pour faire en sorte que je n'ai qu'une seul requête pour récupérer et trie la liste des formulaires.
     [Authorize]
     [HttpGet("Owner_Public_Access/forms")]
     public async Task<ActionResult<IEnumerable<FormDTO>>> GetOwnerPublicAccessForm(){
@@ -180,7 +179,7 @@ public class FormsController : ControllerBase {
 
         var formsDTO = allForms.Select(f => {
             var lastInstance = f.ListInstances.OrderByDescending(i => i.Id).FirstOrDefault();
-            var formDTO = _mapper.Map<FormDTO>(f);
+            var formDTO = _mapper.Map<Form_with_LastInstanceDTO>(f);
 
             if (lastInstance != null) {
                 formDTO.LastInstance = new Instance_only_DateDTO

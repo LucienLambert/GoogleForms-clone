@@ -4,6 +4,7 @@ import { User } from '../../models/user';
 import { ActivatedRoute, Router } from '@angular/router';
 import { FormService } from '../../services/form.service';
 import { Form } from '../../models/form';
+import { forEach } from 'lodash-es';
 
 @Component({
     selector: 'app-view-forms',
@@ -11,9 +12,9 @@ import { Form } from '../../models/form';
     styleUrl:'./view-forms.component.css'
 })
 export class ViewFormsComponent implements OnInit {
-    forms: Form[] = []; //Liste des formulaire CurrentUser.
+    forms: Form[] = [];
     filteredForms: Form[] = [];
-    errorMessage: string = ''; // permet de stocket les éventuelles erreurs lors du chargement des objets de la liste.
+    errorMessage: string = '';
     user?: User;
 
     isSaveVisible: boolean = false;
@@ -27,11 +28,10 @@ export class ViewFormsComponent implements OnInit {
 
     ngOnInit() {
         if(this.authentification()) {
+            console.log(this.user);
             if(this.user?.role == 2) {
-                console.log("Admin");
                 this.getAllForm();
             }else {
-                console.log("user or guest");
                 this.getOwnerPublicAccessForm();
             }
         }
@@ -39,12 +39,10 @@ export class ViewFormsComponent implements OnInit {
 
     authentification() {
         if (!this.authService.currentUser) {
-            console.log("L'utilisateur n'est pas connecté.");
             this.router.navigate(['/login']);
             return false;
         } else {
             this.user = this.authService.currentUser;
-            console.log("L'utilisateur est bien connecté:", this.user);
             return true;
         }
     }
@@ -84,7 +82,7 @@ export class ViewFormsComponent implements OnInit {
 
     // Le bouton "Open" ne doit pas être visible si le formulaire ne contient pas de questions.
     openForm(form: Form){
-        if(form != null && (form.owner.id == this.user?.id || this.user?.role == 2)){
+        if(form != null && (form.owner.id == this.user?.id || this.user?.role != 0 ||form.isPublic != true)){
             console.log('Formulaire sélectionné:', form);
             this.router.navigate(['view-instance', form.id]);
         } else {
@@ -96,7 +94,8 @@ export class ViewFormsComponent implements OnInit {
     en vue d'en modifier la définition et les questions. Ce bouton n'est 
     visible que si l'utilisateur a accès au formulaire en mode d'édition */
     manageForm(form: Form){
-
+        console.log('Formulaire sélectionné:', form);
+            this.router.navigate(['view-form', form.id]);
     }
 
     handleSearch(term: string) {
@@ -112,10 +111,5 @@ export class ViewFormsComponent implements OnInit {
                 form.owner?.lastName!.toLowerCase().includes(term.toLowerCase())
             );
         }
-    }
-
-    logout() {
-        this.authService.logout()
-        this.router.navigate(['/login']);
     }
 }

@@ -18,11 +18,12 @@ import {TemplateComponent} from "../components/template/template.component";
 import {LoginComponent} from "../components/login/login.component";
 import {RestrictedComponent} from "../components/restricted/restricted.component";
 import {ViewFormsComponent} from '../components/view-forms/view-forms.component';
-import { FormCardComponent } from '../components/view-forms/form-card/form-card.component';
+import {FormCardComponent} from '../components/view-forms/form-card/form-card.component';
 import {ViewInstanceComponent} from "../components/view-instance/view-instance.component";
 import {CreateEditFormComponent} from "../components/create-edit-form/create-edit-form.component";
 import {InstanceQuestionCardComponent} from "../components/view-instance/instance-question-card/instance-question-card.component";
 import {MatRadioButton, MatRadioGroup} from "@angular/material/radio";
+import {ViewFormComponent} from "../components/view-form/view-form.component";
 
 @NgModule({
     declarations: [
@@ -37,7 +38,8 @@ import {MatRadioButton, MatRadioGroup} from "@angular/material/radio";
         FormCardComponent,
         ViewInstanceComponent,
         CreateEditFormComponent,
-        InstanceQuestionCardComponent
+        InstanceQuestionCardComponent,
+        ViewFormComponent
     ],
     imports: [
         BrowserModule.withServerTransition({appId: 'ng-cli-universal'}),

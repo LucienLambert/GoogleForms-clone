@@ -1,6 +1,7 @@
 import { Routes, RouterModule } from '@angular/router';
 
 import { ViewFormsComponent } from '../components/view-forms/view-forms.component';
+import { ViewFormComponent } from '../components/view-form/view-form.component';
 //import { CounterComponent } from '../components/counter/counter.component';
 //import { FetchDataComponent } from '../components/fetch-data/fetch-data.component';
 //import { MemberListComponent } from '../components/memberlist/memberlist.component';
@@ -28,6 +29,7 @@ const appRoutes: Routes = [
     { path: 'home', component: ViewFormsComponent, canActivate: [AuthGuard] },
     { path: 'view-instance/:id', component: ViewInstanceComponent, canActivate: [AuthGuard] },
     { path: 'create-edit-form', component: CreateEditFormComponent, canActivate: [AuthGuard] },
+    { path: 'view-form/:id', component: ViewFormComponent, canActivate: [AuthGuard] },
     { path: '**', component: UnknownComponent }
 ];
 
