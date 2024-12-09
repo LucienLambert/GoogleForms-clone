@@ -196,6 +196,7 @@ public class FormsController : ControllerBase {
         return Ok(formsDTO);
     }
     
+    [Authorized(Role.Admin, Role.User)]
     [HttpPost("createForm")]
     public async Task<ActionResult<FormDTO>> CreateForm(FormDTO formDto) {
         var form = _mapper.Map<Form>(formDto);

@@ -47,7 +47,7 @@ export class FormService {
     }
     
     createForm(form: Form): Observable<Form> {
-        return this.http.post<Form>(`${this.baseUrl}api/forms/createForm'`, form)
+        return this.http.post<Form>(`${this.baseUrl}api/forms/createForm`, form)
             .pipe(map(res => new Form(res)));
     }
 }
