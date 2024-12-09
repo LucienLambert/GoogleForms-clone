@@ -24,7 +24,7 @@ public class FormsController : ControllerBase {
     [Authorized(Role.Admin)]
     [HttpGet]
     //récupère la liste des formulaires
-    public async Task<ActionResult<IEnumerable<FormDTO>>> GetAll() {
+    public async Task<ActionResult<IEnumerable<FormDetailsDTO>>> GetAll() {
         var allForms = await _context.Forms
             .Include(f => f.Owner)
             .Include(f => f.ListInstances)
@@ -33,7 +33,7 @@ public class FormsController : ControllerBase {
 
         var formsDTO = allForms.Select(f => {
             var lastInstance = f.ListInstances.OrderByDescending(i => i.Id).FirstOrDefault();
-            var formDTO = _mapper.Map<FormDTO>(f);
+            var formDTO = _mapper.Map<FormDetailsDTO>(f);
 
             if (lastInstance != null)
             {
@@ -159,7 +159,7 @@ public class FormsController : ControllerBase {
     //refactor pour faire en sorte que je n'ai qu'une seul requête pour récupérer et trie la liste des formulaires.
     [Authorize]
     [HttpGet("Owner_Public_Access/forms")]
-    public async Task<ActionResult<IEnumerable<FormDTO>>> GetOwnerPublicAccessForm(){
+    public async Task<ActionResult<IEnumerable<FormDetailsDTO>>> GetOwnerPublicAccessForm(){
         var userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
         
         if (string.IsNullOrEmpty(userId) || !int.TryParse(userId, out int userIdInt)){
@@ -180,7 +180,7 @@ public class FormsController : ControllerBase {
 
         var formsDTO = allForms.Select(f => {
             var lastInstance = f.ListInstances.OrderByDescending(i => i.Id).FirstOrDefault();
-            var formDTO = _mapper.Map<FormDTO>(f);
+            var formDTO = _mapper.Map<FormDetailsDTO>(f);
 
             if (lastInstance != null) {
                 formDTO.LastInstance = new Instance_only_DateDTO
@@ -195,5 +195,12 @@ public class FormsController : ControllerBase {
 
         return Ok(formsDTO);
     }
-
+    
+    [HttpPost("createForm")]
+    public async Task<ActionResult<FormDTO>> CreateForm(FormDTO formDto) {
+        var form = _mapper.Map<Form>(formDto);
+        _context.Forms.Add(form);
+        await _context.SaveChangesAsync();
+        return CreatedAtAction("GetOneById", new { id = form.Id }, _mapper.Map<FormDTO>(form));
+    }
 }

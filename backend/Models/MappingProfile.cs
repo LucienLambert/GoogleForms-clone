@@ -47,7 +47,10 @@ public class MappingProfile : Profile
         
         CreateMap<OptionValue, OptionValueDTO>();
         CreateMap<OptionValueDTO, OptionValue>();
-        
+
+        CreateMap<Form, FormDetailsDTO>()
+            .IncludeBase<Form, FormDTO>()
+            .ForMember(dest => dest.Owner, opt => opt.MapFrom(src => src.Owner))
+            .ForMember(dest => dest.LastInstance, opt => opt.Ignore());
     }
-    
 }
