@@ -199,6 +199,12 @@ public class FormsController : ControllerBase {
     [HttpPost("createForm")]
     public async Task<ActionResult<FormDTO>> CreateForm(FormDTO formDto) {
         var form = _mapper.Map<Form>(formDto);
+        var formValidationService = new FormValidation(_context);
+        var result = await formValidationService.ValidateOnCreate(form);
+        
+        if (!result.IsValid)
+            return BadRequest(result);
+        
         _context.Forms.Add(form);
         await _context.SaveChangesAsync();
         return CreatedAtAction("GetOneById", new { id = form.Id }, _mapper.Map<FormDTO>(form));
