@@ -21,34 +21,34 @@ public class FormsController : ControllerBase {
         _mapper = mapper;
     }
 
-    [Authorized(Role.Admin)]
-    [HttpGet]
-    //récupère la liste des formulaires
-    public async Task<ActionResult<IEnumerable<FormDTO>>> GetAll() {
-        var allForms = await _context.Forms
-            .Include(f => f.Owner)
-            .Include(f => f.ListInstances)
-            .OrderBy(f => f.Title)
-            .ToListAsync();
+    // [Authorized(Role.Admin)]
+    // [HttpGet]
+    // //récupère la liste des formulaires
+    // public async Task<ActionResult<IEnumerable<FormDTO>>> GetAll() {
+    //     var allForms = await _context.Forms
+    //         .Include(f => f.Owner)
+    //         .Include(f => f.ListInstances)
+    //         .OrderBy(f => f.Title)
+    //         .ToListAsync();
 
-        var formsDTO = allForms.Select(f => {
-            var lastInstance = f.ListInstances.OrderByDescending(i => i.Id).FirstOrDefault();
-            var formDTO = _mapper.Map<Form_with_LastInstanceDTO>(f);
+    //     var formsDTO = allForms.Select(f => {
+    //         var lastInstance = f.ListInstances.OrderByDescending(i => i.Id).FirstOrDefault();
+    //         var formDTO = _mapper.Map<Form_with_LastInstanceDTO>(f);
 
-            if (lastInstance != null)
-            {
-                formDTO.LastInstance = new Instance_only_DateDTO
-                {
-                    Started = lastInstance.Started,
-                    Completed = lastInstance.Completed
-                };
-            }
+    //         if (lastInstance != null)
+    //         {
+    //             formDTO.LastInstance = new Instance_only_DateDTO
+    //             {
+    //                 Started = lastInstance.Started,
+    //                 Completed = lastInstance.Completed
+    //             };
+    //         }
 
-            return formDTO;
-        }).ToList();
+    //         return formDTO;
+    //     }).ToList();
 
-        return Ok(formsDTO);
-    }
+    //     return Ok(formsDTO);
+    // }
 
     [HttpGet("{title}")]
     public async Task<ActionResult<FormDTO>> GetOneByTitle(string title) {
@@ -158,16 +158,18 @@ public class FormsController : ControllerBase {
 
     [Authorize]
     [HttpGet("Owner_Public_Access/forms")]
-    public async Task<ActionResult<IEnumerable<FormDTO>>> GetOwnerPublicAccessForm(){
+    public async Task<ActionResult<IEnumerable<Form_with_LastInstanceDTO>>> GetOwnerPublicAccessForm(){
         var userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
-        
+
         if (string.IsNullOrEmpty(userId) || !int.TryParse(userId, out int userIdInt)){
             return Unauthorized("User Unfound");
         }
+        var currentUser = await _context.Users.Where(u => u.Id == userIdInt).FirstOrDefaultAsync();
 
         var allForms = await _context.Forms
-            .Where(f => f.OwnerId == userIdInt || f.IsPublic == true || _context.UserFormAccesses
-            .Any(ufa => ufa.FormId == userIdInt && ufa.FormId == f.Id))
+        .Include(f => f.ListInstances.Where(i => i.UserId == userIdInt).OrderByDescending(i => i.Id).Take(1))
+            .Where(f =>  currentUser!.Role == Role.Admin || f.OwnerId == userIdInt || f.IsPublic || 
+            _context.UserFormAccesses.Any(ufa => ufa.FormId == userIdInt && ufa.FormId == f.Id))
             .Include(f => f.Owner)
             .Include(f => f.ListInstances)
             .OrderBy(f => f.Title)
@@ -177,20 +179,7 @@ public class FormsController : ControllerBase {
             return NotFound("Aucun formulaire trouvé.");
         }
 
-        var formsDTO = allForms.Select(f => {
-            var lastInstance = f.ListInstances.OrderByDescending(i => i.Id).FirstOrDefault();
-            var formDTO = _mapper.Map<Form_with_LastInstanceDTO>(f);
-
-            if (lastInstance != null) {
-                formDTO.LastInstance = new Instance_only_DateDTO
-                {
-                    Started = lastInstance.Started,
-                    Completed = lastInstance.Completed
-                };
-            }
-
-            return formDTO;
-        }).ToList();
+        var formsDTO = _mapper.Map<List<Form_with_LastInstanceDTO>>(allForms);
 
         return Ok(formsDTO);
     }

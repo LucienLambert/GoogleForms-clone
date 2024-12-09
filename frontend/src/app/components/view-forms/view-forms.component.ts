@@ -29,11 +29,7 @@ export class ViewFormsComponent implements OnInit {
     ngOnInit() {
         if(this.authentification()) {
             console.log(this.user);
-            if(this.user?.role == 2) {
-                this.getAllForm();
-            }else {
-                this.getOwnerPublicAccessForm();
-            }
+            this.getOwnerPublicAccessForm();
         }
     }
 

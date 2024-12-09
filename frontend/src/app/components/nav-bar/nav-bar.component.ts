@@ -1,6 +1,7 @@
 import {Component, Input, Output, EventEmitter, ElementRef, ViewChild} from '@angular/core';
 import {Router} from "@angular/router";
 import {Location} from '@angular/common';
+import { AuthenticationService } from 'src/app/services/authentication.service';
 
 @Component({
     selector: 'app-nav-bar',
@@ -20,7 +21,7 @@ export class NavBarComponent {
     @Input() isAddVisible: boolean = false;
     @Input() backButtonVisible: boolean = false;
 
-    constructor(private router: Router, private _location: Location) {
+    constructor(private router: Router, private _location: Location, private authService : AuthenticationService) {
     }
 
     toggleSearch() {
@@ -48,5 +49,10 @@ export class NavBarComponent {
     
     backClicked() {
         this._location.back();
+    }
+
+    logout(){
+        this.authService.logout();
+        this.router.navigate(['/login']);
     }
 }

@@ -24,5 +24,5 @@ public class Form_With_QuestionsDTO {
 
 public class Form_with_LastInstanceDTO : FormDTO{
     //référence la dernière instance du form
-    public Instance_only_DateDTO? LastInstance { get; set; }
+    public ICollection<Instance_only_DateDTO>? ListInstances { get; set; }
 }

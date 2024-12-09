@@ -10,7 +10,7 @@ export class Form {
     description?: string | null;
     isPublic: boolean;
     owner: User;
-    lastInstance: Instance;
+    listInstance: Instance [];
     listQuestion: Question [];
 
 
@@ -21,7 +21,7 @@ export class Form {
         this.description = data.description;
         this.owner = data.owner;
         this.isPublic = data.isPublic;
-        this.lastInstance = data.lastInstance;
+        this.listInstance = data.listInstances ? data.listInstances.map( (i: Instance) => new Instance(i)) : [];
         this.listQuestion = data.listQuestions ? data.listQuestions.map( (q: Question) => new Question(q)) : [];
     }
 }

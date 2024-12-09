@@ -47,7 +47,7 @@
     </button>
     <!-- Redirection vers la page de login-->
     <!--il faut surement déplacer la logique du logout dans le nav-bar.comporent.ts au lieu de home.component.ts (à vérifier)-->
-    <button mat-menu-item routerLink="/login">
+    <button mat-menu-item (click)="logout()">
         <mat-icon>Logout</mat-icon>
         <span>Logout</span>
     </button>

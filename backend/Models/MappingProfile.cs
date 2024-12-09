@@ -36,6 +36,8 @@ public class MappingProfile : Profile
         CreateMap<Instance, Instance_With_AnswersDTO>();
         CreateMap<Instance_With_AnswersDTO, Instance>();
 
+        CreateMap<Instance, Instance_only_DateDTO>();
+        CreateMap<Instance_only_DateDTO, Instance>();
         //ANSWER
         CreateMap<Answer, AnswerDTO>();
         CreateMap<AnswerDTO, Answer>();
