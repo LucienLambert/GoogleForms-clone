@@ -3,13 +3,26 @@
              class="toolbar-actions">
 </app-nav-bar>
 
-<div class="form-container">
-    <!-- <div class="form-item">
-        <div class="form-label">Title:</div>
-        <div class="form-value">{{ form?.title }}</div>
+<div class="manage-container">
+    <div class="form-container">
+        <div class="form-item">
+            <div class="form-label">Title :</div>
+            <div class="form-value">{{ form?.title }}</div>
+        </div>
+        <div class="form-item">
+            <div class="form-label">Description :</div>
+            <div class="form-value">{{ form?.description }}</div>
+        </div>
+        <div class="form-item">
+            <div class="form-label">Owner :</div>
+            <div class="form-value">{{ form?.owner?.firstName }} {{ form?.owner?.lastName }}</div>
+        </div>
+        <div class="form-item">
+            <div class="form-label">Public :</div>
+            <mat-slide-toggle 
+                [checked]="form?.isPublic" 
+                (change)="toggleIsPublic()">
+            </mat-slide-toggle>
+        </div>
     </div>
-    <div class="form-item">
-        <div class="form-label">Description:</div>
-        <div class="form-value">{{ form?.description }}</div>
-    </div> -->
 </div>

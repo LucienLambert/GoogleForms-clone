@@ -22,7 +22,12 @@ public class Form_With_QuestionsDTO {
 
 }
 
-public class Form_with_LastInstanceDTO : FormDTO{
+public class Form_with_LastInstanceDTO : FormDTO {
     //référence la dernière instance du form
     public ICollection<Instance_only_DateDTO>? ListInstances { get; set; }
+}
+
+//DTO avec l'attribut form, owner, listQuestion
+public class Form_With_Form_QuestionsDTO : FormDTO {
+    public ICollection<Question_CompleteDTO> ListQuestions { get; set; } = new List<Question_CompleteDTO>();
 }

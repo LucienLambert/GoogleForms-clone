@@ -8,8 +8,8 @@ using prid_2425_a01.Models;
 using System.Security.Claims;
 namespace prid_2425_a01.Controllers;
 
-//
-// [Authorize]
+
+[Authorize]
 [Route("api/[controller]")]
 [ApiController]
 public class FormsController : ControllerBase {
@@ -61,7 +61,10 @@ public class FormsController : ControllerBase {
     
     [HttpGet("id/{id:int}")]
     public async Task<ActionResult<FormDTO>> GetOneById(int id){
-        var form = await _context.Forms.FirstOrDefaultAsync(f => f.Id == id);
+        var form = await _context.Forms
+        .Include(f => f.Owner)
+        .FirstOrDefaultAsync(f => f.Id == id);
+        
         if(form == null) {
             return NotFound();
         }
@@ -112,49 +115,49 @@ public class FormsController : ControllerBase {
         return NoContent();
     }
 
-    [Authorize]
-    [HttpGet("User/forms")]
-    public async Task<ActionResult<IEnumerable<FormDTO>>> GetUserForms(){
-        // Récupérer l'ID de l'utilisateur connecté
-        var userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+    // [Authorize]
+    // [HttpGet("User/forms")]
+    // public async Task<ActionResult<IEnumerable<FormDTO>>> GetUserForms(){
+    //     // Récupérer l'ID de l'utilisateur connecté
+    //     var userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
 
-        if (string.IsNullOrEmpty(userId) || !int.TryParse(userId, out int userIdInt)){
-            return Unauthorized("User ID est manquant dans le token.");
-        }
+    //     if (string.IsNullOrEmpty(userId) || !int.TryParse(userId, out int userIdInt)){
+    //         return Unauthorized("User ID est manquant dans le token.");
+    //     }
         
-        // Charger directement les formulaires de l'utilisateur connecté avec leur propriétaire
-        var forms = await _context.Forms
-            .Where(f => f.OwnerId == userIdInt)
-            .Include(f => f.Owner) // Inclure les données du propriétaire
-            .OrderBy(f => f.Title) // Trier par titre
-            .ToListAsync();
+    //     // Charger directement les formulaires de l'utilisateur connecté avec leur propriétaire
+    //     var forms = await _context.Forms
+    //         .Where(f => f.OwnerId == userIdInt)
+    //         .Include(f => f.Owner) // Inclure les données du propriétaire
+    //         .OrderBy(f => f.Title) // Trier par titre
+    //         .ToListAsync();
 
-        // Vérifier si aucun formulaire n'est trouvé
-        if (forms == null || !forms.Any()){
-            return NotFound("Aucun formulaire trouvé pour cet utilisateur.");
-        }
+    //     // Vérifier si aucun formulaire n'est trouvé
+    //     if (forms == null || !forms.Any()){
+    //         return NotFound("Aucun formulaire trouvé pour cet utilisateur.");
+    //     }
 
-        // Mapper directement les formulaires en FormDTO
-        return Ok(_mapper.Map<List<FormDTO>>(forms));
-    }
+    //     // Mapper directement les formulaires en FormDTO
+    //     return Ok(_mapper.Map<List<FormDTO>>(forms));
+    // }
 
-    [Authorize]
-    [HttpGet("Public/forms")]
-    public async Task<ActionResult<IEnumerable<FormDTO>>> GetPublicForm(){
-        //récup les formulaires qui sont public avec les infos du owner et trie le contenue par ordre aphabétique des titres
-        var listPublicForm = await _context.Forms.Where(f => f.IsPublic == true)
-            .Include(f => f.Owner)
-            .OrderBy(f => f.Title)
-            .ToListAsync();
+    // [Authorize]
+    // [HttpGet("Public/forms")]
+    // public async Task<ActionResult<IEnumerable<FormDTO>>> GetPublicForm(){
+    //     //récup les formulaires qui sont public avec les infos du owner et trie le contenue par ordre aphabétique des titres
+    //     var listPublicForm = await _context.Forms.Where(f => f.IsPublic == true)
+    //         .Include(f => f.Owner)
+    //         .OrderBy(f => f.Title)
+    //         .ToListAsync();
 
-        //is la liste est null ou vide alors NotFound()
-        if(listPublicForm == null || !listPublicForm.Any()){
-            return NotFound("Aucun Formulaire avec le statut Public n'a été trouvé");
-        }
+    //     //is la liste est null ou vide alors NotFound()
+    //     if(listPublicForm == null || !listPublicForm.Any()){
+    //         return NotFound("Aucun Formulaire avec le statut Public n'a été trouvé");
+    //     }
 
-        //return et convertie la listePublicForm en Objet DTO
-        return Ok(_mapper.Map<List<FormDTO>>(listPublicForm));
-    }
+    //     //return et convertie la listePublicForm en Objet DTO
+    //     return Ok(_mapper.Map<List<FormDTO>>(listPublicForm));
+    // }
 
     [Authorize]
     [HttpGet("Owner_Public_Access/forms")]
@@ -171,7 +174,6 @@ public class FormsController : ControllerBase {
             .Where(f =>  currentUser!.Role == Role.Admin || f.OwnerId == userIdInt || f.IsPublic || 
             _context.UserFormAccesses.Any(ufa => ufa.FormId == userIdInt && ufa.FormId == f.Id))
             .Include(f => f.Owner)
-            .Include(f => f.ListInstances)
             .OrderBy(f => f.Title)
             .ToListAsync();
             
