@@ -20,3 +20,10 @@
     font-weight: bold;
     word-break: break-word;
 }
+
+mat-card-actions {
+    display: flex;
+    justify-content: center;  /* Centrage horizontal */
+    align-items: center;      /* Centrage vertical si nécessaire */
+    padding: 16px;            /* Ajouter de l'espace autour si nécessaire */
+}

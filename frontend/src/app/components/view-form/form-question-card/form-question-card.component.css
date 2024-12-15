@@ -1,0 +1,53 @@
+/* Style pour le mat-card-header */
+mat-card-header {
+  display: flex;
+  justify-content: space-between;  /* Espacement entre le titre et le conteneur des boutons */
+  align-items: center;
+  position: relative;  /* Pour que les boutons puissent être positionnés dans le coin supérieur droit */
+  padding-right: 16px;  /* Pour donner de l'espace entre les boutons et le bord droit de la carte */
+}
+
+/* Titre de la carte (mat-card-title) */
+mat-card-title {
+  flex-grow: 1;  /* Prendre tout l'espace disponible à gauche */
+  margin-bottom: 4px;  /* Réduit l'espace sous le titre */
+}
+
+/* Conteneur pour les boutons */
+.button-header {
+  position: absolute;  /* Positionne les boutons relativement à mat-card-header */
+  right: 0;  /* Aligne les boutons au bord droit */
+  top: 50%;  /* Aligne les boutons au centre verticalement */
+  transform: translateY(-50%);  /* Compense le centrage vertical pour que les boutons soient parfaitement au centre */
+  margin-left: 8px;  /* Espacement entre les boutons */
+}
+
+
+
+/* Style pour les boutons en bas à droite */
+.button-content {
+  position: absolute; /* Positionne les boutons relativement à mat-card */
+  right: 0; /* Aligne les boutons au bord droit */
+  bottom: 0px; /* Positionne les boutons un peu au-dessus du bord inférieur */
+  display: flex;
+  gap: 8px; /* Espacement entre les boutons */
+}
+
+/* Style au survol des icônes */
+mat-card-footer mat-icon:hover {
+  color: #3f51b5; /* Accentuer au survol */
+}
+
+/* Appliquer des marges autour des cartes */
+.question-card {
+  margin: 10px;
+  border-radius: 8px; /* Coins arrondis */
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* Ombre douce */
+  transition: transform 0.2s ease, box-shadow 0.2s ease; /* Transition au survol */
+  width: 100%;  /* La largeur s'adapte au parent, ajustez si nécessaire */
+}
+
+mat-card-content p {
+  margin: 0; /* Supprime les marges par défaut */
+  padding: 4px; /* Optionnel : ajout d'un léger padding pour contrôler l'espacement entre les éléments */
+}

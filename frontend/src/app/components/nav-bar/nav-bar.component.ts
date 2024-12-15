@@ -14,7 +14,7 @@ export class NavBarComponent {
 
     @ViewChild('searchInput') searchInput!: ElementRef<HTMLInputElement>;
 
-    @Input() title: string = '<undefined>';
+    @Input() title?: string;
     @Input() searchVisible: boolean = false;
     @Input() isSaveVisible: boolean = false;
     @Input() isSearchVisible: boolean = false;

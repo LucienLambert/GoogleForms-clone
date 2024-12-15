@@ -28,6 +28,6 @@ public class Form_with_LastInstanceDTO : FormDTO {
 }
 
 //DTO avec l'attribut form, owner, listQuestion
-public class Form_With_Form_QuestionsDTO : FormDTO {
+public class FormDTO_With_Form_QuestionsDTO : FormDTO {
     public ICollection<Question_CompleteDTO> ListQuestions { get; set; } = new List<Question_CompleteDTO>();
 }

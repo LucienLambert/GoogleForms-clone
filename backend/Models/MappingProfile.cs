@@ -29,6 +29,9 @@ public class MappingProfile : Profile
         CreateMap<Form, Form_With_QuestionsDTO>();
         CreateMap<Form_With_QuestionsDTO, Form>();
         
+        CreateMap<Form, FormDTO_With_Form_QuestionsDTO>();
+        CreateMap<FormDTO_With_Form_QuestionsDTO, Form>();
+        
         //INSTANCE
         CreateMap<Instance, InstanceDTO>();
         CreateMap<InstanceDTO, Instance>();

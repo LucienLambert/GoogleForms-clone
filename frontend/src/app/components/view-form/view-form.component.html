@@ -1,4 +1,4 @@
-<app-nav-bar title="test Form"
+<app-nav-bar [title]="form?.title"
              [backButtonVisible]="backButtonVisible"
              class="toolbar-actions">
 </app-nav-bar>
@@ -24,5 +24,29 @@
                 (change)="toggleIsPublic()">
             </mat-slide-toggle>
         </div>
+        <div *ngIf="listQuestion.length > 0; else noQuestions">
+            <h2 class="mb-4">Questions</h2>
+            <div *ngFor="let question of listQuestion">
+                <app-form-question-card
+                    [question]="question"
+                    [totalQuestion]="listQuestion.length"
+                    (moveDownEvent)="moveDown($event)"
+                    (moveUpEvent)="moveUp($event)"
+                    (editQuestionEvent)="editQuestion($event)"
+                    (delQuestionEvent)="delQuestion($event)">
+                </app-form-question-card>
+            </div>
+        </div>
+    </div>
+
+    
+
+    <ng-template #noQuestions>
+        <h1 style="text-align: center">No Question</h1>
+    </ng-template>
+    <div>
+        <mat-card-actions>
+            <button mat-raised-button color="primary">Add Question</button>
+        </mat-card-actions>
     </div>
 </div>

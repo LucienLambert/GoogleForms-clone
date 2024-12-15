@@ -12,7 +12,7 @@ import { Question } from 'src/app/models/question';
 })
 export class ViewFormComponent implements OnInit {
     form?: Form;
-    listQuestion? : Question [];
+    listQuestion : Question [] = [];
     backButtonVisible: boolean = true;
 
     constructor(private authService: AuthenticationService, private router: Router,
@@ -23,13 +23,13 @@ export class ViewFormComponent implements OnInit {
     ngOnInit() {
         const formId = Number(this.route.snapshot.paramMap.get('id'));
 
-        this.formService.getFormWithQuestions(formId).subscribe({
+        this.formService.GetOneFormManager(formId).subscribe({
             next : (data ) => {
                 this.form = data;
+                this.listQuestion = data.listQuestion;
                 console.log(this.form);
             }
         })
-        
     }
 
     //gestion du toggle isPublic du form.
@@ -39,5 +39,21 @@ export class ViewFormComponent implements OnInit {
           console.log("form.isPublic : " + this.form.isPublic);
           //sauvegarder le changement d'état du isPublic ici
         }
+    }
+
+    moveDown(question: Question) {
+        console.log("moveDown");
+    }
+
+    moveUp(question: Question) {
+        console.log("moveUp");
+    }
+
+    editQuestion(question: Question) {
+        console.log("edit");
+    }
+
+    delQuestion(question: Question) {
+        console.log("del");
     }
 }

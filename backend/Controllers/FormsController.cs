@@ -6,6 +6,7 @@ using prid_2425_a01.Helpers;
 
 using prid_2425_a01.Models;
 using System.Security.Claims;
+using System.Diagnostics.Eventing.Reader;
 namespace prid_2425_a01.Controllers;
 
 
@@ -186,4 +187,31 @@ public class FormsController : ControllerBase {
         return Ok(formsDTO);
     }
 
+    [Authorize]
+    [HttpGet("{id:int}/manager")]
+    public async Task<ActionResult<FormDTO_With_Form_QuestionsDTO>> GetOneFormManager(int id) {
+        //vérifier que le currentUser puisse accéder au form_Manager
+        //récup le form via l'ID avec title, description, owner, isPublic + liste question associé
+        var userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+
+        if (string.IsNullOrEmpty(userId) || !int.TryParse(userId, out int userIdInt)){
+            return Unauthorized("User Unfound");
+        }
+        var currentUser = await _context.Users.Where(u => u.Id == userIdInt).FirstOrDefaultAsync();
+        
+        var form = await _context.Forms
+        .Where(f => f.Id == id)
+        .Include(f => f.Owner)
+        .Include(f => f.ListQuestions.OrderBy(lq => lq.Idx))
+        .ThenInclude(lq => lq.OptionList)
+        .FirstOrDefaultAsync();
+
+        var canAccess = _context.UserFormAccesses.Where(ufc => ufc.FormId == form.Id && ufc.UserId == currentUser.Id).Any();
+
+        if(!(currentUser.Role == Role.Admin || currentUser.Id == form.OwnerId || canAccess)){
+            return Forbid();
+        }
+        
+        return Ok(_mapper.Map<FormDTO_With_Form_QuestionsDTO>(form));
+    }
 }
