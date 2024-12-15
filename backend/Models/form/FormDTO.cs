@@ -1,6 +1,6 @@
 
 
-namespace prid_2425_a01.Models;
+namespace prid_2425_a01.Models.form;
 
 public class FormDTO {
     
@@ -11,15 +11,8 @@ public class FormDTO {
     public bool IsPublic { get; set; }
 }
 
-public class Form_With_QuestionsDTO {
-    public int Id { get; set; }
-    public string Title { get; set; } = null!;
-    public string? Description { get; set; }
-    public int OwnerId { get; set; }
-    public bool IsPublic { get; set; }
-
+public class FormWithQuestionsDTO : FormDTO {
     public ICollection<Question_CompleteDTO> ListQuestions { get; set; } = new List<Question_CompleteDTO>();
-
 }
 
 public class FormDetailsDTO : FormDTO {

@@ -1,11 +1,13 @@
 import {Component, Input, OnInit} from "@angular/core";
 import {ActivatedRoute, Router} from "@angular/router";
-import {FormBuilder, FormGroup, Validators} from "@angular/forms";
+import {AbstractControl, FormBuilder, FormGroup, ValidationErrors, Validators} from "@angular/forms";
 import {AuthenticationService} from "../../services/authentication.service";
 import {FormService} from "../../services/form.service";
 import {Form} from "../../models/form";
 import {User} from "../../models/user";
 import {UserService} from "../../services/user.service";
+import {debounceTime, Observable, of, switchMap} from "rxjs";
+import {catchError, map} from "rxjs/operators";
 
 @Component({
     selector: "app-create-edit-form",
@@ -17,11 +19,15 @@ export class CreateEditFormComponent implements OnInit {
     form!: FormGroup;
     returnUrl?: string;
     owner?: User;
+    navBarTitle = 'New Form';
 
     backButtonVisible: boolean = true;
     isSearchVisible: boolean = false;
     isAddVisible: boolean = false;
     isSaveVisible: boolean = true;
+    isSaveDisabled: boolean = true;
+    showSuccessMessage: any;
+    showErrorMessage: any;
 
     constructor(private router: Router, private route: ActivatedRoute, private formBuilder: FormBuilder,
                 private authenticationService: AuthenticationService, private formService: FormService, 
@@ -29,15 +35,19 @@ export class CreateEditFormComponent implements OnInit {
 
     ngOnInit() {
         this.form = this.formBuilder.group({
-            title: ['', Validators.required],
-            description: ['', Validators.required],
+            title: ['', [Validators.required, Validators.minLength(3)], [this.uniqueTitleValidator.bind(this)]],
+            description: ['', Validators.minLength(3)],
             owner: ['', Validators.required],
-            checkbox: [false, Validators.required]
+            isPublic: [false]
         });
-        
+
         this.returnUrl = this.route.snapshot.queryParams['returnUrl'] || '/home';
-        
+
         this.fetchOwnerData();
+
+        this.form.statusChanges.subscribe((status) => {
+            this.isSaveDisabled = status !== 'VALID';
+        });
     }
 
     fetchOwnerData() {
@@ -57,19 +67,46 @@ export class CreateEditFormComponent implements OnInit {
         if (this.form.valid) {
             const formData: Form = this.form.value;
             formData.owner = this.owner!;
-            this.returnUrl = '/home';
+            formData.ownerId = this.owner!.id;
 
-            this.formService.createForm(formData).subscribe({
+            this.formService.saveForm(formData).subscribe({
                 next: (response) => {
-                    console.log('Form successfully created:', response);
-                    this.router.navigate([this.returnUrl]);
+                    this.fetchOwnerData();
+                    // Update the page with the new data and title
+                    this.form.patchValue(response);
+                    this.navBarTitle = response.title || 'New Form';
+                    
+                    // Show success message
+                    this.showSuccessMessage = true;
+                    setTimeout(() => {
+                        this.showSuccessMessage = false;
+                    }, 3000);
                 },
                 error: (err) => {
-                    console.error('Error while creating the form:', err);
+                    // Show error message
+                    this.showErrorMessage = true;
+                    setTimeout(() => {
+                        this.showErrorMessage = false;
+                    }, 3000);
                 }
             });
         } else {
             console.log('Form is invalid');
         }
+    }
+
+    uniqueTitleValidator(control: AbstractControl): Observable<ValidationErrors | null> {
+        if (!control.value) {
+            return of(null);
+        }
+
+        const ownerId = this.owner?.id;
+
+        return of(control.value).pipe(
+            debounceTime(300), // Delay to reduce API calls
+            switchMap((title) => this.formService.isTitleUnique(title, ownerId!)), // Call the backend
+            map((isUnique) => (isUnique ? null : { unique: true })), // Return validation result
+            catchError(() => of(null)) // Handle errors gracefully
+        );
     }
 }

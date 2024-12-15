@@ -1,4 +1,6 @@
-﻿namespace prid_2425_a01.Models;
+﻿using prid_2425_a01.Models.form;
+
+namespace prid_2425_a01.Models;
 
 public class UserDTO {
     public int Id { get; set; }

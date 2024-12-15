@@ -1,16 +1,48 @@
-<app-nav-bar title="New Form" [isSaveVisible]="isSaveVisible" [isSearchVisible]="isSearchVisible"
+<app-nav-bar [title]="navBarTitle" [isSaveVisible]="isSaveVisible" [isSearchVisible]="isSearchVisible"
              [isAddVisible]="isAddVisible" [backButtonVisible]="backButtonVisible" class="toolbar-actions"
-             (saveEvent)="onSave()"></app-nav-bar>
+             (saveEvent)="onSave()" [saveDisabled]="isSaveDisabled"></app-nav-bar>
 
 <form [formGroup]="form" class="input-container">
-    <input id="title" type="text" formControlName="title" class="form-control" name="title" placeholder="Title*" required/>
+    <!-- Title Input -->
+    <div>
+        <label for="title">Title*</label>
+        <input id="title" type="text" formControlName="title" class="form-control" placeholder="Title*" required/>
+        <!-- Validation Errors -->
+        <div *ngIf="form.get('title')?.invalid && form.get('title')?.dirty" class="error-message">
+            <small *ngIf="form.get('title')?.errors?.['required']">Title is required.</small>
+            <small *ngIf="form.get('title')?.errors?.['minlength']">Title must be at least 3 characters.</small>
+            <small *ngIf="form.get('title')?.errors?.['unique']">This title already exists for this owner.</small>
+        </div>
+    </div>
 
-    <input id="description" type="text" formControlName="description" class="form-control" name="description" placeholder="Description"/>
+    <!-- Description Input -->
+    <div>
+        <label for="description">Description</label>
+        <input id="description" type="text" formControlName="description" class="form-control" placeholder="Description"/>
+        <!-- Validation Errors -->
+        <div *ngIf="form.get('description')?.invalid && form.get('description')?.dirty" class="error-message">
+            <small *ngIf="form.get('description')?.errors?.['minlength']">Description must be at least 3 characters or empty.</small>
+        </div>
+    </div>
 
-    <input id="owner" type="text" formControlName="owner" class="form-control" name="additionalInfo" readonly/>
+    <!-- Owner Input -->
+    <div>
+        <label for="owner">Owner</label>
+        <input id="owner" type="text" formControlName="owner" class="form-control" readonly/>
+    </div>
 
-    <label for="checkbox">
-        <input id="checkbox" type="checkbox" formControlName="checkbox" name="isPublic"/>
-        Is Public
-    </label>
+    <!-- Checkbox Input -->
+    <div>
+        <label for="checkbox">
+            <input id="checkbox" type="checkbox" formControlName="isPublic"/>
+            Is Public
+        </label>
+    </div>
 </form>
+
+<div *ngIf="showSuccessMessage" class="alert alert-success">
+    Form successfully saved!
+</div>
+<div *ngIf="showErrorMessage" class="alert alert-danger">
+    An error occurred while saving the form. Please try again.
+</div>

@@ -19,6 +19,7 @@ export class NavBarComponent {
     @Input() isSearchVisible: boolean = false;
     @Input() isAddVisible: boolean = false;
     @Input() backButtonVisible: boolean = false;
+    @Input() saveDisabled: boolean = true;
 
     constructor(private router: Router, private _location: Location) {
     }
