@@ -24,6 +24,7 @@ export class FormCardComponent {
     
     ngOnInit(){
       this.user = this.authService.currentUser;
+      //console.log(this.form.listUserFormAccess);
     }
 
     //permet à la form-card (enfant) de récupérer le formulaire sur lequel on à clické

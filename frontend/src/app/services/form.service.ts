@@ -5,6 +5,7 @@ import { Form } from '../models/form';
 import { map } from 'rxjs/operators';
 import { Observable } from 'rxjs';
 import { QuestionType } from '../models/question';
+import { AccesType } from '../models/userFormAccess';
 
 @Injectable({ providedIn: 'root' })
 export class FormService {
@@ -68,4 +69,9 @@ export class FormService {
         const enumKey = Object.keys(enumObj).find(key => enumObj[key] === value);
         return enumKey || 'Unknown';  // Si la valeur n'existe pas dans l'énum, retournez 'Unknown'
     }
+
+    // getOwnerPublicAccessForm() : Observable<Form[]> {
+    //     return this.http.get<Form[]>(`${this.baseUrl}api/forms/Owner_Public_Access/forms`)
+    //         .pipe(map(res => res.map(m => new Form(m))));
+    // }
 }

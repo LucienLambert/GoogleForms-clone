@@ -31,6 +31,9 @@ public class MappingProfile : Profile
         
         CreateMap<Form, FormDTO_With_Form_QuestionsDTO>();
         CreateMap<FormDTO_With_Form_QuestionsDTO, Form>();
+
+        CreateMap<Form, FormDTO_With_All_ListDTO>();
+        CreateMap<FormDTO_With_All_ListDTO, Form>();
         
         //INSTANCE
         CreateMap<Instance, InstanceDTO>();
@@ -62,6 +65,10 @@ public class MappingProfile : Profile
         //OPTION_VALUE
         CreateMap<OptionValue, OptionValueDTO>();
         CreateMap<OptionValueDTO, OptionValue>();
+
+        //USERFORMACCES
+        CreateMap<UserFormAccess, UserFormAccessDTO_Only_Id>();
+        CreateMap<UserFormAccessDTO_Only_Id, UserFormAccess>();
         
     }
     

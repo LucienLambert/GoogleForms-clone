@@ -5,9 +5,9 @@ using System.Security.AccessControl;
 
 namespace prid_2425_a01.Models;
 
-public enum AccessType
-{
-    User = 0, Editor = 1,
+public enum AccessType {
+    User = 0,
+    Editor = 1 
 }
 
 public class UserFormAccess {

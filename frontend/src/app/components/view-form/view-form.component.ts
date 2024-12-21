@@ -42,18 +42,22 @@ export class ViewFormComponent implements OnInit {
     }
 
     moveDown(question: Question) {
-        console.log("moveDown");
+        console.log("moveDown : " + question);
     }
 
     moveUp(question: Question) {
-        console.log("moveUp");
+        console.log("moveUp : " + question);
     }
 
     editQuestion(question: Question) {
-        console.log("edit");
+        console.log("edit : " + question);
     }
 
     delQuestion(question: Question) {
-        console.log("del");
+        console.log("del : " + question);
+    }
+
+    addQuestion(){
+        console.log("add question")
     }
 }

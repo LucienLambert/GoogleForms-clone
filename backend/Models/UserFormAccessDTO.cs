@@ -9,3 +9,9 @@ public class UserFormAccessDTO {
     public Form Form{ get; set; } = null!;
     public AccessType Enum { get; set; } 
 }
+
+public class UserFormAccessDTO_Only_Id {
+    public int UserId { get; set; }
+    public int FormId { get; set; }
+    public AccessType Enum { get; set; } 
+}

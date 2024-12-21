@@ -162,7 +162,7 @@ public class FormsController : ControllerBase {
 
     [Authorize]
     [HttpGet("Owner_Public_Access/forms")]
-    public async Task<ActionResult<IEnumerable<Form_with_LastInstanceDTO>>> GetOwnerPublicAccessForm(){
+    public async Task<ActionResult<IEnumerable<FormDTO_With_All_ListDTO>>> GetOwnerPublicAccessForm(){
         var userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
 
         if (string.IsNullOrEmpty(userId) || !int.TryParse(userId, out int userIdInt)){
@@ -171,10 +171,15 @@ public class FormsController : ControllerBase {
         var currentUser = await _context.Users.Where(u => u.Id == userIdInt).FirstOrDefaultAsync();
 
         var allForms = await _context.Forms
-        .Include(f => f.ListInstances.Where(i => i.UserId == userIdInt).OrderByDescending(i => i.Id).Take(1))
-            .Where(f =>  currentUser!.Role == Role.Admin || f.OwnerId == userIdInt || f.IsPublic || 
-            _context.UserFormAccesses.Any(ufa => ufa.FormId == userIdInt && ufa.FormId == f.Id))
+            .Where(f =>  
+                currentUser!.Role == Role.Admin ||
+                f.OwnerId == userIdInt ||
+                f.IsPublic || 
+                _context.UserFormAccesses.Any(ufa => ufa.UserId == userIdInt && ufa.FormId == f.Id))
+            .Include(f => f.ListInstances.Where(i => i.UserId == userIdInt).OrderByDescending(i => i.Id).Take(1))
+            .Include(f => f.ListInstances)
             .Include(f => f.Owner)
+            .Include(f => f.ListUserFormAccesses.Where(ufa => ufa.UserId == userIdInt))
             .OrderBy(f => f.Title)
             .ToListAsync();
             
@@ -182,7 +187,7 @@ public class FormsController : ControllerBase {
             return NotFound("Aucun formulaire trouvé.");
         }
 
-        var formsDTO = _mapper.Map<List<Form_with_LastInstanceDTO>>(allForms);
+        var formsDTO = _mapper.Map<List<FormDTO_With_All_ListDTO>>(allForms);
 
         return Ok(formsDTO);
     }
@@ -205,7 +210,7 @@ public class FormsController : ControllerBase {
         .Include(f => f.ListQuestions.OrderBy(lq => lq.Idx))
         .ThenInclude(lq => lq.OptionList)
         .FirstOrDefaultAsync();
-
+        
         var canAccess = _context.UserFormAccesses.Where(ufc => ufc.FormId == form.Id && ufc.UserId == currentUser.Id).Any();
 
         if(!(currentUser.Role == Role.Admin || currentUser.Id == form.OwnerId || canAccess)){
