@@ -1,0 +1,55 @@
+<div [ngSwitch]="questionType?.valueOf()">
+    <div *ngSwitchCase="QuestionType.Short">short
+        <mat-form-field>
+            <input matInput>
+        </mat-form-field>
+    </div>
+    <div *ngSwitchCase="QuestionType.Long">long
+        <mat-form-field>
+            <textarea matInput></textarea>
+        </mat-form-field>
+    </div>
+    <div *ngSwitchCase="QuestionType.Date">date
+        <mat-form-field>
+            <input matInput [matDatepicker]="picker">
+            <mat-hint>MM/DD/YYYY</mat-hint>
+            <mat-datepicker-toggle matIconSuffix [for]="picker"></mat-datepicker-toggle>
+            <mat-datepicker #picker></mat-datepicker>
+        </mat-form-field>
+    </div>
+    <div *ngSwitchCase="QuestionType.Email">
+        
+        <form>
+            <div>
+                <input
+                        type="email"
+                        id="email"
+                        name="email"
+                        ngModel
+                        (input)="onInputChange(email.value)"
+                        email
+                        #email="ngModel"
+                />
+                <div *ngIf="email.touched">
+                    <small style="color:red;" *ngIf="email.errors?.email">Please enter a valid email.</small>
+                </div>
+            </div>
+        </form>
+
+    </div>
+    <div *ngSwitchCase="QuestionType.Integer">integer</div>
+    <div *ngSwitchCase="QuestionType.Check">
+        <mat-checkbox *ngFor="let option of optionList?.optionValues" [value]="option.value">{{option.value}}</mat-checkbox>
+    </div>
+    <div *ngSwitchCase="QuestionType.Combo">
+        <select matNativeControl>
+            <option *ngFor="let option of optionList?.optionValues">{{option.value.toString()}}</option>
+        </select>
+    </div>
+    <div *ngSwitchCase="QuestionType.Radio">
+        <mat-radio-group>
+            <mat-radio-button *ngFor="let option of optionList?.optionValues" [value]="option.value">{{option.value}}</mat-radio-button>
+        </mat-radio-group>
+    </div>
+    <div *ngSwitchDefault>Unknown QuestionType</div>
+</div>

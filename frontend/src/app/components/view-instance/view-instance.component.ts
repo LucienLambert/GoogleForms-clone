@@ -10,6 +10,7 @@ import { Form } from '../../models/form';
 import { Question } from '../../models/question';
 import { Instance } from '../../models/instance';
 import {forEach} from "lodash-es";
+import {Answer} from "../../models/answer";
 @Component({
     selector: 'app-view-instance',
     templateUrl: './view-instance.component.html',
@@ -24,6 +25,8 @@ export class ViewInstanceComponent implements OnInit {
     currentQuestion?: Question;
     questionTracker: number = 1;
     isCompleted: boolean = false;
+    answers?: Answer[];
+    currentAnswers?: Answer[];
     
     
     //TODO:refactor
@@ -50,26 +53,27 @@ export class ViewInstanceComponent implements OnInit {
                 this.form=data;
                 this.questions=this.form.listQuestion;
                 this.currentQuestion=this.questions[0];
+                this.updateCurrentAnswers();
             },
             error: (err) => {
                 console.log(err);
-                // switch (err.status) {
-                //     case 404:
-                //         this.router.navigate(['/unknown']);
-                //         break;
-                //     case 401:
-                //         this.router.navigate(['/restricted']);
-                //         break;
-                //     default:
-                //         this.router.navigate(['/unknown']);
-                // }
+                switch (err.status) {
+                    case 404:
+                        this.router.navigate(['/unknown']);
+                        break;
+                    case 401:
+                        this.router.navigate(['/restricted']);
+                        break;
+                    default:
+                        this.router.navigate(['/unknown']);
+                }
             }
         });
         
         this.instanceService.getExistingOrFreshInstanceByFormId(formId).subscribe({
             next: (data) => {
                 this.instance=data;
-                // console.log("instance fetched:",this.instance);
+                this.answers=data.listAnswers;
             },
             error: (err) => {  
                 // ...
@@ -88,9 +92,26 @@ export class ViewInstanceComponent implements OnInit {
         if (nb > 0 && nb <= this.questions.length) {
             this.currentQuestion = this.questions[nb-1];
             this.questionTracker = nb;
+            this.updateCurrentAnswers();
         }
         
     }
+
+    updateCurrentAnswers(){
+        if (this.answers && this.answers.length > 0) {
+            var temp : Answer[] = [];
+            this.currentAnswers = [];
+            this.answers?.forEach( (answer) => {
+                if (this.currentQuestion != undefined && answer.questionId === this.currentQuestion.id) {
+                    temp.push(answer);
+                }
+            })
+            this.currentAnswers = temp;
+            this.answers = this.answers?.filter( (answer) => {answer.questionId !== this.currentQuestion?.id})
+        }
+    }
+    
+    
     isInProgress(): boolean {
         return !this.instance?.completed;
     }

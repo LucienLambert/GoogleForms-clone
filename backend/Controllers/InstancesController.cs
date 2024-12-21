@@ -12,17 +12,18 @@ namespace prid_2425_a01.Controllers;
 [Authorize]
 [Route("api/[controller]")]
 [ApiController]
-public class InstancesController : ControllerBase {
+public class InstancesController : ControllerBase
+{
 
     private readonly FormContext _context;
     private readonly IMapper _mapper;
-    
+
     public InstancesController(FormContext context, IMapper mapper) {
         _context = context;
         _mapper = mapper;
     }
-    
-    [HttpGet] 
+
+    [HttpGet]
     public async Task<ActionResult<IEnumerable<InstanceDTO>>> GetAll() {
         var instances = await _context.Instances.ToListAsync();
         var instanceDTOs = _mapper.Map<List<InstanceDTO>>(instances);
@@ -42,9 +43,9 @@ public class InstancesController : ControllerBase {
         // Returns an instance for the formid - logged user combinaison. /!\ If not found, returns a fresh instance
         var userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
         var user = await _context.Users.FirstOrDefaultAsync(u => u.Id == int.Parse(userId));
-        
+
         var form = await _context.Forms.FirstOrDefaultAsync(f => f.Id == id);
-        
+
         if (user == null) {
             return Unauthorized();
         }
@@ -52,30 +53,38 @@ public class InstancesController : ControllerBase {
         if (form == null) {
             return NotFound();
         }
-        
+
         Instance freshInstance = new() {
             FormId = id,
             UserId = user.Id,
-            Started = DateTime.Now, 
+            Started = DateTime.Now,
             Completed = null
         };
 
         if (user.IsInRole(Role.Guest)) {
             _context.Instances.Add(freshInstance);
             await _context.SaveChangesAsync();
-            return Ok(_mapper.Map<InstanceDTO>(freshInstance));
+            return Ok(_mapper.Map<Instance_With_AnswersDTO>(freshInstance));
         }
-        
+
         var instance = await _context.Instances.Where(i => i.FormId == id && i.UserId == user.Id)
-                .FirstOrDefaultAsync();
+            .Include(i=>i.ListAnswers)
+            .FirstOrDefaultAsync();
+
 
         if (instance == null) {
             _context.Instances.Add(freshInstance);
             await _context.SaveChangesAsync();
-            return Ok(_mapper.Map<InstanceDTO>(freshInstance));
+            return Ok(_mapper.Map<Instance_With_AnswersDTO>(freshInstance));
         }
-        
-        return Ok(_mapper.Map<InstanceDTO>(instance));
-}
-    
+
+        return Ok(_mapper.Map<Instance_With_AnswersDTO>(instance));
+    }
+
+    // [HttpGet("by_form_id/{id}/answers")]
+    // public async Task<ActionResult<IEnumerable<InstanceDTO>>> GetWithAnswersByFormId(int id) {
+    //     
+    //     
+    // }
+
 }

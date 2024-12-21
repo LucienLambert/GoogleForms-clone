@@ -5,60 +5,7 @@
         <span class="title">{{question.title}}</span><br>
         <span class="description">{{question.description}}</span>
 
-        <div [ngSwitch]="question.questionType">
-            <div *ngSwitchCase="QuestionType.Short">
-                <mat-form-field>
-                    <input matInput>
-                </mat-form-field>
-            </div>
-            <div *ngSwitchCase="QuestionType.Long">
-                <mat-form-field>
-                    <textarea matInput></textarea>
-                </mat-form-field>
-            </div>
-            <div *ngSwitchCase="QuestionType.Date">
-                <mat-form-field>
-                    <input matInput [matDatepicker]="picker">
-                    <mat-hint>MM/DD/YYYY</mat-hint>
-                    <mat-datepicker-toggle matIconSuffix [for]="picker"></mat-datepicker-toggle>
-                    <mat-datepicker #picker></mat-datepicker>
-                </mat-form-field>
-            </div>
-            <div *ngSwitchCase="QuestionType.Email">
-                <mat-form-field>
-                    <mat-label>Enter an email</mat-label>
-                    <input
-                            matInput
-                            placeholder="pat@example.com"
-                            [formControl]="email"
-                            (blur)="updateErrorMessage()"
-                            required
-                            />
-                            @if (email.invalid) {
-                    <mat-error>{{errorMessage()}}</mat-error>
-                    }
-                </mat-form-field>
-            </div>
-            <div *ngSwitchCase="QuestionType.Integer">integer</div>
-            <div *ngSwitchCase="QuestionType.Check">
-                <mat-checkbox *ngFor="let option of question.optionList?.optionValues" [value]="option.value">{{option.value}}</mat-checkbox>
-            </div>
-            <div *ngSwitchCase="QuestionType.Combo">
-                <select matNativeControl>
-                    <option *ngFor="let option of question.optionList?.optionValues">{{option.value.toString()}}</option>
-                </select>
-            </div>
-            <div *ngSwitchCase="QuestionType.Radio">
-                <mat-radio-group> 
-                    <mat-radio-button *ngFor="let option of question.optionList?.optionValues" [value]="option.value">{{option.value}}</mat-radio-button>
-                </mat-radio-group>
-            </div>
-            <div *ngSwitchDefault>Unknown QuestionType</div>
-        </div>
-
-
-
-
+    <app-option-viewer [optionList]="question.optionList" [questionType]="question.questionType" (updatedValuesEvent)="receiveValue($event)"></app-option-viewer>
 
 
 
