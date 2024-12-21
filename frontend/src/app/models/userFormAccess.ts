@@ -1,4 +1,4 @@
-export enum AccesType {
+export enum AccessType {
     User,
     Editor
 }
@@ -6,12 +6,12 @@ export enum AccesType {
 export class UserFormAccess {
     userId: number;
     formId: number;
-    accesType: AccesType;
+    accessType: AccessType;
 
 
     constructor(data: any) {
         this.userId = data.userId;
         this.formId = data.formId;
-        this.accesType = data.accesType;
+        this.accessType = data.accessType;
     }
 }

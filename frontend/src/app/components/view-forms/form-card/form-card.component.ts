@@ -1,7 +1,8 @@
 import { Component, Input, Output, EventEmitter } from '@angular/core';
 import { Form } from '../../../models/form';
-import { User } from '../../../models/user';
+import { Role, User } from '../../../models/user';
 import { AuthenticationService } from '../../../services/authentication.service';
+import { AccessType } from 'src/app/models/userFormAccess';
 
 
 @Component({
@@ -12,6 +13,7 @@ import { AuthenticationService } from '../../../services/authentication.service'
 export class FormCardComponent {
     //objet form récupérer grâce à la vue view-form (parent)
     @Input() form!: Form;
+    @Input() isManageButtonVisible: boolean = false;
     user?: User;
 
     //renvoie le formulaire sur lequel on à clické grâce à la fonction openForm() ou manageForm()
@@ -24,7 +26,6 @@ export class FormCardComponent {
     
     ngOnInit(){
       this.user = this.authService.currentUser;
-      //console.log(this.form.listUserFormAccess);
     }
 
     //permet à la form-card (enfant) de récupérer le formulaire sur lequel on à clické

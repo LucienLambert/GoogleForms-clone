@@ -8,6 +8,7 @@
         <div *ngFor="let form of filteredForms">
         <app-form-card
           [form]="form"
+          [isManageButtonVisible]="isManageButtonVisible(form)"
           (openFormEvent)="openForm($event)"
           (manageFormEvent)="manageForm($event)">
         </app-form-card>

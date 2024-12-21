@@ -5,7 +5,7 @@ import { Form } from '../models/form';
 import { map } from 'rxjs/operators';
 import { Observable } from 'rxjs';
 import { QuestionType } from '../models/question';
-import { AccesType } from '../models/userFormAccess';
+import { AccessType } from '../models/userFormAccess';
 
 @Injectable({ providedIn: 'root' })
 export class FormService {
@@ -49,6 +49,7 @@ export class FormService {
     }
 
     // Méthode pour récupérer le form pour le form manager
+    //form + owner + listQuestion + optionList
     GetOneFormManager(id: number): Observable<Form> {
         return this.http.get<Form>(`${this.baseUrl}api/forms/${id}/manager`)
         .pipe(map((res: any) => {
@@ -70,8 +71,4 @@ export class FormService {
         return enumKey || 'Unknown';  // Si la valeur n'existe pas dans l'énum, retournez 'Unknown'
     }
 
-    // getOwnerPublicAccessForm() : Observable<Form[]> {
-    //     return this.http.get<Form[]>(`${this.baseUrl}api/forms/Owner_Public_Access/forms`)
-    //         .pipe(map(res => res.map(m => new Form(m))));
-    // }
 }

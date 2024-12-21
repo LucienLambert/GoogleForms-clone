@@ -7,11 +7,11 @@ public class UserFormAccessDTO {
     
     public User User{ get; set; } = null!;
     public Form Form{ get; set; } = null!;
-    public AccessType Enum { get; set; } 
+    public AccessType AccessType { get; set; } 
 }
 
 public class UserFormAccessDTO_Only_Id {
     public int UserId { get; set; }
     public int FormId { get; set; }
-    public AccessType Enum { get; set; } 
+    public AccessType AccessType { get; set; } 
 }
