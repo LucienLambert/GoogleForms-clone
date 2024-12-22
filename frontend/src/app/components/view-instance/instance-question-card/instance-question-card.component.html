@@ -5,7 +5,7 @@
         <span class="title">{{question.title}}</span><br>
         <span class="description">{{question.description}}</span>
 
-    <app-option-viewer [optionList]="question.optionList" [questionType]="question.questionType" (updatedValuesEvent)="receiveValue($event)"></app-option-viewer>
+    <app-option-viewer [optionList]="question.optionList" [isCompleted]="isCompleted"  [answers]="answers" [questionType]="question.questionType" (updatedValuesEvent)="receiveValue($event)"></app-option-viewer>
 
 
 

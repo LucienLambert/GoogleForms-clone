@@ -92,22 +92,26 @@ export class ViewInstanceComponent implements OnInit {
         if (nb > 0 && nb <= this.questions.length) {
             this.currentQuestion = this.questions[nb-1];
             this.questionTracker = nb;
+            this.updateAnswers();
             this.updateCurrentAnswers();
         }
         
     }
+    updateAnswers() {
+        this.currentAnswers?.forEach(answer=>this.answers?.push(answer));
+    }
 
     updateCurrentAnswers(){
+        this.currentAnswers = [];
         if (this.answers && this.answers.length > 0) {
             var temp : Answer[] = [];
-            this.currentAnswers = [];
             this.answers?.forEach( (answer) => {
                 if (this.currentQuestion != undefined && answer.questionId === this.currentQuestion.id) {
                     temp.push(answer);
                 }
             })
             this.currentAnswers = temp;
-            this.answers = this.answers?.filter( (answer) => {answer.questionId !== this.currentQuestion?.id})
+            this.answers = this.answers.filter((answer) => answer.questionId !== this.currentQuestion?.id);
         }
     }
     

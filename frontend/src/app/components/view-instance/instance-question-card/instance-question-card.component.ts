@@ -3,6 +3,7 @@ import {Question, QuestionType} from '../../../models/question';
 import {FormControl, Validators} from "@angular/forms";
 import {merge} from "rxjs";
 import {takeUntilDestroyed} from "@angular/core/rxjs-interop";
+import {Answer} from "../../../models/answer";
 
 @Component({
   selector: 'app-instance-question-card',
@@ -12,6 +13,8 @@ import {takeUntilDestroyed} from "@angular/core/rxjs-interop";
 export class InstanceQuestionCardComponent {
   
   @Input() question?: Question;
+  @Input() answers?: Answer[];
+  @Input() isCompleted: boolean=false;
 
 
   constructor() {
