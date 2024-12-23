@@ -11,6 +11,7 @@ import { Question } from '../../models/question';
 import { Instance } from '../../models/instance';
 import {forEach} from "lodash-es";
 import {Answer} from "../../models/answer";
+import {MatIconModule} from '@angular/material/icon';
 @Component({
     selector: 'app-view-instance',
     templateUrl: './view-instance.component.html',
@@ -120,7 +121,11 @@ export class ViewInstanceComponent implements OnInit {
         return !this.instance?.completed;
     }
 
-    onSave() {
+    deleteButtonAction(){
+        console.log("delete button pressed");
+    }
+
+    saveButtonAction() {
         console.log("saved button pressed");
     }
 }
