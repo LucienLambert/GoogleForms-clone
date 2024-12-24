@@ -33,4 +33,17 @@ export class Question {
         this.required = data.required;
         this.optionList = data.optionList ? new OptionList(data.optionList) : undefined;
     }
+
+    toString(): string {
+        return `Question {
+        id: ${this.id},
+        idx: ${this.idx},
+        form: ${this.form ? this.form.toString() : 'undefined'},
+        title: "${this.title}",
+        description: "${this.description || ''}",
+        questionType: ${QuestionType[this.questionType]},
+        required: ${this.required},
+        optionList: ${this.optionList ? this.optionList.toString() : 'undefined'}
+        }`;
+    }
 }

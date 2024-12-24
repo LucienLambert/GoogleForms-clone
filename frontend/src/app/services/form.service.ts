@@ -71,4 +71,7 @@ export class FormService {
         return enumKey || 'Unknown';  // Si la valeur n'existe pas dans l'énum, retournez 'Unknown'
     }
 
+    DelQuestionFormById(formId: number, questionId : number): Observable<boolean>{
+        return this.http.delete<boolean>(`${this.baseUrl}api/forms/${formId}/question/${questionId}`);
+    }
 }

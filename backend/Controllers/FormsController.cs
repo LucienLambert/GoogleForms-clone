@@ -219,4 +219,37 @@ public class FormsController : ControllerBase {
         
         return Ok(_mapper.Map<FormDTO_With_Form_QuestionsDTO>(form));
     }
+
+    [Authorize]
+    [HttpDelete("{formId:int}/question/{questionId:int}")]
+    public async Task<ActionResult<bool>> DelQuestionFormById(int formId, int questionId) {
+        //check si user est connecté
+        //check si form contient la question
+        var userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+
+        if (string.IsNullOrEmpty(userId) || !int.TryParse(userId, out int userIdInt)){
+            return Unauthorized("User Unfound");
+        }
+        var currentUser = await _context.Users.Where(u => u.Id == userIdInt).FirstOrDefaultAsync();
+
+        var form = await _context.Forms
+            .Where(f => _context.Questions.Any(q => q.Id == questionId && q.FormId == formId) && 
+                    (f.Owner.Id == currentUser!.Id ||
+                    currentUser.Role == Role.Admin ||
+                    _context.UserFormAccesses.Any(ufa => ufa.UserId == userIdInt && 
+                        ufa.FormId == f.Id &&
+                        ufa.AccessType == AccessType.Editor)))
+            .FirstOrDefaultAsync();
+        
+        if(form == null){
+            return NotFound(false);
+        }
+
+        var question = await _context.Questions.Where(q => q.Id == questionId).FirstOrDefaultAsync();
+
+        _context.Questions.Remove(question);
+        await _context.SaveChangesAsync();
+
+        return Ok(true);
+    }
 }

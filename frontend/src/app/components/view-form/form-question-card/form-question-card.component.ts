@@ -23,13 +23,10 @@ export class FormQuestionCardComponent {
     }
 
     ngOnInit(){
-        console.log(this.totalQuestion);
+        console.log("total Question = " + this.totalQuestion);
     }
 
     moveDown(question: Question) {
-        if(question.idx == this.totalQuestion){
-            console.log("last Question: invalid action");
-        }
         this.moveDownEvent.emit(question);
     }
 
