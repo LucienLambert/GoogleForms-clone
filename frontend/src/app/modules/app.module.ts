@@ -25,6 +25,7 @@ import {InstanceQuestionCardComponent} from "../components/view-instance/instanc
 import {MatRadioButton, MatRadioGroup} from "@angular/material/radio";
 import {ViewFormComponent} from "../components/view-form/view-form.component";
 import { FormQuestionCardComponent } from '../components/view-form/form-question-card/form-question-card.component';
+import { ModalDialogComponent } from '../components/modal-dialog/modal-dialog.component';
 
 @NgModule({
     declarations: [
@@ -41,7 +42,8 @@ import { FormQuestionCardComponent } from '../components/view-form/form-question
         CreateEditFormComponent,
         InstanceQuestionCardComponent,
         ViewFormComponent,
-        FormQuestionCardComponent
+        FormQuestionCardComponent,
+        ModalDialogComponent
     ],
     imports: [
         BrowserModule.withServerTransition({appId: 'ng-cli-universal'}),

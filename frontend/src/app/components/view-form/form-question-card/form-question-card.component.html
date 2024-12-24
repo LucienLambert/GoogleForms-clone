@@ -4,14 +4,16 @@
       <mat-card-title>
         <strong>{{ question.title }}</strong>
       </mat-card-title>
-
-      <div class="button-header">
-        <button mat-icon-button (click)="moveDown(question)">
-          <img src="assets/icons/arrow-down.svg" />
-        </button>
-        <button mat-icon-button (click)="moveUp(question)">
-          <img src="assets/icons/arrow-up.svg" />
-        </button>
+      
+      <div *ngIf="!instanceInProgress">
+        <div class="button-header">
+          <button mat-icon-button (click)="moveDown(question)">
+            <img src="assets/icons/arrow-down.svg" />
+          </button>
+          <button mat-icon-button (click)="moveUp(question)">
+            <img src="assets/icons/arrow-up.svg" />
+          </button>
+        </div>
       </div>
 
     </mat-card-header>
@@ -23,7 +25,7 @@
 
       <p>Type: <strong>{{ question.questionType }}</strong></p>
       <p>Required: <strong>{{ question.required }}</strong></p>
-      <div class="button-content">
+      <div *ngIf="!instanceInProgress" class="button-content">
         <button mat-icon-button (click)="editQuestion(question)">
             <img src="assets/icons/pencil.svg" />
           </button>

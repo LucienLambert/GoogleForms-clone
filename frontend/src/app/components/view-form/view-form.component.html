@@ -19,7 +19,8 @@
         </div>
         <div class="form-item">
             <div class="form-label">Public :</div>
-            <mat-slide-toggle 
+            <mat-slide-toggle
+                [disabled]="instanceInProgress"
                 [checked]="form?.isPublic" 
                 (change)="toggleIsPublic()">
             </mat-slide-toggle>
@@ -33,7 +34,8 @@
                     (moveDownEvent)="moveDown($event)"
                     (moveUpEvent)="moveUp($event)"
                     (editQuestionEvent)="editQuestion($event)"
-                    (delQuestionEvent)="delQuestion($event)">
+                    (delQuestionEvent)="delQuestion($event)"
+                    [instanceInProgress]="instanceInProgress">
                 </app-form-question-card>
             </div>
         </div>

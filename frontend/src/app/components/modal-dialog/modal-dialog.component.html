@@ -1,0 +1,26 @@
+<div class="mat-dialog-container">
+  <h2 mat-dialog-title>{{ data.title }}</h2>
+  <mat-dialog-content>
+    <p>{{ data.message }}</p>
+  </mat-dialog-content>
+
+  <mat-dialog-actions>
+    <!-- action if DelQuestion or ModifIsPublic -->
+    <ng-container *ngIf="data.context === 'editForm'; else otherActions">
+      <button mat-button (click)="clickOnNo()">No</button>
+      <button mat-raised-button color="primary" (click)="clickOnYes()">Yes</button>
+    </ng-container>
+
+    <!-- action si y a au moins une instance -->
+    <ng-template #otherActions>
+      <ng-container *ngIf="data.context === 'instanceInProgress'; else defaultActions">
+        <button mat-button (click)="clickOnNo()">Ok</button>
+      </ng-container>
+      
+      <!-- Si besoin pour les modals de vos component -->
+      <ng-template #defaultActions>
+          
+      </ng-template>
+    </ng-template>
+  </mat-dialog-actions>
+</div>

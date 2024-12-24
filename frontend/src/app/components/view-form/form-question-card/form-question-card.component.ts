@@ -10,6 +10,7 @@ import { AuthenticationService } from "src/app/services/authentication.service";
 export class FormQuestionCardComponent {
     @Input() question!: Question;
     @Input() totalQuestion!: number;
+    @Input() instanceInProgress!: boolean;
     
 
     @Output() moveDownEvent = new EventEmitter<Question>();
@@ -23,7 +24,7 @@ export class FormQuestionCardComponent {
     }
 
     ngOnInit(){
-        console.log("total Question = " + this.totalQuestion);
+        console.log(this.instanceInProgress);
     }
 
     moveDown(question: Question) {

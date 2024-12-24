@@ -207,6 +207,7 @@ public class FormsController : ControllerBase {
         var form = await _context.Forms
         .Where(f => f.Id == id)
         .Include(f => f.Owner)
+        .Include(f => f.ListInstances)
         .Include(f => f.ListQuestions.OrderBy(lq => lq.Idx))
         .ThenInclude(lq => lq.OptionList)
         .FirstOrDefaultAsync();
