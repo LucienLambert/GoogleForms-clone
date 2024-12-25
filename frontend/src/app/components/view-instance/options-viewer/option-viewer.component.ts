@@ -20,13 +20,13 @@ export class OptionViewerComponent implements OnInit {
 
     private _answers?: Answer[]; 
     @Input() 
-    set answers(value: Answer[] | undefined) { 
-        this._answers = value; 
-        this.onAnswersChange(value); 
-    } 
-    get answers(): Answer[] | undefined { 
-        return this._answers; 
-    }
+        set answers(value: Answer[] | undefined) { 
+            this._answers = value; 
+            this.onAnswersChange(value);
+        } 
+        get answers(): Answer[] | undefined { 
+            return this._answers; 
+        }
     
     @Input() questionType?: QuestionType;
     //TODO
@@ -39,8 +39,15 @@ export class OptionViewerComponent implements OnInit {
 
 
     protected readonly QuestionType = QuestionType;
-    protected currentValue: any;
-    protected currentAnswer?: any;
+    protected currentAnswer?: Answer;
+    protected _currentValue?: any = "";
+        set currentValue(value: any) {
+            this._currentValue = value;
+            // this.onCurrentValueChange(value);
+        }
+        get currentValue(): any {
+            return this._currentValue;
+        }
     constructor() {
 
     }
@@ -48,27 +55,40 @@ export class OptionViewerComponent implements OnInit {
 
     ngOnInit() {
     }
-    onInputChange(value: any) {
-        if (this.email.valid)
-            console.log("valid : "+ this.email.value);
-        this.currentValue = value;
-        this.updateValues()
-    }
     
     updateValues() {
-        this.updatedValuesEvent.emit(this.currentValue);
+            this.updatedValuesEvent.emit(this.currentValue);
     }
 
     private onAnswersChange(value: Answer[] | undefined) {
         this.currentAnswer = undefined;
+        this.currentValue = "";
         if (this.answers && this.answers.length == 1) {
-            this.currentAnswer=this.answers[0].value;
+            this.currentValue=this.answers[0].value;
+        } else if (this.answers && this.answers.length > 1) {
+            //TODO
         }
     }
+    
+    onFieldInput() {
+            console.log("onFieldInput()", this.currentValue);
+        switch (this.questionType) {
+            case QuestionType.Short:
+            case QuestionType.Long:
+            case QuestionType.Email:
+            case QuestionType.Date:
+                this.updateValues();
+                break;
+            default:
+            
+        }
+    }
+    
+    
 
     // RADIO
     preselectRadioButton(option: OptionValue, i: number) {
-        return Number.parseInt(this.currentAnswer) === i;
+        return Number.parseInt(this.currentValue) === i;
     }
 
     //CHECK
@@ -81,6 +101,7 @@ export class OptionViewerComponent implements OnInit {
     
     //COMBO
     preselectCombo(option: OptionValue, i: number) {
-        return Number.parseInt(this.currentAnswer) === i+1;
+        return Number.parseInt(this.currentValue) === i+1;
     }
+    
 }

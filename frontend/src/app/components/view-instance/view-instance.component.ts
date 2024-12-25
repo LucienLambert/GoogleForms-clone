@@ -25,9 +25,19 @@ export class ViewInstanceComponent implements OnInit {
     questions: Question[] = new Array<Question>();
     currentQuestion?: Question;
     questionTracker: number = 1;
-    isCompleted: boolean = false;
-    answers?: Answer[];
+    
+    private _answers: Answer[] | undefined;
+    public get answers(): Answer[] | undefined {
+        return this._answers;
+    }
+    public set answers(value: Answer[] | undefined) {
+        if (value !== this._answers) {
+            this._answers = value;
+            this.checkForRequiredQuestions()
+        }
+    }
     currentAnswers?: Answer[];
+    isSaveable: boolean = false;
     
     
     //TODO:refactor
@@ -45,48 +55,10 @@ export class ViewInstanceComponent implements OnInit {
     
     ngOnInit() {
         
-        //TODO: security
-        
         const formId = Number(this.route.snapshot.paramMap.get('id'));
         
-        this.formService.getFormWithQuestions(formId).subscribe({
-            next: (data) => {
-                this.form=data;
-                this.questions=this.form.listQuestion;
-                this.currentQuestion=this.questions[0];
-                this.updateCurrentAnswers();
-            },
-            error: (err) => {
-                console.log(err);
-                switch (err.status) {
-                    case 404:
-                        this.router.navigate(['/unknown']);
-                        break;
-                    case 401:
-                        this.router.navigate(['/restricted']);
-                        break;
-                    default:
-                        this.router.navigate(['/unknown']);
-                }
-            }
-        });
-        
-        this.instanceService.getExistingOrFreshInstanceByFormId(formId).subscribe({
-            next: (data) => {
-                this.instance=data;
-                this.answers=data.listAnswers;
-            },
-            error: (err) => {  
-                // ...
-                switch (err.status) {
-                    case 404:
-                        
-                }
-            }
-            
-        });
-        
-        
+        this.fetchFormWithQuestions(formId);
+        this.fetchInstance(formId);
     }
     
     switchQuestion(nb: number) {
@@ -127,5 +99,90 @@ export class ViewInstanceComponent implements OnInit {
 
     saveButtonAction() {
         console.log("saved button pressed");
+    }
+
+    // received value after answering the question
+    public receiveValue($event : any){
+
+        if ($event || $event == ""){
+
+            const answerData = {
+                instanceId: this.instance?.id,
+                questionId: this.currentQuestion?.id,
+                idx: 0,
+                value: $event,
+            }
+            const answer = new Answer(answerData);
+
+            this.answers?.push(answer);
+            
+            this.updateCurrentAnswers();
+            
+        } 
+        
+    }
+
+    private fetchFormWithQuestions(formId : number) {
+        this.formService.getFormWithQuestions(formId).subscribe({
+            next: (data) => {
+                this.form=data;
+                this.questions=this.form.listQuestion;
+                this.currentQuestion=this.questions[0];
+                this.updateCurrentAnswers();
+            },
+            error: (err) => {
+                console.log(err);
+                switch (err.status) {
+                    case 404:
+                        this.router.navigate(['/unknown']);
+                        break;
+                    case 401:
+                        this.router.navigate(['/restricted']);
+                        break;
+                    default:
+                        this.router.navigate(['/unknown']);
+                }
+            }
+        });
+    }
+
+
+    private fetchInstance(formId: number) {
+
+
+        this.instanceService.getExistingOrFreshInstanceByFormId(formId).subscribe({
+            next: (data) => {
+                this.instance=data;
+                this.answers=data.listAnswers;
+            },
+            error: (err) => {
+                // ...
+                switch (err.status) {
+                    case 404:
+
+                }
+            }
+
+        });
+        
+    }
+
+    private checkForRequiredQuestions() {
+        let saveable = true;
+
+        for (const question of this.questions) {
+            if (question.required) {
+                
+                const hasAnswer = this.answers?.some(answer => answer.questionId === question.id);
+                const hascurrentAnswer = this.currentAnswers?.some(answer => answer.questionId === question.id);
+                if (!hasAnswer || !hascurrentAnswer) {
+                    saveable = false;
+                }
+            }
+        }
+        if (!this.isInProgress()) {
+            saveable = false;
+        }        
+        this.isSaveable = saveable;
     }
 }

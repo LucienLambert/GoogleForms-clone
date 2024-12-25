@@ -39,13 +39,13 @@
                 <mat-icon>delete</mat-icon>
             </button>
 
-            <button mat-icon-button [disabled]="!isInProgress()" (click)="saveButtonAction()">
+            <button mat-icon-button [disabled]="!isSaveable" (click)="saveButtonAction()">
                 <mat-icon>save</mat-icon>
             </button>
             
             
             <p>Question {{questionTracker}}/{{questions.length}}</p>
-        <app-instance-question-card [question]="currentQuestion" [answers]="currentAnswers" [isCompleted]="!isInProgress()"></app-instance-question-card>
+        <app-instance-question-card [question]="currentQuestion" [answers]="currentAnswers" [isCompleted]="!isInProgress()" (updatedValuesEvent)="receiveValue($event)"></app-instance-question-card>
         </div>
         <ng-template #noQuestion>
             This form doesn't have any question!

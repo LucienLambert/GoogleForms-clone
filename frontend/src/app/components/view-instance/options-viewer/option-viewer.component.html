@@ -3,19 +3,19 @@
 <div [ngSwitch]="questionType?.valueOf()">
     <div *ngSwitchCase="QuestionType.Short">
         <mat-form-field>
-            <input matInput [(ngModel)]="currentAnswer" [disabled]="isCompleted">
+            <input matInput [(ngModel)]="currentValue" [disabled]="isCompleted" (input)="onFieldInput()">
         </mat-form-field>
     </div>
 
     <div *ngSwitchCase="QuestionType.Long">
         <mat-form-field>
-            <textarea matInput [(ngModel)]="currentAnswer" [disabled]="isCompleted"></textarea>
+            <textarea matInput [(ngModel)]="currentValue" [disabled]="isCompleted"></textarea>
         </mat-form-field>
     </div>
 
     <div *ngSwitchCase="QuestionType.Date">
         <mat-form-field>
-            <input matInput [matDatepicker]="picker" [(ngModel)]="currentAnswer" [disabled]="isCompleted">
+            <input matInput [matDatepicker]="picker" [(ngModel)]="currentValue" [disabled]="isCompleted">
             <mat-hint>MM/DD/YYYY</mat-hint>
             <mat-datepicker-toggle matIconSuffix [for]="picker" [disabled]="isCompleted"></mat-datepicker-toggle>
             <mat-datepicker #picker [disabled]="isCompleted"></mat-datepicker>
@@ -30,10 +30,10 @@
                         id="email"
                         name="email"
                         ngModel
-                        (input)="onInputChange(email.value)"
+                        (input)="onFieldInput()"
                         email
                         #email="ngModel"
-                        [(ngModel)]="currentAnswer"
+                        [(ngModel)]="currentValue"
                         [disabled]="isCompleted"
                 />
                 <div *ngIf="email.touched">
@@ -45,7 +45,7 @@
 
     <div *ngSwitchCase="QuestionType.Integer">
         <mat-form-field>
-            <input matInput type="number" [(ngModel)]="currentAnswer" [disabled]="isCompleted">
+            <input matInput type="number" [(ngModel)]="currentValue" [disabled]="isCompleted">
         </mat-form-field>
     </div>
 

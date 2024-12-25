@@ -1,6 +1,5 @@
 import {Component, EventEmitter, Input, Output, signal} from '@angular/core';
 import {Question, QuestionType} from '../../../models/question';
-import {FormControl, Validators} from "@angular/forms";
 import {merge} from "rxjs";
 import {takeUntilDestroyed} from "@angular/core/rxjs-interop";
 import {Answer} from "../../../models/answer";
@@ -17,15 +16,18 @@ export class InstanceQuestionCardComponent {
   @Input() isCompleted: boolean=false;
 
 
+  @Output() updatedValuesEvent = new EventEmitter<any>();
+
   constructor() {
 
   }
   
   // receive value from the child (options-viewer)
   public receiveValue($event : any){
-    console.log($event);    
+    this.updatedValuesEvent.emit($event);
   }
 
+  
 
   protected readonly QuestionType = QuestionType;
 }
