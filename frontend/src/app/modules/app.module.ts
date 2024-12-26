@@ -24,6 +24,7 @@ import {CreateEditFormComponent} from "../components/create-edit-form/create-edi
 import {InstanceQuestionCardComponent} from "../components/view-instance/instance-question-card/instance-question-card.component";
 import {MatRadioButton, MatRadioGroup} from "@angular/material/radio";
 import {OptionViewerComponent} from "../components/view-instance/options-viewer/option-viewer.component";
+import {AnalyseComponent} from "../components/analyse/analyse.component";
 
 @NgModule({
     declarations: [
@@ -39,6 +40,7 @@ import {OptionViewerComponent} from "../components/view-instance/options-viewer/
         ViewInstanceComponent,
         CreateEditFormComponent,
         InstanceQuestionCardComponent,
+        AnalyseComponent,
         OptionViewerComponent
     ],
     imports: [

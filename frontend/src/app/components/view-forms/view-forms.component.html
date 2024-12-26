@@ -6,7 +6,7 @@
     <h2 class="mb-4">Vos Formulaires</h2>
     <div class="row">
         <div *ngFor="let form of filteredForms">
-        <app-form-card [form]="form" (openFormEvent)="openForm($event)"></app-form-card>
+        <app-form-card [form]="form" (openFormEvent)="openForm($event)" (editFormEvent)="editForm($event)"></app-form-card>
       </div>
     </div>
   </div>

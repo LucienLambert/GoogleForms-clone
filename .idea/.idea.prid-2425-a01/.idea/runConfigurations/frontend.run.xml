@@ -2,7 +2,7 @@
   <configuration default="false" name="frontend" type="js.build_tools.npm">
     <package-json value="$PROJECT_DIR$/frontend/package.json" />
     <command value="start" />
-    <node-interpreter value="$APPLICATION_CONFIG_DIR$/node/versions/22.11.0/node" />
+    <node-interpreter value="$USER_HOME$/Downloads/PRID2425/tools/node/node" />
     <package-manager value="npm" />
     <envs />
     <EXTENSION ID="com.intellij.lang.javascript.buildTools.npm.rc.StartBrowserRunConfigurationExtension">

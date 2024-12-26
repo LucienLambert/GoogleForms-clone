@@ -92,6 +92,15 @@ export class ViewFormsComponent implements OnInit {
         }
     }
 
+    editForm(form: Form){
+        if(form != null && (form.owner.id == this.user?.id || this.user?.role == 2)){
+            console.log('Formulaire sélectionné:', form);
+            this.router.navigate(['create-edit-form', form.id]);
+        } else {
+            console.log("Vous n'avez pas les droits pour ouvrir ce formulaire");
+        }
+    }
+
     /*Le bouton "Manage" permet d'ouvrir le formulaire en tant qu'éditeur,
     en vue d'en modifier la définition et les questions. Ce bouton n'est 
     visible que si l'utilisateur a accès au formulaire en mode d'édition */

@@ -1,4 +1,5 @@
 using AutoMapper;
+using prid_2425_a01.Models.form;
 
 namespace prid_2425_a01.Models;
 
@@ -21,8 +22,8 @@ public class MappingProfile : Profile
         CreateMap<Form, FormDTO>();
         CreateMap<FormDTO, Form>();
 
-        CreateMap<Form, Form_With_QuestionsDTO>();
-        CreateMap<Form_With_QuestionsDTO, Form>();
+        CreateMap<Form, FormWithQuestionsDTO>();
+        CreateMap<FormWithQuestionsDTO, Form>();
         
         CreateMap<Instance, InstanceDTO>();
         CreateMap<InstanceDTO, Instance>();
@@ -47,7 +48,10 @@ public class MappingProfile : Profile
         
         CreateMap<OptionValue, OptionValueDTO>();
         CreateMap<OptionValueDTO, OptionValue>();
-        
+
+        CreateMap<Form, FormDetailsDTO>()
+            .IncludeBase<Form, FormDTO>()
+            .ForMember(dest => dest.Owner, opt => opt.MapFrom(src => src.Owner))
+            .ForMember(dest => dest.LastInstance, opt => opt.Ignore());
     }
-    
 }

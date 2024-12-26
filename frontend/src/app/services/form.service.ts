@@ -45,4 +45,28 @@ export class FormService {
         return this.http.get<Form[]>(`${this.baseUrl}api/forms`)
             .pipe(map(res => res.map(m => new Form(m))));
     }
+    
+    createForm(form: Form): Observable<Form> {
+        return this.http.post<Form>(`${this.baseUrl}api/forms/createForm`, form)
+            .pipe(map(res => new Form(res)));
+    }
+
+    updateForm(form: Form): Observable<Form> {
+        return this.http.post<Form>(`${this.baseUrl}api/forms/updateForm`, form)
+            .pipe(map(res => new Form(res)));
+    }
+
+    saveForm(form: Form): Observable<Form> {
+        if (form.id) {
+            return this.updateForm(form);
+        } else {
+            return this.createForm(form);
+        }
+    }
+
+    isTitleUnique(title: string, ownerId: number, formId: number): Observable<boolean> {
+        return this.http.get<boolean>(`${this.baseUrl}api/forms/isTitleUnique`, {
+            params: { title, ownerId, formId }
+        });
+    }
 }

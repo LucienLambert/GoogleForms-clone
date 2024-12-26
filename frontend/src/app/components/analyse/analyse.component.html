@@ -1,0 +1,33 @@
+<app-nav-bar [title]="'Statistics'" [isSaveVisible]="false" [isSearchVisible]="false"
+             [isAddVisible]="false" [backButtonVisible]="true" class="toolbar-actions">
+</app-nav-bar>
+
+<div class="statistics-container">
+    <h1>Statistics</h1>
+
+    <!-- Combobox to Select a Question -->
+    <div class="form-group">
+        <label for="questionSelect">Select Question:</label>
+        <select id="questionSelect" class="form-control" [(ngModel)]="selectedQuestion" (change)="onQuestionChange()">
+            <option *ngFor="let question of questions" [value]="question.id">{{ question.text }}</option>
+        </select>
+    </div>
+
+    <!-- Statistics Table -->
+    <table class="table table-bordered">
+        <thead>
+        <tr>
+            <th>Answer</th>
+            <th>Count</th>
+            <th>Ratio</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr *ngFor="let stat of statistics">
+            <td>{{ stat.answer }}</td>
+            <td>{{ stat.count }}</td>
+            <td>{{ stat.ratio | percent:'1.1-1' }}</td> <!-- Display ratio as percentage -->
+        </tr>
+        </tbody>
+    </table>
+</div>
