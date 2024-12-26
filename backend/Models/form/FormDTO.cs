@@ -22,20 +22,22 @@ public class Form_with_LastInstanceDTO : FormDTO {
 }
 
 //DTO avec l'attribut form, owner, listQuestion
-public class FormDTO_With_Form_QuestionsDTO : FormDTO {
+public class FormDTO_With_Form_QuestionsDTO : Form_With_OwnerDTO {
     public ICollection<Question_CompleteDTO> ListQuestions { get; set; } = new List<Question_CompleteDTO>();
     public ICollection<Instance_only_DateDTO>? ListInstances { get; set; } = new List<Instance_only_DateDTO>();
 }
 
-public class FormDTO_With_All_ListDTO : FormDTO {
-    public UserDTO Owner { get; set; } = null!;
+public class FormDTO_With_All_ListDTO : Form_With_OwnerDTO {
     public ICollection<Question_CompleteDTO>? ListQuestions { get; set; } = new List<Question_CompleteDTO>();
     public ICollection<Instance_only_DateDTO>? ListInstances { get; set; } = new List<Instance_only_DateDTO>();
     public ICollection<UserFormAccessDTO_Only_Id>? ListUserFormAccesses { get; set; } = new List<UserFormAccessDTO_Only_Id>();
 }
 
-public class FormDetailsDTO : FormDTO {
-    public UserDTO Owner { get; set; } = null!;
+public class FormDetailsDTO : Form_With_OwnerDTO {
     public Instance_only_DateDTO? LastInstance { get; set; }
+}
+
+public class Form_With_OwnerDTO : FormDTO {
+    public UserDTO Owner { get; set; } = null!;
 }
 
