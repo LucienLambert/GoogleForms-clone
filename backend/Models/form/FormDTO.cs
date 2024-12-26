@@ -28,6 +28,7 @@ public class FormDTO_With_Form_QuestionsDTO : FormDTO {
 }
 
 public class FormDTO_With_All_ListDTO : FormDTO {
+    public UserDTO Owner { get; set; } = null!;
     public ICollection<Question_CompleteDTO>? ListQuestions { get; set; } = new List<Question_CompleteDTO>();
     public ICollection<Instance_only_DateDTO>? ListInstances { get; set; } = new List<Instance_only_DateDTO>();
     public ICollection<UserFormAccessDTO_Only_Id>? ListUserFormAccesses { get; set; } = new List<UserFormAccessDTO_Only_Id>();

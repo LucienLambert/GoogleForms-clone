@@ -52,15 +52,15 @@ export class NavBarComponent {
     backClicked() {
         this._location.back();
     }
-<<<<<<< HEAD
+
 
     logout(){
         this.authService.logout();
         this.router.navigate(['/login']);
-=======
+    }
     
     analyse() {
         this.router.navigate(['analyse']);
->>>>>>> f1f53c428f8b92fc532820f7b532ade0e9a01d4b
+
     }
 }
