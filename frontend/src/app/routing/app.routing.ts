@@ -25,7 +25,6 @@ const appRoutes: Routes = [
         data: { roles: [Role.Admin] }
     },*/
     { path: '', component: LoginComponent, pathMatch: 'full' },
-    { path: 'login', component: LoginComponent },
     { path: 'restricted', component: RestrictedComponent },
     { path: 'home', component: ViewFormsComponent, canActivate: [AuthGuard] },
     { path: 'view-instance/:id', component: ViewInstanceComponent, canActivate: [AuthGuard] },
