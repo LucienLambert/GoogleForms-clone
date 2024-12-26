@@ -32,13 +32,12 @@ public class FormContext : DbContext
                 .OnDelete(DeleteBehavior.Cascade);
         });
 
-        //liaison entre Form et User.
+        //liaison entre Form.
         modelBuilder.Entity<Form>()
             .HasOne(f => f.Owner)               //Un form possède un User
             .WithMany(u => u.ListForms)         //Un user possède plusieur Form
             .HasForeignKey(f => f.OwnerId)      //indique que la clé étrangère est représenté par Owner dans Form
-            .OnDelete(DeleteBehavior.Cascade);  //si le user est Del on supprime tous les formulaires lié. 
-            
+            .OnDelete(DeleteBehavior.Cascade);  //si le user est Del on supprime tous les formulaires lié.         
 
         //liaisons Instance
         modelBuilder.Entity<Instance>(i => {
@@ -66,7 +65,11 @@ public class FormContext : DbContext
                 .OnDelete(DeleteBehavior.Cascade);
         });
         
-
+        modelBuilder.Entity<Question>()
+            .HasOne(q => q.Form)
+            .WithMany(f => f.ListQuestions)
+            .HasForeignKey(q => q.FormId)
+            .OnDelete(DeleteBehavior.NoAction);
 
         //TODO ADD LIAISON ENTRE
         //ANSWER -> QUESTION

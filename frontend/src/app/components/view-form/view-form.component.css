@@ -1,0 +1,29 @@
+.manage-container {
+    margin: 0 auto;
+    padding: 20px;
+    width: 90%;
+}
+
+.form-item {
+    display: flex;
+    justify-content: flex-start;
+    align-items: flex-start;
+}
+
+.form-label {
+    font-weight: lighter;
+    min-width: 100px;
+    width: 100px;
+}
+
+.form-value {
+    font-weight: bold;
+    word-break: break-word;
+}
+
+mat-card-actions {
+    display: flex;
+    justify-content: center;  /* Centrage horizontal */
+    align-items: center;      /* Centrage vertical si nécessaire */
+    padding: 16px;            /* Ajouter de l'espace autour si nécessaire */
+}

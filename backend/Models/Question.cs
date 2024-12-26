@@ -48,4 +48,17 @@ public class Question {
 
 
     public ICollection<Answer> ListAnswers { get; set; } = new HashSet<Answer>();
+
+    public override string ToString() {
+        return $"Question {{ " +
+            $"Id = {Id}, " +
+            $"FormId = {FormId}, " +
+            $"Idx = {Idx}, " +
+            $"Title = \"{Title}\", " +
+            $"Description = \"{Description}\", " +
+            $"QuestionType = {QuestionType}, " +
+            $"Required = {Required}, " +
+            $"OptionListId = {OptionListId}" +
+            $" }}";
+    }
 }

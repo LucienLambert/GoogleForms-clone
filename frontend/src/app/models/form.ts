@@ -1,7 +1,7 @@
-
 import { Instance } from "./instance";
 import { User } from "./user";
 import { Question } from "./question";
+import { UserFormAccess } from "./userFormAccess";
 
 
 export class Form {
@@ -11,9 +11,9 @@ export class Form {
     isPublic: boolean;
     ownerId: number;
     owner: User;
-    lastInstance: Instance;
+    listInstance: Instance [];
     listQuestion: Question [];
-
+    listUserFormAccess: UserFormAccess [];
 
 
     constructor(data: any) {
@@ -23,7 +23,9 @@ export class Form {
         this.owner = data.owner;
         this.ownerId = data.ownerId;
         this.isPublic = data.isPublic;
-        this.lastInstance = data.lastInstance;
+        this.listInstance = data.listInstances ? data.listInstances.map( (i: Instance) => new Instance(i)) : [];
         this.listQuestion = data.listQuestions ? data.listQuestions.map( (q: Question) => new Question(q)) : [];
+        this.listUserFormAccess = data.listUserFormAccesses ? data.listUserFormAccesses.map( (ufa: UserFormAccess) => new UserFormAccess(ufa)) : [];
+    
     }
 }

@@ -18,13 +18,17 @@ import {TemplateComponent} from "../components/template/template.component";
 import {LoginComponent} from "../components/login/login.component";
 import {RestrictedComponent} from "../components/restricted/restricted.component";
 import {ViewFormsComponent} from '../components/view-forms/view-forms.component';
-import { FormCardComponent } from '../components/view-forms/form-card/form-card.component';
+import {FormCardComponent} from '../components/view-forms/form-card/form-card.component';
 import {ViewInstanceComponent} from "../components/view-instance/view-instance.component";
 import {CreateEditFormComponent} from "../components/create-edit-form/create-edit-form.component";
 import {InstanceQuestionCardComponent} from "../components/view-instance/instance-question-card/instance-question-card.component";
 import {MatRadioButton, MatRadioGroup} from "@angular/material/radio";
+import {ViewFormComponent} from "../components/view-form/view-form.component";
+import { FormQuestionCardComponent } from '../components/view-form/form-question-card/form-question-card.component';
+import { ModalDialogComponent } from '../components/modal-dialog/modal-dialog.component';
 import {OptionViewerComponent} from "../components/view-instance/options-viewer/option-viewer.component";
 import {AnalyseComponent} from "../components/analyse/analyse.component";
+
 
 @NgModule({
     declarations: [
@@ -40,8 +44,12 @@ import {AnalyseComponent} from "../components/analyse/analyse.component";
         ViewInstanceComponent,
         CreateEditFormComponent,
         InstanceQuestionCardComponent,
+        ViewFormComponent,
+        FormQuestionCardComponent,
+        ModalDialogComponent,
         AnalyseComponent,
         OptionViewerComponent
+
     ],
     imports: [
         BrowserModule.withServerTransition({appId: 'ng-cli-universal'}),

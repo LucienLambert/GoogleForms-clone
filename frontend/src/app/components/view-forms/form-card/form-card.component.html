@@ -19,23 +19,23 @@
     <mat-card-content>
       <mat-card-subtitle>{{ form.description || 'No description' }}</mat-card-subtitle>
       <p>by <strong>{{ form.owner.firstName }} {{ form.owner.lastName }}</strong></p>
-      <ng-container *ngIf="form.lastInstance?.started && user?.role !== 0">
-        <p>Started: <strong>{{ form.lastInstance.started | date:'dd/MM/yyyy HH:mm:ss' }}</strong></p>
-        <p> {{ user }}</p>
-        <!-- Si completed == null-->
-        <p *ngIf="!form.lastInstance?.completed">
-          Completed: <strong>In Progress</strong>
-        </p>
-        
-        <!-- Si completed != null -->
-        <p *ngIf="form.lastInstance?.completed">
-          Completed: <strong>{{ form.lastInstance.completed | date:'dd/MM/yyyy HH:mm:ss' }}</strong>
-        </p>
-      </ng-container>
+
+      <div *ngIf="form.listInstance.length > 0">
+        <div>
+          <p>Started: <strong>{{ form.listInstance[0].started | date:'dd/MM/yyyy HH:mm:ss' }}</strong></p>
+          <p *ngIf="!form.listInstance[0].completed; else completedContent">
+            Completed: <strong>In Progress</strong>
+          </p>
+          <ng-template #completedContent>
+            <p>Completed: <strong>{{ form.listInstance[0].completed | date:'dd/MM/yyyy HH:mm:ss' }}</strong></p>
+          </ng-template>
+        </div>
+      </div>
+      
     </mat-card-content>
     <mat-card-actions>
       <button mat-raised-button color="primary" (click)="openForm()">Open</button>
-      <button mat-raised-button color="primary" (click)="editForm()">Manage</button>
+      <button *ngIf="isManageButtonVisible" mat-raised-button color="primary" (click)="manageForm()">Manage</button>
     </mat-card-actions>
     <mat-card-footer>
     </mat-card-footer>

@@ -15,6 +15,7 @@ export enum QuestionType {
 export class Question {
     
     id: number;
+    idx: number;
     form: Form; 
     title: string;
     description?: string;
@@ -24,11 +25,25 @@ export class Question {
 
     constructor(data: any) {
         this.id = data.id;
+        this.idx = data.idx;
         this.form = data.form;
         this.title = data.title;
         this.description = data.description;
         this.questionType = data.questionType;
         this.required = data.required;
         this.optionList = data.optionList ? new OptionList(data.optionList) : undefined;
+    }
+
+    toString(): string {
+        return `Question {
+        id: ${this.id},
+        idx: ${this.idx},
+        form: ${this.form ? this.form.toString() : 'undefined'},
+        title: "${this.title}",
+        description: "${this.description || ''}",
+        questionType: ${QuestionType[this.questionType]},
+        required: ${this.required},
+        optionList: ${this.optionList ? this.optionList.toString() : 'undefined'}
+        }`;
     }
 }
