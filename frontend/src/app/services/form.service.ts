@@ -64,9 +64,9 @@ export class FormService {
         }
     }
 
-    isTitleUnique(title: string, ownerId: number): Observable<boolean> {
+    isTitleUnique(title: string, ownerId: number, formId: number): Observable<boolean> {
         return this.http.get<boolean>(`${this.baseUrl}api/forms/isTitleUnique`, {
-            params: { title, ownerId }
+            params: { title, ownerId, formId }
         });
     }
 }

@@ -20,6 +20,7 @@ export class NavBarComponent {
     @Input() isAddVisible: boolean = false;
     @Input() backButtonVisible: boolean = false;
     @Input() saveDisabled: boolean = true;
+    @Input() analyseVisible: boolean = false;
 
     constructor(private router: Router, private _location: Location) {
     }
@@ -49,5 +50,9 @@ export class NavBarComponent {
     
     backClicked() {
         this._location.back();
+    }
+    
+    analyse() {
+        this.router.navigate(['analyse']);
     }
 }

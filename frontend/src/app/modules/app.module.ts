@@ -23,6 +23,7 @@ import {ViewInstanceComponent} from "../components/view-instance/view-instance.c
 import {CreateEditFormComponent} from "../components/create-edit-form/create-edit-form.component";
 import {InstanceQuestionCardComponent} from "../components/view-instance/instance-question-card/instance-question-card.component";
 import {MatRadioButton, MatRadioGroup} from "@angular/material/radio";
+import {AnalyseComponent} from "../components/analyse/analyse.component";
 
 @NgModule({
     declarations: [
@@ -37,7 +38,8 @@ import {MatRadioButton, MatRadioGroup} from "@angular/material/radio";
         FormCardComponent,
         ViewInstanceComponent,
         CreateEditFormComponent,
-        InstanceQuestionCardComponent
+        InstanceQuestionCardComponent,
+        AnalyseComponent
     ],
     imports: [
         BrowserModule.withServerTransition({appId: 'ng-cli-universal'}),

@@ -231,13 +231,17 @@ public class FormsController : ControllerBase {
         _context.Forms.Update(existingForm);
         await _context.SaveChangesAsync();
 
-        return NoContent(); // Return 204 for successful updates
+        return NoContent();
     }
     
     [Authorized(Role.Admin, Role.User)]
     [HttpGet("isTitleUnique")]
-    public async Task<ActionResult<bool>> IsTitleUnique(string title, int ownerId) {
-        var exists = await _context.Forms.AnyAsync(f => f.Title == title && f.OwnerId == ownerId);
+    public async Task<ActionResult<bool>> IsTitleUnique(string title, int ownerId, int? formId) {
+        var exists = await _context.Forms.AnyAsync(f => 
+                f.Title == title && 
+                f.OwnerId == ownerId &&
+                (formId == null || f.Id != formId)
+        );
         return Ok(!exists);
     }
 }
