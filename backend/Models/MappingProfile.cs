@@ -1,4 +1,5 @@
 using AutoMapper;
+using prid_2425_a01.Models.form;
 
 namespace prid_2425_a01.Models;
 
@@ -28,6 +29,7 @@ public class MappingProfile : Profile
 
         CreateMap<Form, Form_With_QuestionsDTO>();
         CreateMap<Form_With_QuestionsDTO, Form>();
+
         
         CreateMap<Form, FormDTO_With_Form_QuestionsDTO>();
         CreateMap<FormDTO_With_Form_QuestionsDTO, Form>();
@@ -70,6 +72,11 @@ public class MappingProfile : Profile
         CreateMap<UserFormAccess, UserFormAccessDTO_Only_Id>();
         CreateMap<UserFormAccessDTO_Only_Id, UserFormAccess>();
         
+
+        CreateMap<Form, FormDetailsDTO>()
+            .IncludeBase<Form, FormDTO>()
+            .ForMember(dest => dest.Owner, opt => opt.MapFrom(src => src.Owner))
+            .ForMember(dest => dest.LastInstance, opt => opt.Ignore());
+
     }
-    
 }

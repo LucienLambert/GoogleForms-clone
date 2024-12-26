@@ -15,5 +15,8 @@ export class UserService {
             map(res => plainToInstance(User, res))
         );
     }
-    
+
+    getUserById(userId: number): Observable<User> {
+        return this.http.get<User>(`${this.baseUrl}api/users/${userId}`);
+    }
 }

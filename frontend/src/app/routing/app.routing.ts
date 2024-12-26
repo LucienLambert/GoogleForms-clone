@@ -12,6 +12,7 @@ import { AuthGuard } from '../services/auth.guard';
 import { Role } from '../models/user';
 import { ViewInstanceComponent } from '../components/view-instance/view-instance.component';
 import {CreateEditFormComponent} from "../components/create-edit-form/create-edit-form.component";
+import {AnalyseComponent} from "../components/analyse/analyse.component";
 
 const appRoutes: Routes = [
     //{ path: '', component: HomeComponent, pathMatch: 'full' },
@@ -30,6 +31,8 @@ const appRoutes: Routes = [
     { path: 'view-instance/:id', component: ViewInstanceComponent, canActivate: [AuthGuard] },
     { path: 'create-edit-form', component: CreateEditFormComponent, canActivate: [AuthGuard] },
     { path: 'view-form/:id', component: ViewFormComponent, canActivate: [AuthGuard] },
+    { path: 'create-edit-form/:id', component: CreateEditFormComponent, canActivate: [AuthGuard] },
+    { path: 'analyse', component: AnalyseComponent, canActivate: [AuthGuard] },
     { path: '**', component: UnknownComponent }
 ];
 

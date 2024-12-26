@@ -27,3 +27,9 @@ button {
 button:hover {
     background-color: #45a049;
 }
+
+.error-message {
+    color: red; /* Makes text red */
+    font-size: 0.875rem; /* Adjust font size */
+    margin-top: 4px;
+}

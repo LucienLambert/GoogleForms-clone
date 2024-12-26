@@ -5,6 +5,7 @@ using Microsoft.AspNetCore.Authorization;
 using prid_2425_a01.Helpers;
 
 using prid_2425_a01.Models;
+using prid_2425_a01.Models.form;
 using System.Security.Claims;
 using System.Diagnostics.Eventing.Reader;
 namespace prid_2425_a01.Controllers;
@@ -163,6 +164,7 @@ public class FormsController : ControllerBase {
     [Authorize]
     [HttpGet("Owner_Public_Access/forms")]
     public async Task<ActionResult<IEnumerable<FormDTO_With_All_ListDTO>>> GetOwnerPublicAccessForm(){
+
         var userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
 
         if (string.IsNullOrEmpty(userId) || !int.TryParse(userId, out int userIdInt)){
@@ -189,7 +191,44 @@ public class FormsController : ControllerBase {
 
         var formsDTO = _mapper.Map<List<FormDTO_With_All_ListDTO>>(allForms);
 
+
         return Ok(formsDTO);
+    }
+    
+    [Authorized(Role.Admin, Role.User)]
+    [HttpPost("createForm")]
+    public async Task<ActionResult<FormDTO>> CreateForm(FormDTO formDto) {
+        var form = _mapper.Map<Form>(formDto);
+        var formValidationService = new FormValidation(_context);
+        var result = await formValidationService.ValidateOnCreate(form);
+        
+        if (!result.IsValid)
+            return BadRequest(result);
+        
+        _context.Forms.Add(form);
+        await _context.SaveChangesAsync();
+        return CreatedAtAction("GetOneById", new { id = form.Id }, _mapper.Map<FormDTO>(form));
+    }
+    
+    [Authorized(Role.Admin, Role.User)]
+    [HttpPut("updateForm")]
+    public async Task<IActionResult> UpdateForm(FormDTO formDto) {
+        var existingForm = await _context.Forms.FirstOrDefaultAsync(f => f.Id == formDto.Id);
+                if (existingForm == null)
+            return NotFound();
+        
+        _mapper.Map(formDto, existingForm);
+        
+        var formValidationService = new FormValidation(_context);
+        var result = await formValidationService.ValidateOnCreate(existingForm);
+
+        if (!result.IsValid)
+            return BadRequest(result);
+        
+        _context.Forms.Update(existingForm);
+        await _context.SaveChangesAsync();
+
+        return NoContent();
     }
 
     [Authorize]
@@ -252,5 +291,17 @@ public class FormsController : ControllerBase {
         await _context.SaveChangesAsync();
 
         return Ok(true);
+    }
+    
+    [Authorized(Role.Admin, Role.User)]
+    [HttpGet("isTitleUnique")]
+    public async Task<ActionResult<bool>> IsTitleUnique(string title, int ownerId, int? formId) {
+        var exists = await _context.Forms.AnyAsync(f => 
+                f.Title == title && 
+                f.OwnerId == ownerId &&
+                (formId == null || f.Id != formId)
+        );
+        return Ok(!exists);
+
     }
 }

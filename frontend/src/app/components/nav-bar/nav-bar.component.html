@@ -33,8 +33,13 @@
     </button>
 
     <!-- Save button -->
-    <button mat-icon-button *ngIf="isSaveVisible" (click)="onSave()">
+    <button mat-icon-button *ngIf="isSaveVisible" (click)="onSave()" [disabled]="saveDisabled">
         <mat-icon>save</mat-icon>
+    </button>
+
+    <!-- Analyse button -->
+    <button mat-icon-button *ngIf="analyseVisible" (click)="analyse()">
+        <mat-icon>insights</mat-icon>
     </button>
 </mat-toolbar>
 

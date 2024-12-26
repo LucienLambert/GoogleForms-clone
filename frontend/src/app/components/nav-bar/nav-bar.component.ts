@@ -20,6 +20,8 @@ export class NavBarComponent {
     @Input() isSearchVisible: boolean = false;
     @Input() isAddVisible: boolean = false;
     @Input() backButtonVisible: boolean = false;
+    @Input() saveDisabled: boolean = true;
+    @Input() analyseVisible: boolean = false;
 
     constructor(private router: Router, private _location: Location, private authService : AuthenticationService) {
     }
@@ -50,9 +52,15 @@ export class NavBarComponent {
     backClicked() {
         this._location.back();
     }
+<<<<<<< HEAD
 
     logout(){
         this.authService.logout();
         this.router.navigate(['/login']);
+=======
+    
+    analyse() {
+        this.router.navigate(['analyse']);
+>>>>>>> f1f53c428f8b92fc532820f7b532ade0e9a01d4b
     }
 }

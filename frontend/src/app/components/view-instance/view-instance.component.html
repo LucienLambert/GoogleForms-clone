@@ -1,6 +1,6 @@
 <app-nav-bar title="Answer Form" [isSaveVisible]="isSaveVisible" [isSearchVisible]="isSearchVisible"
              [isAddVisible]="isAddVisible" [backButtonVisible]="backButtonVisible" class="toolbar-actions"
-             (saveEvent)="onSave()"></app-nav-bar>
+             (saveEvent)="saveButtonAction()"></app-nav-bar>
 
 <div class="instance-container">
     <div class="form-container">
@@ -26,10 +26,26 @@
                 </ng-template>
         </div>
         <div *ngIf="questions.length > 0; else noQuestion">
-            <mat-icon (click)="switchQuestion(questionTracker-1)"><</mat-icon>
-            <mat-icon (click)="switchQuestion(questionTracker+1)">></mat-icon>
+
+            <button mat-icon-button (click)="switchQuestion(questionTracker - 1)" [disabled]="questionTracker == 1">
+                <span>&lt;</span>
+            </button>
+
+            <button mat-icon-button (click)="switchQuestion(questionTracker + 1)" [disabled]="questionTracker >= questions.length ">
+                <span>&gt;</span>
+            </button>
+
+            <button mat-icon-button [disabled]="!isInProgress()" (click)="deleteButtonAction()">
+                <mat-icon>delete</mat-icon>
+            </button>
+
+            <button mat-icon-button [disabled]="!isSaveable" (click)="saveButtonAction()">
+                <mat-icon>save</mat-icon>
+            </button>
+            
+            
             <p>Question {{questionTracker}}/{{questions.length}}</p>
-        <app-instance-question-card [question]="currentQuestion"></app-instance-question-card>
+        <app-instance-question-card [question]="currentQuestion" [answers]="currentAnswers" [isCompleted]="!isInProgress()" (updatedValuesEvent)="receiveValue($event)"></app-instance-question-card>
         </div>
         <ng-template #noQuestion>
             This form doesn't have any question!
