@@ -6,6 +6,7 @@ import { FormService } from 'src/app/services/form.service';
 import { Question } from 'src/app/models/question';
 import { MatDialog } from '@angular/material/dialog';
 import { ModalDialogComponent } from '../modal-dialog/modal-dialog.component';
+import { User } from 'src/app/models/user';
 
 @Component({
     selector: 'app-view-form',
@@ -15,12 +16,17 @@ import { ModalDialogComponent } from '../modal-dialog/modal-dialog.component';
 export class ViewFormComponent implements OnInit {
     form?: Form;
     listQuestion : Question [] = [];
+    user?: User;
     instanceInProgress : boolean = false;
     backButtonVisible: boolean = true;
+    delFormButton : boolean = true;
 
     constructor(private authService: AuthenticationService, private router: Router,
         private formService: FormService, private route: ActivatedRoute, private modalDialog : MatDialog) {
 
+        this.user = this.authService.currentUser;
+        console.log("role currentUser : "+ this.user?.role);
+        console.log(this.user?.role != 2 || this.form?.owner?.id != this.user?.id)
     }
     
     ngOnInit() {
@@ -139,5 +145,18 @@ export class ViewFormComponent implements OnInit {
                 resolve(result);
             });
         }); 
+    }
+
+    delForm() {
+        const idform = this.form!.id;
+        this.formService.delFormById(idform).subscribe({
+            next : (data) => {
+                console.log("del form : " +data);
+                this.router.navigate(['/home']);
+            },
+            error : (err) => {
+                console.log("Erreur lors de la suppression : " + err);
+            }
+        });
     }
 }

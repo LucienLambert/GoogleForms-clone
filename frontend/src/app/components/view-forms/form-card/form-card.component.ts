@@ -18,7 +18,6 @@ export class FormCardComponent {
 
     //renvoie le formulaire sur lequel on à clické grâce à la fonction openForm() ou manageForm()
     @Output() openFormEvent = new EventEmitter<Form>();
-
     @Output() manageFormEvent = new EventEmitter<Form>();
 
 
@@ -37,6 +36,5 @@ export class FormCardComponent {
 
     manageForm() {
       this.manageFormEvent.emit(this.form);
-
     }
 }

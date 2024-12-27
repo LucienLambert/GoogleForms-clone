@@ -11,6 +11,7 @@ import { AuthenticationService } from 'src/app/services/authentication.service';
 export class NavBarComponent {
     @Output() searchEvent = new EventEmitter<string>(); // Emits search input to parent
     @Output() saveEvent = new EventEmitter<void>();
+    @Output() delFormEvent = new EventEmitter<void>();
 
     @ViewChild('searchInput') searchInput!: ElementRef<HTMLInputElement>;
 
@@ -22,6 +23,7 @@ export class NavBarComponent {
     @Input() backButtonVisible: boolean = false;
     @Input() saveDisabled: boolean = true;
     @Input() analyseVisible: boolean = false;
+    @Input() delFormVisible: boolean = false;
 
     constructor(private router: Router, private _location: Location, private authService : AuthenticationService) {
     }
@@ -61,6 +63,9 @@ export class NavBarComponent {
     
     analyse() {
         this.router.navigate(['analyse']);
+    }
 
+    delForm(){
+        this.delFormEvent.emit();
     }
 }

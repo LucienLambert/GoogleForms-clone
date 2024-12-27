@@ -86,16 +86,16 @@ public class FormsController : ControllerBase {
         return Ok(_mapper.Map<Form_With_QuestionsDTO>(form));
     }
 
-
-    [HttpDelete("{id}")]
-    public async Task<ActionResult<FormDTO>> DeleteForm(int id){
+    [Authorize]
+    [HttpDelete("{id:int}/form")]
+    public async Task<ActionResult<bool>> DeleteForm(int id){
         var form = await _context.Forms.FirstOrDefaultAsync(f => f.Id == id);
         if(form == null) {
-            return NotFound();
+            return NotFound(false);
         }
         _context.Forms.Remove(form);
         await _context.SaveChangesAsync();
-        return _mapper.Map<FormDTO>(form);
+        return Ok(true);
     }
 
     //TO FIX : fonctionne mais la modification du form est trop complexe et donc illisible

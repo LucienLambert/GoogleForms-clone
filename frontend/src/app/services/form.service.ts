@@ -97,6 +97,9 @@ export class FormService {
         return this.http.get<boolean>(`${this.baseUrl}api/forms/isTitleUnique`, {
             params: { title, ownerId, formId }
         });
+    }
 
+    delFormById(formId: number) : Observable<boolean> {
+        return this.http.delete<boolean>(`${this.baseUrl}api/forms/${formId}/form`);
     }
 }
