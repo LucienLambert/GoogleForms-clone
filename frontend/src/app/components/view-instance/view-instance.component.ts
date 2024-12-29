@@ -1,17 +1,15 @@
-import { Component, OnInit } from '@angular/core';
-import { AuthenticationService } from '../../services/authentication.service';
-import { ActivatedRoute, Router } from '@angular/router';
-import {RedirectCommand} from "@angular/router";
+import {Component, OnInit} from '@angular/core';
+import {AuthenticationService} from '../../services/authentication.service';
+import {ActivatedRoute, Router} from '@angular/router';
 
-import { InstanceService } from '../../services/instance.service';
-import { FormService } from '../../services/form.service';
-import { User } from '../../models/user';
-import { Form } from '../../models/form';
-import { Question } from '../../models/question';
-import { Instance } from '../../models/instance';
-import {forEach} from "lodash-es";
+import {InstanceService} from '../../services/instance.service';
+import {FormService} from '../../services/form.service';
+import {User} from '../../models/user';
+import {Form} from '../../models/form';
+import {Question, QuestionType} from '../../models/question';
+import {Instance} from '../../models/instance';
 import {Answer} from "../../models/answer";
-import {MatIconModule} from '@angular/material/icon';
+
 @Component({
     selector: 'app-view-instance',
     templateUrl: './view-instance.component.html',
@@ -67,8 +65,9 @@ export class ViewInstanceComponent implements OnInit {
             this.questionTracker = nb;
             this.updateAnswers();
             this.updateCurrentAnswers();
+            console.log("switched",this.currentQuestion, this.answers,"currentans", this.currentAnswers);
         }
-        
+
     }
     updateAnswers() {
         this.currentAnswers?.forEach(answer=>this.answers?.push(answer));
@@ -103,23 +102,47 @@ export class ViewInstanceComponent implements OnInit {
 
     // received value after answering the question
     public receiveValue($event : any){
-
-        if ($event || $event == ""){
-
-            const answerData = {
-                instanceId: this.instance?.id,
-                questionId: this.currentQuestion?.id,
-                idx: 0,
-                value: $event,
+  
+        if (this.currentQuestion?.questionType == QuestionType.Check) {
+            
+            if ($event.length > 0) {
+                let count = 1;
+                let newAnswers : Answer[] = [];
+                $event?.forEach((value : number) => {
+                    
+                    const answerData = {
+                        instanceId: this.instance?.id,
+                        questionId: this.currentQuestion?.id,
+                        idx: count,
+                        value: value,
+                    }
+                    newAnswers.push(new Answer(answerData));
+                    ++count;
+                });
+                
+                this.currentAnswers = newAnswers;
+                
+            } else {
+                this.currentAnswers = [];
             }
-            const answer = new Answer(answerData);
-
-            this.answers?.push(answer);
             
-            this.updateCurrentAnswers();
-            
-        } 
+        } else {
         
+            if ($event) {
+                const answerData = {
+                    instanceId: this.instance?.id,
+                    questionId: this.currentQuestion?.id,
+                    idx: 0,
+                    value: $event,
+                }
+                const answer = new Answer(answerData);
+                this.answers?.push(answer);
+                this.updateCurrentAnswers();
+            } else {
+                //delete db
+                console.log("empty value");
+            }
+        }
     }
 
     private fetchFormWithQuestions(formId : number) {

@@ -12,8 +12,10 @@ import {Answer} from "../../../models/answer";
 export class InstanceQuestionCardComponent {
   
   @Input() question?: Question;
+  @Input() questionType?: QuestionType;
   @Input() answers?: Answer[];
   @Input() isCompleted: boolean=false;
+  
 
 
   @Output() updatedValuesEvent = new EventEmitter<any>();
@@ -26,8 +28,5 @@ export class InstanceQuestionCardComponent {
   public receiveValue($event : any){
     this.updatedValuesEvent.emit($event);
   }
-
   
-
-  protected readonly QuestionType = QuestionType;
 }

@@ -45,7 +45,7 @@
             
             
             <p>Question {{questionTracker}}/{{questions.length}}</p>
-        <app-instance-question-card [question]="currentQuestion" [answers]="currentAnswers" [isCompleted]="!isInProgress()" (updatedValuesEvent)="receiveValue($event)"></app-instance-question-card>
+        <app-instance-question-card [question]="currentQuestion" [questionType]="currentQuestion?.questionType" [answers]="currentAnswers" [isCompleted]="!isInProgress()" (updatedValuesEvent)="receiveValue($event)"></app-instance-question-card>
         </div>
         <ng-template #noQuestion>
             This form doesn't have any question!
