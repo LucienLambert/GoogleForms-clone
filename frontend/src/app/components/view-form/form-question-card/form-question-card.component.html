@@ -7,10 +7,10 @@
       
       <div *ngIf="!instanceInProgress">
         <div class="button-header">
-          <button mat-icon-button (click)="moveDown(question)">
+          <button *ngIf="indexQuestion != sizeListQuestion " mat-icon-button (click)="moveDown()">
             <img src="assets/icons/arrow-down.svg" />
           </button>
-          <button mat-icon-button (click)="moveUp(question)">
+          <button *ngIf="indexQuestion != 0" mat-icon-button (click)="moveUp()">
             <img src="assets/icons/arrow-up.svg" />
           </button>
         </div>
@@ -26,10 +26,10 @@
       <p>Type: <strong>{{ question.questionType }}</strong></p>
       <p>Required: <strong>{{ question.required }}</strong></p>
       <div *ngIf="!instanceInProgress" class="button-content">
-        <button mat-icon-button (click)="editQuestion(question)">
+        <button mat-icon-button (click)="editQuestion()">
             <img src="assets/icons/pencil.svg" />
           </button>
-          <button mat-icon-button (click)="delQuestion(question)">
+          <button mat-icon-button (click)="delQuestion()">
             <img src="assets/icons/trash.svg" />
           </button>
       </div>

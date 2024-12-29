@@ -29,10 +29,11 @@
         </div>
         <div *ngIf="listQuestion.length > 0; else noQuestions">
             <h2 class="mb-4">Questions</h2>
-            <div *ngFor="let question of listQuestion">
+            <div *ngFor="let question of listQuestion let i = index">
                 <app-form-question-card
                     [question]="question"
-                    [totalQuestion]="listQuestion.length"
+                    [indexQuestion]="i"
+                    [sizeListQuestion]="listQuestion.length -1"
                     (moveDownEvent)="moveDown($event)"
                     (moveUpEvent)="moveUp($event)"
                     (editQuestionEvent)="editQuestion($event)"

@@ -25,8 +25,7 @@ export class ViewFormComponent implements OnInit {
         private formService: FormService, private route: ActivatedRoute, private modalDialog : MatDialog) {
 
         this.user = this.authService.currentUser;
-        console.log("role currentUser : "+ this.user?.role);
-        console.log(this.user?.role != 2 || this.form?.owner?.id != this.user?.id)
+
     }
     
     ngOnInit() {
@@ -59,10 +58,20 @@ export class ViewFormComponent implements OnInit {
 
     moveDown(question: Question) {
         console.log("moveDown : " + question);
+
     }
 
     moveUp(question: Question) {
         console.log("moveUp : " + question);
+        this.formService.moveUpQuestion(this.form!.id, question.id).subscribe({
+            next : (reponse) => {
+                console.log("déplacement Up réussie : " + reponse);
+                this.getOnFormManager();
+            },
+            error : (err) => {
+                console.log("Erreur lors du déplacement : " + err);
+            }
+        });
     }
     
     //faire un redirect vers le component Edit_question

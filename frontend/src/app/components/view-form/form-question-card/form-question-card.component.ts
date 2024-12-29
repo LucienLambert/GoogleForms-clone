@@ -9,7 +9,10 @@ import { AuthenticationService } from "src/app/services/authentication.service";
 })
 export class FormQuestionCardComponent {
     @Input() question!: Question;
-    @Input() totalQuestion!: number;
+    //stock l'index de la question de la listQuestion du form
+    @Input() indexQuestion?: number;
+    //stock la taille de la listQuestion - 1
+    @Input() sizeListQuestion?: number;
     @Input() instanceInProgress!: boolean;
     
 
@@ -20,26 +23,26 @@ export class FormQuestionCardComponent {
 
 
     constructor(private authService: AuthenticationService) {
-
+        
     }
 
     ngOnInit(){
-        console.log(this.instanceInProgress);
+        console.log("IndexQuetion = "+this.indexQuestion +"\nsizeListQuestion = "+this.sizeListQuestion + "\nIdx = " +this.question?.idx);
     }
 
-    moveDown(question: Question) {
-        this.moveDownEvent.emit(question);
+    moveDown() {
+        this.moveDownEvent.emit(this.question);
     }
 
-    moveUp(question: Question) {
-        this.moveUpEvent.emit(question);
+    moveUp() {
+        this.moveUpEvent.emit(this.question);
     }
 
-    editQuestion(question: Question) {
-        this.editQuestionEvent.emit(question);
+    editQuestion() {
+        this.editQuestionEvent.emit(this.question);
     }
 
-    delQuestion(question: Question) {
-        this.delQuestionEvent.emit(question);
+    delQuestion() {
+        this.delQuestionEvent.emit(this.question);
     }
 }

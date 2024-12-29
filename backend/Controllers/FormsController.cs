@@ -7,7 +7,6 @@ using prid_2425_a01.Helpers;
 using prid_2425_a01.Models;
 using prid_2425_a01.Models.form;
 using System.Security.Claims;
-using System.Diagnostics.Eventing.Reader;
 namespace prid_2425_a01.Controllers;
 
 
@@ -272,15 +271,17 @@ public class FormsController : ControllerBase {
         }
         var currentUser = await _context.Users.Where(u => u.Id == userIdInt).FirstOrDefaultAsync();
 
-        var form = await _context.Forms
-            .Where(f => _context.Questions.Any(q => q.Id == questionId && q.FormId == formId) && 
-                    (f.Owner.Id == currentUser!.Id ||
-                    currentUser.Role == Role.Admin ||
-                    _context.UserFormAccesses.Any(ufa => ufa.UserId == userIdInt && 
-                        ufa.FormId == f.Id &&
-                        ufa.AccessType == AccessType.Editor)))
-            .FirstOrDefaultAsync();
-        
+        // var form = await _context.Forms
+        //     .Where(f => _context.Questions.Any(q => q.Id == questionId && q.FormId == formId) && 
+        //             (f.Owner.Id == currentUser!.Id ||
+        //             currentUser.Role == Role.Admin ||
+        //             _context.UserFormAccesses.Any(ufa => ufa.UserId == userIdInt && 
+        //                 ufa.FormId == f.Id &&
+        //                 ufa.AccessType == AccessType.Editor)))
+        //     .FirstOrDefaultAsync();
+
+        var form = await CanActionOnQuestionForm(formId, questionId);
+
         if(form == null){
             return NotFound(false);
         }
@@ -302,6 +303,67 @@ public class FormsController : ControllerBase {
                 (formId == null || f.Id != formId)
         );
         return Ok(!exists);
-
     }
+
+    [Authorize]
+    [HttpPost("{formId:int}/moveUpQuestion/{questionId:int}")]
+    public async Task<ActionResult<bool>> MoveUpQuestionForm(int formId, int questionId){
+        // Vérifie si l'utilisateur a les droits d'action sur la question
+        var canAct = await CanActionOnQuestionForm(formId, questionId);
+        
+        if (canAct == null) {
+            return NotFound("pas droit d'acces au form");
+        }
+
+        var question = await _context.Questions.Where(q => q.Id == questionId).FirstOrDefaultAsync();
+        
+        if (question == null) {
+            return NotFound("no question found");
+        }
+
+        // Récupère la question située juste au-dessus
+        var questionTemp = await _context.Questions
+            .Where(q => q.FormId == formId && q.Idx < question.Idx)
+            .OrderByDescending(q => q.Idx)
+            .FirstOrDefaultAsync();
+
+        if (questionTemp == null) {
+            return NotFound("no question above found");
+        }
+
+        // Échange les indices
+        var tempIdx = question.Idx;
+        question.Idx = questionTemp.Idx;
+        questionTemp.Idx = tempIdx;
+
+        // Sauvegarde les modifications dans la base de données
+        await _context.SaveChangesAsync();
+
+        return Ok(true);
+    }
+
+    private async Task<ActionResult<bool>> CanActionOnQuestionForm(int formId, int questionId){
+                var userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+
+        if (string.IsNullOrEmpty(userId) || !int.TryParse(userId, out int userIdInt)){
+            return Unauthorized("User Unfound");
+        }
+
+        var currentUser = await _context.Users.Where(u => u.Id == userIdInt).FirstOrDefaultAsync();
+
+        var form = await _context.Forms
+            .Where(f => _context.Questions.Any(q => q.Id == questionId && q.FormId == formId) && 
+                    (f.Owner.Id == currentUser!.Id ||
+                    currentUser.Role == Role.Admin ||
+                    _context.UserFormAccesses.Any(ufa => ufa.UserId == userIdInt && 
+                        ufa.FormId == f.Id &&
+                        ufa.AccessType == AccessType.Editor)))
+            .FirstOrDefaultAsync();
+        if (form == null){
+            return Forbid("User does not have permission to perform this action.");
+        }
+
+    return Ok(true);
+    }
+
 }
