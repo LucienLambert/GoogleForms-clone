@@ -27,7 +27,7 @@ export class FormQuestionCardComponent {
     }
 
     ngOnInit(){
-        console.log("IndexQuetion = "+this.indexQuestion +"\nsizeListQuestion = "+this.sizeListQuestion + "\nIdx = " +this.question?.idx);
+        
     }
 
     moveDown() {

@@ -62,12 +62,6 @@ export class ViewFormsComponent implements OnInit {
             next: (data) => {
                 this.forms = data;
                 this.filteredForms = data;
-                console.log(this.forms);
-                // this.forms.forEach( form => {
-                //     if(form.listUserFormAccess[0] != null){
-                //         console.log("[title form : "+form.title +"] [id form : " +form.id + "] [accessType Form : " + form.listUserFormAccess[0].accessType + "]");
-                //     }
-                // })
             },
             error: (err) => {
             this.errorMessage = "Erreur de récupération des formulaires.";

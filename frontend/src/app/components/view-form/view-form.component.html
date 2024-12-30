@@ -20,11 +20,11 @@
             <div class="form-value">{{ form?.owner?.firstName }} {{ form?.owner?.lastName }}</div>
         </div>
         <div class="form-item">
-            <div class="form-label">Public :</div>
+            <div class="form-label">Public : </div>
             <mat-slide-toggle
                 [disabled]="!(user?.role === 2 || form?.owner?.id === user?.id)"
-                [checked]="form?.isPublic" 
-                (change)="toggleIsPublic()">
+                [checked]="form?.isPublic"
+                (change)="toggleIsPublic($event)">
             </mat-slide-toggle>
         </div>
         <div *ngIf="listQuestion.length > 0; else noQuestions">
@@ -50,7 +50,7 @@
         <h1 style="text-align: center">No Question</h1>
     </ng-template>
     <div>
-        <mat-card-actions *ngIf="instanceInProgress">
+        <mat-card-actions *ngIf="!instanceInProgress">
             <button mat-raised-button color="primary">Add Question</button>
         </mat-card-actions>
     </div>

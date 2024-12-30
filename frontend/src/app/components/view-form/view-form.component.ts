@@ -7,6 +7,7 @@ import { Question } from 'src/app/models/question';
 import { MatDialog } from '@angular/material/dialog';
 import { ModalDialogComponent } from '../modal-dialog/modal-dialog.component';
 import { User } from 'src/app/models/user';
+import { MatSlideToggleChange } from '@angular/material/slide-toggle';
 
 @Component({
     selector: 'app-view-form',
@@ -25,7 +26,7 @@ export class ViewFormComponent implements OnInit {
         private formService: FormService, private route: ActivatedRoute, private modalDialog : MatDialog) {
 
         this.user = this.authService.currentUser;
-
+        
     }
     
     ngOnInit() {
@@ -45,27 +46,47 @@ export class ViewFormComponent implements OnInit {
                     this.instanceInProgress = false;
                 }
             }
-        })
+        });
     }
 
-    //gestion du toggle isPublic du form.
-    async toggleIsPublic() {
-        const canEditIsPublic = await this.modalDialogIsPublicForm();
-        if (canEditIsPublic) {
-          this.form!.isPublic = !this.form?.isPublic;
-        }
+    async toggleIsPublic(event : MatSlideToggleChange) {
+        const previousState = this.form!.isPublic;
+
+        const canChange = await this.modalDialogIsPublicForm(this.form!.isPublic);
+
+        if(canChange){
+            this.formService.isPublicFormChange(this.form!.id).subscribe({
+                next : () => {
+                    console.log("Form status updated successfully");
+                    this.form!.isPublic =  !previousState;
+                },
+                error : (err) => {
+                    console.log("Erreur lors du changement de statut : ", err);
+                    this.form!.isPublic = previousState;
+                    event.source.checked = previousState;
+                }
+            })
+        } else {
+            // Si annulé, réinitialiser visuellement le toggle
+            event.source.checked = previousState; // Rétablit l'état visuel
+            console.log("L'utilisateur a annulé le changement");
+        } 
     }
 
     moveDown(question: Question) {
-        console.log("moveDown : " + question);
-
+        this.formService.moveDownQuestion(this.form!.id, question.id).subscribe({
+            next : (reponse) => {
+                this.getOnFormManager();
+            },
+            error : (err) => {
+                console.log("Erreur lors du déplacement : " + err);
+            }
+        });
     }
 
     moveUp(question: Question) {
-        console.log("moveUp : " + question);
         this.formService.moveUpQuestion(this.form!.id, question.id).subscribe({
             next : (reponse) => {
-                console.log("déplacement Up réussie : " + reponse);
                 this.getOnFormManager();
             },
             error : (err) => {
@@ -131,13 +152,13 @@ export class ViewFormComponent implements OnInit {
             });
         }); 
     }
-    //TODO
-    modalDialogIsPublicForm() : Promise<boolean> {
+
+    modalDialogIsPublicForm(newValue : boolean) : Promise<boolean> {
         return new Promise<boolean>((resolve) => {
 
-            const title = this.form?.isPublic ? 'Make Form Public' : 'Make Form Private';
+            const title = newValue ? 'Make Form Public' : 'Make Form Private';
 
-            const message = this.form?.isPublic 
+            const message = newValue 
             ? "Are you sure you want to make this form private? You will need to shared this form again to allow 'User' access to other users."
             : "Are you sure you want to make this form public? This will delete all existing shared with 'User' access to this form.";
 
@@ -156,16 +177,35 @@ export class ViewFormComponent implements OnInit {
         }); 
     }
 
-    delForm() {
-        const idform = this.form!.id;
-        this.formService.delFormById(idform).subscribe({
-            next : (data) => {
-                console.log("del form : " +data);
-                this.router.navigate(['/home']);
-            },
-            error : (err) => {
-                console.log("Erreur lors de la suppression : " + err);
-            }
+    modalDelForm () : Promise<boolean> {
+        return new Promise<boolean>((resolve) => {
+            const modal = this.modalDialog.open(ModalDialogComponent, {
+                data : {
+                    title : 'Delete Form',
+                    message : "Are you sure you want to delete this form ?",
+                    context : 'editForm'
+                }
+            })
+
+            modal.afterClosed().subscribe( resutl => {
+                resolve(resutl);
+            })
         });
+    }
+
+    async delForm() {
+        const idform = this.form!.id;
+        const canDelForm = await this.modalDelForm();
+        if(canDelForm){
+            this.formService.delFormById(idform).subscribe({
+                next : (data) => {
+                    console.log("del form : " +data);
+                    this.router.navigate(['/home']);
+                },
+                error : (err) => {
+                    console.log("Erreur lors de la suppression : " + err);
+                }
+            });
+        }
     }
 }

@@ -342,6 +342,43 @@ public class FormsController : ControllerBase {
         return Ok(true);
     }
 
+    [Authorize]
+    [HttpPost("{formId:int}/moveDownQuestion/{questionId:int}")]
+    public async Task<ActionResult<bool>> MoveDownQuestionForm(int formId, int questionId){
+        // Vérifie si l'utilisateur a les droits d'action sur la question
+        var canAct = await CanActionOnQuestionForm(formId, questionId);
+        
+        if (canAct == null) {
+            return NotFound("pas droit d'acces au form");
+        }
+
+        var question = await _context.Questions.Where(q => q.Id == questionId).FirstOrDefaultAsync();
+        
+        if (question == null) {
+            return NotFound("no question found");
+        }
+
+        // Récupère la question située juste au-dessus
+        var questionTemp = await _context.Questions
+            .Where(q => q.FormId == formId && q.Idx > question.Idx)
+            .OrderBy(q => q.Idx)
+            .FirstOrDefaultAsync();
+
+        if (questionTemp == null) {
+            return NotFound("no question above found");
+        }
+
+        // Échange les indices
+        var tempIdx = question.Idx;
+        question.Idx = questionTemp.Idx;
+        questionTemp.Idx = tempIdx;
+
+        // Sauvegarde les modifications dans la base de données
+        await _context.SaveChangesAsync();
+
+        return Ok(true);
+    }
+
     private async Task<ActionResult<bool>> CanActionOnQuestionForm(int formId, int questionId){
                 var userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
 
@@ -364,6 +401,46 @@ public class FormsController : ControllerBase {
         }
 
     return Ok(true);
+    }
+
+    [Authorize]
+    [HttpPost("{formId:int}/isPublicFormChange")]
+    public async Task<ActionResult<bool>> IsPublicFormChange(int formId){
+        //form exits
+        //access to Form
+        //check IsPublic or Not
+
+        var userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+
+        if (string.IsNullOrEmpty(userId) || !int.TryParse(userId, out int userIdInt)){
+            return Unauthorized("User not found");
+        }
+
+        var currentUser = await _context.Users.Where(u => u.Id == userIdInt).FirstOrDefaultAsync();
+
+        //récupère le form + la liste des UserFormAccess correspondant
+        var form = await _context.Forms
+            .Include(f => f.ListUserFormAccesses)
+            .FirstOrDefaultAsync(f => f.Id == formId);
+
+        if(form == null){
+            return NotFound(false);
+        }
+        
+        if(currentUser?.Role == Role.Admin || form.OwnerId == userIdInt || _context.UserFormAccesses
+        .Any(ufa => ufa.UserId == userIdInt && ufa.FormId == form.Id && ufa.AccessType == AccessType.Editor)){
+            //si form == false, ça veut dire que l'on doit passer le form en public ou inversément.
+            if(form.IsPublic == false) {
+                var userAccess = _context.UserFormAccesses.Where(ufa => ufa.AccessType == AccessType.User && ufa.FormId == formId).ToList();
+                if(userAccess.Any()){
+                    _context.UserFormAccesses.RemoveRange(userAccess);
+                }
+            }
+            form.IsPublic = !form.IsPublic;
+        }
+        await _context.SaveChangesAsync();
+
+        return Ok(form.IsPublic);
     }
 
 }

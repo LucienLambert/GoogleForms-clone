@@ -106,4 +106,12 @@ export class FormService {
     moveUpQuestion(formId: number, questionId : number) : Observable<boolean> {
         return this.http.post<boolean>(`${this.baseUrl}api/forms/${formId}/moveUpQuestion/${questionId}`, null);
     }
+
+    moveDownQuestion(formId: number, questionId : number) : Observable<boolean> {
+        return this.http.post<boolean>(`${this.baseUrl}api/forms/${formId}/moveDownQuestion/${questionId}`, null);
+    }
+
+    isPublicFormChange(formId: number) : Observable<boolean> {
+        return this.http.post<boolean>(`${this.baseUrl}api/forms/${formId}/isPublicFormChange`, null);
+    }
 }
