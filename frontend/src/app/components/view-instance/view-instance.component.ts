@@ -29,10 +29,8 @@ export class ViewInstanceComponent implements OnInit {
         return this._answers;
     }
     public set answers(value: Answer[] | undefined) {
-        if (value !== this._answers) {
-            this._answers = value;
-            this.checkForRequiredQuestions()
-        }
+        this._answers = value;
+        this.checkForRequiredQuestions()
     }
     currentAnswers?: Answer[];
     isSaveable: boolean = false;
@@ -65,7 +63,6 @@ export class ViewInstanceComponent implements OnInit {
             this.questionTracker = nb;
             this.updateAnswers();
             this.updateCurrentAnswers();
-            console.log("switched",this.currentQuestion, this.answers,"currentans", this.currentAnswers);
         }
 
     }
@@ -121,9 +118,13 @@ export class ViewInstanceComponent implements OnInit {
                 });
                 
                 this.currentAnswers = newAnswers;
+                this.updateAnswers();
+                this.updateCurrentAnswers();
+                //persist
                 
             } else {
                 this.currentAnswers = [];
+                //persist
             }
             
         } else {
@@ -138,9 +139,10 @@ export class ViewInstanceComponent implements OnInit {
                 const answer = new Answer(answerData);
                 this.answers?.push(answer);
                 this.updateCurrentAnswers();
+                //persist
             } else {
-                //delete db
-                console.log("empty value");
+                this.currentAnswers = [];
+                //persist
             }
         }
     }
@@ -177,6 +179,7 @@ export class ViewInstanceComponent implements OnInit {
             next: (data) => {
                 this.instance=data;
                 this.answers=data.listAnswers;
+                this.updateCurrentAnswers();
             },
             error: (err) => {
                 // ...
@@ -195,17 +198,16 @@ export class ViewInstanceComponent implements OnInit {
 
         for (const question of this.questions) {
             if (question.required) {
-                
                 const hasAnswer = this.answers?.some(answer => answer.questionId === question.id);
                 const hascurrentAnswer = this.currentAnswers?.some(answer => answer.questionId === question.id);
-                if (!hasAnswer || !hascurrentAnswer) {
+                if (!hasAnswer && !hascurrentAnswer) {
                     saveable = false;
                 }
             }
         }
-        if (!this.isInProgress()) {
+        if (!this.isInProgress() || !this.questions || !this.currentQuestion) {
             saveable = false;
-        }        
+        }
         this.isSaveable = saveable;
     }
 }

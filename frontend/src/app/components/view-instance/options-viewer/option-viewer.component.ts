@@ -59,7 +59,7 @@ export class OptionViewerComponent implements OnInit {
     }
     
     updateValues() {
-            this.updatedValuesEvent.emit(this.currentValue);
+        this.updatedValuesEvent.emit(this.currentValue);
     }
 
     private onAnswersChange(value: Answer[] | undefined) {
@@ -82,14 +82,11 @@ export class OptionViewerComponent implements OnInit {
     
     // SHORT, LONG & DATE
     onFieldInput(modelInput : NgModel) {
-        console.log("onFieldInput()", this.currentValue);
-        
         if (!modelInput.value && this.isRequired) {
             modelInput.control.setErrors({required:true});
         } else {
             modelInput.control.setErrors(null);
         }
-        
         this.updateValues();
     }
     
@@ -111,7 +108,6 @@ export class OptionViewerComponent implements OnInit {
     
     //INTEGER
     onIntegerFieldChange(integerInput: NgModel) {
-        console.log("onIntegerFieldChange()", integerInput);
         const regexp = new RegExp(/^[0-9]*$/);
 
         if (!integerInput.value && this.isRequired) {

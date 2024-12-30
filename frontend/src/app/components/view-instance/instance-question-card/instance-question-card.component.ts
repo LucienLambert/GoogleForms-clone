@@ -16,6 +16,7 @@ export class InstanceQuestionCardComponent {
   @Input() answers?: Answer[];
   @Input() isCompleted: boolean=false;
   
+  
 
 
   @Output() updatedValuesEvent = new EventEmitter<any>();
