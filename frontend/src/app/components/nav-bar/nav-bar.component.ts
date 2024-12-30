@@ -9,8 +9,10 @@ import { AuthenticationService } from 'src/app/services/authentication.service';
     styleUrl: './nav-bar.component.css'
 })
 export class NavBarComponent {
-    @Output() searchEvent = new EventEmitter<string>(); // Emits search input to parent
+    @Output() searchEvent = new EventEmitter<string>();
     @Output() saveEvent = new EventEmitter<void>();
+    @Output() editEvent = new EventEmitter<void>();
+    @Output() AnalyseEvent = new EventEmitter<void>();
 
     @ViewChild('searchInput') searchInput!: ElementRef<HTMLInputElement>;
 
@@ -21,7 +23,8 @@ export class NavBarComponent {
     @Input() isAddVisible: boolean = false;
     @Input() backButtonVisible: boolean = false;
     @Input() saveDisabled: boolean = true;
-    @Input() analyseVisible: boolean = false;
+    @Input() isAnalyseVisible: boolean = false;
+    @Input() isEditVisible: boolean = false;
 
     constructor(private router: Router, private _location: Location, private authService : AuthenticationService) {
     }
@@ -44,6 +47,10 @@ export class NavBarComponent {
     createForm() {
         this.router.navigate(['create-edit-form']);
     }
+
+    editForm() {
+        this.editEvent.emit();
+    }
     
     onSave() {
         this.saveEvent.emit();
@@ -60,7 +67,6 @@ export class NavBarComponent {
     }
     
     analyse() {
-        this.router.navigate(['analyse']);
-
+        this.AnalyseEvent.emit();
     }
 }

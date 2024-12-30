@@ -7,13 +7,14 @@ export class OptionList {
     id: number;
     name: string;
     owner?: User;
-    optionValues?: OptionValue[];
+    listOptionValues?: OptionValue[];
 
     constructor(data:any) {
         this.id = data.id;
         this.name = data.name;
         this.owner = data.owner;
-        this.optionValues = data.listOptionValues ? data.listOptionValues.map( (ov: OptionValue) => new OptionValue(ov)) : [];
+        if (data.listOptionValues) {
+            this.listOptionValues = data.listOptionValues.map((value: any) => new OptionValue(value));
+        }
     }
-    
 }

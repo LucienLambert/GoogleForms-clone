@@ -37,6 +37,7 @@ export class CreateEditFormComponent implements OnInit {
 
     ngOnInit() {
         this.form = this.formBuilder.group({
+            id: [''],
             title: ['', [Validators.required, Validators.minLength(3)], [this.uniqueTitleValidator.bind(this)]],
             description: ['', Validators.minLength(3)],
             owner: ['', Validators.required],
@@ -50,14 +51,12 @@ export class CreateEditFormComponent implements OnInit {
             if (idParam) {
                 const id = Number(idParam);
                 if (!isNaN(id)) {
-                    this.isAnalyseVisible = true;
                     this.navBarTitle = 'Edit Form';
                     this.loadForm(id);
                 } else {
                     console.error('Invalid form ID:', idParam);
                 }
             } else {
-                this.isAnalyseVisible = false;
                 this.navBarTitle = 'New Form';
             }
         });
@@ -68,9 +67,11 @@ export class CreateEditFormComponent implements OnInit {
     }
 
     loadForm(id: number) {
+        this.fetchOwnerData();
         this.formService.getFormByFormId(id).subscribe({
             next: (formData: Form) => {
                 this.form.patchValue({
+                    id: formData.id,
                     title: formData.title,
                     description: formData.description,
                     isPublic: formData.isPublic
@@ -99,6 +100,7 @@ export class CreateEditFormComponent implements OnInit {
 
     onSave() {
         if (this.form.valid) {
+            this.fetchOwnerData();
             const formData: Form = this.form.value;
             formData.owner = this.owner!;
             formData.ownerId = this.owner!.id;
@@ -115,6 +117,7 @@ export class CreateEditFormComponent implements OnInit {
                     setTimeout(() => {
                         this.showSuccessMessage = false;
                     }, 3000);
+                    this.router.navigate(['/home']);
                 },
                 error: (err) => {
                     // Show error message

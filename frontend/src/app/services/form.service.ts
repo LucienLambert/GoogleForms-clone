@@ -4,7 +4,7 @@ import { HttpClient } from '@angular/common/http';
 import { Form } from '../models/form';
 import { map } from 'rxjs/operators';
 import { Observable } from 'rxjs';
-import { QuestionType } from '../models/question';
+import {Question, QuestionType} from '../models/question';
 import { AccessType } from '../models/userFormAccess';
 
 @Injectable({ providedIn: 'root' })
@@ -81,7 +81,7 @@ export class FormService {
     }
 
     updateForm(form: Form): Observable<Form> {
-        return this.http.post<Form>(`${this.baseUrl}api/forms/updateForm`, form)
+        return this.http.put<Form>(`${this.baseUrl}api/forms/updateForm`, form)
             .pipe(map(res => new Form(res)));
     }
 
@@ -98,5 +98,11 @@ export class FormService {
             params: { title, ownerId, formId }
         });
 
+    }
+
+    getFormQuestions(formId: number): Observable<Array<Question>> {
+        return this.http.get<Array<Question>>(`${this.baseUrl}api/forms/getFormQuestionsById`, {
+            params: { formId }
+        });
     }
 }

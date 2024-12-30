@@ -57,6 +57,10 @@ public class MappingProfile : Profile
         CreateMap<Question, Question_CompleteDTO>();
         CreateMap<Question_CompleteDTO, Question>();
         
+        CreateMap<Question, Question_CompleteDTO_With_AnswersDTO>()
+            .IncludeBase<Question, Question_CompleteDTO>()
+            .ForMember(dest => dest.AnswersList, opt => opt.Ignore());
+        
         //OPTION_LIST
         CreateMap<OptionList, OptionListDTO>();
         CreateMap<OptionListDTO, OptionList>();

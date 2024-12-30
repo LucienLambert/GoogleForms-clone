@@ -31,7 +31,7 @@ const appRoutes: Routes = [
     { path: 'create-edit-form', component: CreateEditFormComponent, canActivate: [AuthGuard] },
     { path: 'view-form/:id', component: ViewFormComponent, canActivate: [AuthGuard] },
     { path: 'create-edit-form/:id', component: CreateEditFormComponent, canActivate: [AuthGuard] },
-    { path: 'analyse', component: AnalyseComponent, canActivate: [AuthGuard] },
+    { path: 'analyse/:id', component: AnalyseComponent, canActivate: [AuthGuard] },
     { path: '**', component: UnknownComponent }
 ];
 

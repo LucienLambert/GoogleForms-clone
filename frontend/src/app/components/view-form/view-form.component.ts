@@ -17,6 +17,8 @@ export class ViewFormComponent implements OnInit {
     listQuestion : Question [] = [];
     instanceInProgress : boolean = false;
     backButtonVisible: boolean = true;
+    isEditVisible: boolean = true;
+    isAnalyseVisible: boolean = true;
 
     constructor(private authService: AuthenticationService, private router: Router,
         private formService: FormService, private route: ActivatedRoute, private modalDialog : MatDialog) {
@@ -68,6 +70,15 @@ export class ViewFormComponent implements OnInit {
     addQuestion(){
         console.log("add question")
     }
+    
+    editForm() {
+        this.router.navigate(['create-edit-form/', this.form!.id]);
+    }
+
+    analyse() {
+        this.router.navigate(['analyse/', this.form!.id]);
+    }
+
 
     //requête Async donc obligé d'écouter la réponse pour éviter les erreurs et attendre la réponse de la requête 
     //pour faire le  refresh d'interface si pas d'erreur.

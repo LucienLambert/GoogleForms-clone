@@ -32,13 +32,18 @@
         <mat-icon>add</mat-icon>
     </button>
 
+    <!-- Edit button -->
+    <button mat-icon-button *ngIf="isEditVisible" (click)="editForm()">
+        <mat-icon>edit</mat-icon>
+    </button>
+
     <!-- Save button -->
     <button mat-icon-button *ngIf="isSaveVisible" (click)="onSave()" [disabled]="saveDisabled">
         <mat-icon>save</mat-icon>
     </button>
 
     <!-- Analyse button -->
-    <button mat-icon-button *ngIf="analyseVisible" (click)="analyse()">
+    <button mat-icon-button *ngIf="isAnalyseVisible" (click)="analyse()">
         <mat-icon>insights</mat-icon>
     </button>
 </mat-toolbar>

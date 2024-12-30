@@ -1,4 +1,5 @@
 ﻿using AutoMapper;
+using AutoMapper.QueryableExtensions;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.AspNetCore.Authorization;
@@ -214,7 +215,8 @@ public class FormsController : ControllerBase {
     [HttpPut("updateForm")]
     public async Task<IActionResult> UpdateForm(FormDTO formDto) {
         var existingForm = await _context.Forms.FirstOrDefaultAsync(f => f.Id == formDto.Id);
-                if (existingForm == null)
+        
+        if (existingForm == null)
             return NotFound();
         
         _mapper.Map(formDto, existingForm);
@@ -228,7 +230,7 @@ public class FormsController : ControllerBase {
         _context.Forms.Update(existingForm);
         await _context.SaveChangesAsync();
 
-        return NoContent();
+        return Ok(new { message = "Form updated successfully.", form = existingForm });
     }
 
     [Authorize]
@@ -303,5 +305,43 @@ public class FormsController : ControllerBase {
         );
         return Ok(!exists);
 
+    }
+    
+    [Authorized(Role.Admin, Role.User)]
+    [HttpGet("getFormQuestionsById")]
+    public async Task<ActionResult<List<Question_CompleteDTO_With_AnswersDTO>>> GetFormQuestions(int? formId)
+    {
+        if (formId == null)
+        {
+            return BadRequest("Form ID cannot be null.");
+        }
+
+        var questions = await _context.Questions
+            .Where(q => q.FormId == formId)
+            .Include(q => q.OptionList)
+            .ThenInclude(ol => ol.ListOptionValues)
+            .ToListAsync();
+
+        if (!questions.Any())
+        {
+            return NotFound("No questions or answers found for the provided Form ID.");
+        }
+
+        var answers = await _context.Answers
+            .Where(a => questions.Select(q => q.Id).Contains(a.QuestionId))
+            .ToListAsync();
+
+        var result = questions.Select(question =>
+        {
+            var questionDto = _mapper.Map<Question_CompleteDTO_With_AnswersDTO>(question);
+            questionDto.AnswersList = answers
+                .Where(a => a.QuestionId == question.Id)
+                .Select(a => _mapper.Map<AnswerDTO>(a))
+                .ToList();
+
+            return questionDto;
+        }).ToList();
+
+        return Ok(result);
     }
 }

@@ -50,7 +50,7 @@
     </div>
 
     <div *ngSwitchCase="QuestionType.Check">
-        <mat-checkbox *ngFor="let option of optionList?.optionValues; let i = index" 
+        <mat-checkbox *ngFor="let option of optionList?.listOptionValues; let i = index" 
                       [value]="option.value" 
                       [disabled]="isCompleted"
                       [checked]="preselectCheckBox(option, i)">
@@ -60,7 +60,7 @@
 
     <div *ngSwitchCase="QuestionType.Combo">
         <select matNativeControl [disabled]="isCompleted" >
-            <option *ngFor="let option of optionList?.optionValues; let i = index"
+            <option *ngFor="let option of optionList?.listOptionValues; let i = index"
                             [selected]="preselectCombo(option, i)"
             >{{ option.value }}</option>
         </select>
@@ -68,7 +68,7 @@
 
     <div *ngSwitchCase="QuestionType.Radio">
         <mat-radio-group [disabled]="isCompleted">
-            <mat-radio-button *ngFor="let option of optionList?.optionValues; let i = index"
+            <mat-radio-button *ngFor="let option of optionList?.listOptionValues; let i = index"
                               [value]="option.value"
                               [checked]="preselectRadioButton(option, i)">
                 {{ option.value }}

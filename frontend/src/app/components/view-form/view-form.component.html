@@ -1,6 +1,5 @@
-<app-nav-bar [title]="form?.title"
-             [backButtonVisible]="backButtonVisible"
-             class="toolbar-actions">
+<app-nav-bar [title]="form?.title" [backButtonVisible]="backButtonVisible" [isEditVisible]="isEditVisible" 
+             [isAnalyseVisible]="isAnalyseVisible" (editEvent)="editForm()" (AnalyseEvent)="analyse()" class="toolbar-actions">
 </app-nav-bar>
 
 <div class="manage-container">
