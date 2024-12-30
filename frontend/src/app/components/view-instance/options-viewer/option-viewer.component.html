@@ -5,7 +5,7 @@
         <mat-form-field>
             <input matInput [required]="isRequired" [(ngModel)]="currentValue" #shortInput="ngModel" [disabled]="isCompleted" (input)="onFieldInput(shortInput)">
         </mat-form-field>
-        <div style="color:red;" *ngIf="shortInput.errors?.required && (shortInput.dirty || shortInput.touched)">
+        <div style="color:red;" *ngIf="isRequired && answers?.length == 0">
             That field is required.
         </div>
     </div>
@@ -14,7 +14,7 @@
         <mat-form-field>
             <textarea matInput [required]="isRequired" [(ngModel)]="currentValue" #longInput="ngModel" [disabled]="isCompleted" (input)="onFieldInput(longInput)"></textarea>
         </mat-form-field>
-        <div style="color:red;" *ngIf="longInput.errors?.required && (longInput.dirty || longInput.touched)">
+        <div style="color:red;" *ngIf="isRequired && answers?.length == 0">
             That field is required.
         </div>
     </div>
@@ -26,7 +26,7 @@
             <mat-datepicker-toggle matIconSuffix [for]="picker" [disabled]="isCompleted"></mat-datepicker-toggle>
             <mat-datepicker #picker [disabled]="isCompleted"></mat-datepicker>
         </mat-form-field>
-        <div style="color:red;" *ngIf="dateInput.invalid && (dateInput.dirty || dateInput.touched)">
+        <div style="color:red;" *ngIf="isRequired && answers?.length == 0">
             That field is required.
         </div>
         <div>
@@ -52,7 +52,7 @@
                 <div *ngIf="emailInput.touched">
                     <small style="color:red;" *ngIf="emailInput.errors?.email">Please enter a valid email.</small>
                 </div>
-                <div style="color:red;" *ngIf="emailInput.errors?.required && (emailInput.dirty || emailInput.touched)">
+                <div style="color:red;" *ngIf="isRequired && answers?.length == 0">
                     That field is required.
                 </div>
             </div>
@@ -75,7 +75,7 @@
         <div style="color:red;" *ngIf="integerInput.errors?.integer && (integerInput.dirty || integerInput.touched)">
             Only numbers are allowed.
         </div>
-        <div style="color:red;" *ngIf="integerInput.errors?.required && (integerInput.dirty || integerInput.touched)">
+        <div style="color:red;" *ngIf="isRequired && answers?.length == 0">
             That field is required.
         </div>
     </div>
@@ -90,24 +90,36 @@
                     (change)="onCheckboxFieldChange($event, i+1)">
             {{ option.value }}
         </mat-checkbox>
+        <div style="color:red;" *ngIf="isRequired && answers?.length == 0">
+            That field is required.
+        </div>
     </div>
 
     <div *ngSwitchCase="QuestionType.Combo">
-        <select matNativeControl [required]="isRequired" [disabled]="isCompleted" >
-            <option *ngFor="let option of optionList?.optionValues; let i = index"
-                            [selected]="preselectCombo(option, i)"
-            >{{ option.value }}</option>
-        </select>
+        <mat-select [placeholder]="'Select an option'" [required]="isRequired" [disabled]="isCompleted" [(ngModel)]="selectedValue" (selectionChange)="onComboFieldChange($event)">
+            <mat-option *ngFor="let option of optionList?.optionValues;"
+                        [value]="option.value"
+                        >
+                {{ option.value }}
+            </mat-option>
+        </mat-select>
+        <div style="color:red;" *ngIf="isRequired && answers?.length == 0">
+            That field is required.
+        </div>
     </div>
 
+
     <div *ngSwitchCase="QuestionType.Radio">
-        <mat-radio-group [required]="isRequired" [disabled]="isCompleted">
+        <mat-radio-group [(ngModel)]="selectedValue" [required]="isRequired" [disabled]="isCompleted">
             <mat-radio-button *ngFor="let option of optionList?.optionValues; let i = index"
                               [value]="option.value"
-                              [checked]="preselectRadioButton(option, i)">
+                              (change)="onRadioFieldChange($event, i+1)">
                 {{ option.value }}
             </mat-radio-button>
         </mat-radio-group>
+        <div style="color:red;" *ngIf="isRequired && answers?.length == 0">
+            That field is required.
+        </div>
     </div>
 
     <div *ngSwitchDefault>Unknown QuestionType</div>

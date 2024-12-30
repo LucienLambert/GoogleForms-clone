@@ -5,6 +5,8 @@ import {NgModel} from "@angular/forms";
 import {Answer} from "../../../models/answer";
 import {OptionValue} from "../../../models/optionValue";
 import {MatCheckboxChange} from "@angular/material/checkbox";
+import {MatSelectChange} from "@angular/material/select";
+import {MatRadioChange} from "@angular/material/radio";
 
 @Component({
     selector: 'app-option-viewer',
@@ -46,11 +48,10 @@ export class OptionViewerComponent implements OnInit {
     @Output() updatedValuesEvent = new EventEmitter<any>();
     protected readonly QuestionType = QuestionType;
     
-    protected currentValue ="";
+    protected currentValue = this.answers ? this.answers[0].value : "";
     // Used as currentValue for multiple-answers based questions
     protected currentValueIndex : number [] = [];
     constructor() {
-
     }
 
 
@@ -58,14 +59,14 @@ export class OptionViewerComponent implements OnInit {
     }
     
     updateValues() {
-            console.log(this.currentValue);
             this.updatedValuesEvent.emit(this.currentValue);
     }
 
     private onAnswersChange(value: Answer[] | undefined) {
         this.currentValue="";
-        if (this.answers && this.answers.length == 1) {
-            this.currentValue=this.answers[0].value;
+        this.selectedValue="";
+        if (value && value.length == 1) {
+            this.currentValue=value[0].value;
         }
 
         this.currentValueIndex = [];
@@ -74,6 +75,9 @@ export class OptionViewerComponent implements OnInit {
         });
     }
     private onQuestionTypeChange(value: QuestionType | undefined) {
+        if ((this.questionType == QuestionType.Combo || this.questionType == QuestionType.Radio  ) && this.answers && this.answers.length == 1) {
+            this.selectedValue=this.valueFinder(Number.parseInt(this.answers[0].value));
+        }
     }
     
     // SHORT, LONG & DATE
@@ -126,11 +130,6 @@ export class OptionViewerComponent implements OnInit {
         }
     }
 
-    // RADIO
-    preselectRadioButton(option: OptionValue, i: number) {
-        return Number.parseInt(this.currentValue) === i;
-    }
-
     //CHECK
     preselectCheckBox(option: OptionValue, i: number): boolean {
         if (this.answers) {
@@ -142,7 +141,6 @@ export class OptionViewerComponent implements OnInit {
     onCheckboxFieldChange(event: MatCheckboxChange, index: number) {
             
             if (event.checked) {
-                console.log(this.currentValue);
                 this.currentValueIndex.push(index);
                 this.updatedValuesEvent.emit(this.currentValueIndex);
                 
@@ -156,8 +154,26 @@ export class OptionViewerComponent implements OnInit {
     }
     
     //COMBO
-    preselectCombo(option: OptionValue, i: number) {
-        return Number.parseInt(this.currentValue) === i+1;
+    protected selectedValue = this.answers?.[0]?.value ? this.valueFinder(Number.parseInt(this.answers[0].value)) : undefined;
+    onComboFieldChange($event: MatSelectChange) {
+        this.currentValue = this.indexFinder($event.value).toString();
+        this.updateValues();
+    }
+    indexFinder(value: string){
+        return (this.optionList?.optionValues?.findIndex(option => option.value === value))!+1;
+    }
+    valueFinder(index: number){
+        if (this.optionList?.optionValues) {
+            return this.optionList.optionValues[index-1].value;
+        }
+        return undefined;
     }
     
+    // RADIO
+    onRadioFieldChange($event: MatRadioChange, number: number) {
+        this.currentValue = this.indexFinder($event.value).toString();
+        this.updateValues();
+    }
+
+
 }
