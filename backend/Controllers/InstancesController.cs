@@ -15,10 +15,10 @@ namespace prid_2425_a01.Controllers;
 public class InstancesController : ControllerBase
 {
 
-    private readonly FormContext _context;
+    private readonly ApplicationDbContext _context;
     private readonly IMapper _mapper;
 
-    public InstancesController(FormContext context, IMapper mapper) {
+    public InstancesController(ApplicationDbContext context, IMapper mapper) {
         _context = context;
         _mapper = mapper;
     }

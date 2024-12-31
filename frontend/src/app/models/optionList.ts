@@ -6,12 +6,14 @@ export class OptionList {
 
     id: number;
     name: string;
+    ownerId?: number;
     owner?: User;
     listOptionValues?: OptionValue[];
 
     constructor(data:any) {
         this.id = data.id;
         this.name = data.name;
+        this.ownerId = data.ownerId;
         this.owner = data.owner;
         if (data.listOptionValues) {
             this.listOptionValues = data.listOptionValues.map((value: any) => new OptionValue(value));

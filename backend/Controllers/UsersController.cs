@@ -16,10 +16,10 @@ namespace prid_2425_a01.Controllers;
 [Route("api/[controller]")]
 [ApiController]
 public class UsersController : ControllerBase {
-    private readonly FormContext _context;
+    private readonly ApplicationDbContext _context;
     private readonly IMapper _mapper;
 
-    public UsersController(FormContext context, IMapper mapper) {
+    public UsersController(ApplicationDbContext context, IMapper mapper) {
         _context = context;
         _mapper = mapper;
     }
@@ -128,6 +128,14 @@ public class UsersController : ControllerBase {
 
         return user;
     }
-    
-    
+
+    [Authorized(Role.Admin, Role.User)]
+    [HttpGet("optionLists/{userId:int}")]
+    public async Task<ActionResult<List<OptionListDTO>>> GetOptionLists(int userId) {
+        var optionLists = await _context.OptionLists.Where(op => op.OwnerId == userId || op.OwnerId == null)
+            .Include(op => op.ListOptionValues).ToListAsync();
+        var optionListsDTO = _mapper.Map<List<OptionListDTO>>(optionLists);
+        
+        return optionListsDTO;
+    }
 }

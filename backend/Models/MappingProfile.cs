@@ -5,9 +5,9 @@ namespace prid_2425_a01.Models;
 
 public class MappingProfile : Profile
 {
-    private FormContext _context;
+    private ApplicationDbContext _context;
 
-    public MappingProfile(FormContext context) {
+    public MappingProfile(ApplicationDbContext context) {
         _context = context;
         
         //USER

@@ -5,7 +5,7 @@ using System.Globalization;
 
 namespace prid_2425_a01.Models
 {
-    public class SeedData(FormContext context)
+    public class SeedData(ApplicationDbContext context)
     {
         public void Seed() {
             context.Users.AddRange(ImportCsvData<User, UserMap>(@"Models\Data\users.csv"));

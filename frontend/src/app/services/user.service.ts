@@ -5,6 +5,7 @@ import { User } from '../models/user';
 import { catchError, map } from 'rxjs/operators';
 import { Observable, of } from 'rxjs';
 import { plainToInstance } from 'class-transformer';
+import {OptionList} from "../models/optionList";
 
 @Injectable({ providedIn: 'root' })
 export class UserService {
@@ -18,5 +19,9 @@ export class UserService {
 
     getUserById(userId: number): Observable<User> {
         return this.http.get<User>(`${this.baseUrl}api/users/${userId}`);
+    }
+    
+    getUserOptionLists(userId: number): Observable<Array<OptionList>> {
+        return this.http.get<Array<OptionList>>(`${this.baseUrl}api/users/optionLists/${userId}`);
     }
 }

@@ -1,9 +1,9 @@
 ﻿using Microsoft.EntityFrameworkCore;
 
 namespace prid_2425_a01.Models;
-public class FormContext : DbContext
+public class ApplicationDbContext : DbContext
 {
-    public FormContext(DbContextOptions<FormContext> options)
+    public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options)
         : base(options) {
     }
 

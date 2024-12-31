@@ -11,10 +11,10 @@ namespace prid_2425_a01.Controllers;
 [Route("api/[controller]")]
 [ApiController]
 public class User_Form_AccessController : ControllerBase {
-    private readonly FormContext _context;
+    private readonly ApplicationDbContext _context;
     private readonly IMapper _mapper;
     
-    public User_Form_AccessController(FormContext context, IMapper mapper) {
+    public User_Form_AccessController(ApplicationDbContext context, IMapper mapper) {
         _context = context;
         _mapper = mapper;
     }

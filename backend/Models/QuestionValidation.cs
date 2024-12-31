@@ -6,7 +6,7 @@ namespace prid_2425_a01.Models;
 
 public class QuestionValidation : AbstractValidator<Question> {
 
-    private readonly FormContext _context;
+    private readonly ApplicationDbContext _context;
 
 
 /* idx doit être supérieur à 0.
@@ -17,7 +17,7 @@ description, si elle est remplie, doit avoir au minimum une longueur de 3 caract
 required doit prendre la valeur 0 (faux) ou 1 (vrai).
 option_list doit référencer une liste d'options si type vaut 'check', 'combo' ou 'radio', sinon doit être null. */
 
-    public QuestionValidation(FormContext context) {
+    public QuestionValidation(ApplicationDbContext context) {
         
         _context = context;
 

@@ -6,9 +6,9 @@ namespace prid_2425_a01.Models;
 
 public class InstanceValidation : AbstractValidator<Instance> {
 
-    private readonly FormContext _context;
+    private readonly ApplicationDbContext _context;
 
-    public InstanceValidation(FormContext context) {
+    public InstanceValidation(ApplicationDbContext context) {
         
         _context = context;
 
