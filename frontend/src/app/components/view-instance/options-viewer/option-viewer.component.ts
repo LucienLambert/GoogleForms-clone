@@ -109,7 +109,8 @@ export class OptionViewerComponent implements OnInit {
     
     //INTEGER
     onIntegerFieldChange(integerInput: NgModel) {
-        const regexp = new RegExp(/^[0-9]*$/);
+        const regexp = new RegExp(/^-?\d+([.,]\d+)?$/);
+
 
         if (!integerInput.value && this.isRequired) {
             integerInput.control.setErrors({required:true});

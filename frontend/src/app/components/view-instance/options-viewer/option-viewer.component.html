@@ -69,7 +69,7 @@
                     [(ngModel)]="currentValue"
                     [disabled]="isCompleted"
                     (input)="onIntegerFieldChange(integerInput)"
-                    pattern="[0-9]*"
+                    pattern="^-?\d+([.,]\d+)?$"
                     placeholder="Enter a number">
         </mat-form-field>
         <div style="color:red;" *ngIf="integerInput.errors?.integer && (integerInput.dirty || integerInput.touched)">
