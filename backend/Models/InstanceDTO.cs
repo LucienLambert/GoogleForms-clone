@@ -9,16 +9,9 @@ public class InstanceDTO {
     public DateTime? Completed { get; set; }
     
 }
-public class Instance_With_AnswersDTO {
 
-    public int Id { get; set; }
-    public int FormId { get; set; }
-    public int UserId { get; set; }
-    public DateTime Started { get; set; }
-    public DateTime? Completed { get; set; }
-    
+public class Instance_With_AnswersDTO : InstanceDTO {
     public ICollection<AnswerDTO> ListAnswers { get; set; } = new HashSet<AnswerDTO>();
-    
 }
 
 public class Instance_only_DateDTO {

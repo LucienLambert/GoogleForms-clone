@@ -1,4 +1,5 @@
 using AutoMapper;
+using FluentValidation;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.AspNetCore.Authorization;
@@ -6,6 +7,7 @@ using Microsoft.IdentityModel.Tokens;
 using prid_2425_a01.Helpers;
 using System.Security.Claims;
 using prid_2425_a01.Models;
+using System.ComponentModel.DataAnnotations;
 
 namespace prid_2425_a01.Controllers;
 
@@ -81,10 +83,50 @@ public class InstancesController : ControllerBase
         return Ok(_mapper.Map<Instance_With_AnswersDTO>(instance));
     }
 
-    // [HttpGet("by_form_id/{id}/answers")]
-    // public async Task<ActionResult<IEnumerable<InstanceDTO>>> GetWithAnswersByFormId(int id) {
-    //     
-    //     
-    // }
+    [HttpPut("update/answers")]
+    public async Task<IActionResult> UpdateInstanceAnswers(Instance_With_AnswersDTO instanceWithAnswersDto) {
+        var userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+        var currentUser = await _context.Users.FirstOrDefaultAsync(u => u.Id == int.Parse(userId));
+
+        if (currentUser == null) {
+            return Unauthorized();
+        }
+        
+        var instance = await _context.Instances.Where(instance => instance.Id == instanceWithAnswersDto.Id)
+            .Include(i => i.User)
+            .Include(i => i.ListAnswers)
+            .Include(i => i.Form)
+            .ThenInclude(f => f.Owner)
+            .FirstOrDefaultAsync();
+
+        if (instance == null) {
+            return NotFound();
+        }
+        
+        if (currentUser != instance.User && currentUser != instance.Form.Owner) {
+            return Unauthorized();
+        }
+        
+        var answers = _mapper.Map<List<Answer>>(instanceWithAnswersDto.ListAnswers)
+            .OrderBy(a => a.QuestionId)
+            .ThenBy(a => a.Idx)
+            .ToList();
+            
+        var validator = new AnswerValidation(_context);
+        
+        foreach (Answer answer in answers)
+        {
+            var result = await validator.ValidateOnUpdate(answer);
+            if (!result.IsValid)
+                return BadRequest(answer);
+        }
+        
+        instance.ListAnswers = answers;
+        
+        _context.Instances.Update(instance);
+        await _context.SaveChangesAsync();
+
+        return Ok(_mapper.Map<Instance_With_AnswersDTO>(instance));
+    }
 
 }

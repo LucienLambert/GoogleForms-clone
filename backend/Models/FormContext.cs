@@ -14,7 +14,7 @@ public class FormContext : DbContext
             .HasKey(o => new { o.Idx, o.OptionListId });
 
         modelBuilder.Entity<Answer>()
-            .HasKey(a => new { a.InstanceId, a.QuestionId, a.Idx });
+            .HasKey(a => new { a.InstanceId, a.QuestionId, Idx = a.Idx });
             
         //liaison des composite Key pour le model UserFormAccess
         modelBuilder.Entity<UserFormAccess>(ufa => {

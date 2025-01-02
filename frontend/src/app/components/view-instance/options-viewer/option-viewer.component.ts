@@ -20,7 +20,8 @@ export class OptionViewerComponent implements OnInit {
 
     private _answers?: Answer[]; 
     @Input() 
-        set answers(value: Answer[] | undefined) { 
+        set answers(value: Answer[] | undefined) {
+            value = value?.sort(a=>a.questionId);
             this._answers = value; 
             this.onAnswersChange(value);
         } 
@@ -118,6 +119,7 @@ export class OptionViewerComponent implements OnInit {
         
         if (regexp.test(integerInput.value)) {
             integerInput.control.setErrors(null);
+            this.currentValue = this.currentValue.toString();
             this.updateValues();
         } else {
             if (integerInput.value) {

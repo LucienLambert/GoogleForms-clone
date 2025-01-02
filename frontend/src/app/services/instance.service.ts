@@ -19,4 +19,9 @@ export class InstanceService {
             );
     }
 
+    updateInstanceWithAnswers(instance: Instance): Observable<Instance> {
+        return this.http.put<Instance>(`${this.baseUrl}api/instances/update/answers`, instance)
+            .pipe(map(res => new Instance(res)));
+    }
+
 }

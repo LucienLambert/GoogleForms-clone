@@ -11,7 +11,7 @@ public class InstanceValidation : AbstractValidator<Instance> {
     public InstanceValidation(FormContext context) {
         
         _context = context;
-
+        // completed, si elle est remplie, doit être postérieure à started et inférieure ou égale à la date/heure courante.
         RuleFor(i => i.Completed) 
             .GreaterThan(i => i.Started) 
             .WithMessage("The completion date must be posterior to the starting date.") 
@@ -19,8 +19,7 @@ public class InstanceValidation : AbstractValidator<Instance> {
             .WithMessage("The completion date must be less than or equal to the current date.");
         
     }
-
-    // completed, si elle est remplie, doit être postérieure à started et inférieure ou égale à la date/heure courante.
+    
 
     
 }

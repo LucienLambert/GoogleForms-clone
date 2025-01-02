@@ -1,4 +1,4 @@
-import {Component, OnInit} from '@angular/core';
+import {Component, OnDestroy, OnInit} from '@angular/core';
 import {AuthenticationService} from '../../services/authentication.service';
 import {ActivatedRoute, Router} from '@angular/router';
 
@@ -9,13 +9,14 @@ import {Form} from '../../models/form';
 import {Question, QuestionType} from '../../models/question';
 import {Instance} from '../../models/instance';
 import {Answer} from "../../models/answer";
+import {interval, Subscription} from "rxjs";
 
 @Component({
     selector: 'app-view-instance',
     templateUrl: './view-instance.component.html',
     styleUrl:'./view-instance.component.css'
 })
-export class ViewInstanceComponent implements OnInit {
+export class ViewInstanceComponent implements OnInit, OnDestroy {
 
     user?: User;
     form?: Form;
@@ -29,6 +30,7 @@ export class ViewInstanceComponent implements OnInit {
         return this._answers;
     }
     public set answers(value: Answer[] | undefined) {
+        value = value?.sort(a=>a.questionId);
         this._answers = value;
         this.checkForRequiredQuestions()
     }
@@ -47,7 +49,11 @@ export class ViewInstanceComponent implements OnInit {
                 private instanceService: InstanceService, private formService: FormService, private route: ActivatedRoute) {
 
     }
-    
+
+
+    // Timer 
+    private intervalSubscription: Subscription| undefined;
+    private tempAnswers: Answer[] = [];
     
     ngOnInit() {
         
@@ -55,6 +61,60 @@ export class ViewInstanceComponent implements OnInit {
         
         this.fetchFormWithQuestions(formId);
         this.fetchInstance(formId);
+
+        // Sends the data to the backend if there are modifications in a four seconds loop
+        this.intervalSubscription = interval(4000)
+            .subscribe(() => {
+                if (this.answers && this.currentAnswers) {
+                    let fullanswers = [...(this.answers ?? []), ...(this.currentAnswers ?? [])].sort((a, b) => {
+                        const questionIdComparison = a.questionId - b.questionId;
+                        if (questionIdComparison !== 0) {
+                            return questionIdComparison;
+                        }
+                        return a.idx - b.idx;
+                    });
+                    this.tempAnswers = [...this.tempAnswers].sort((a, b) => {
+                        const questionIdComparison = a.questionId - b.questionId;
+                        if (questionIdComparison !== 0) {
+                            return questionIdComparison;
+                        }
+                        return a.idx - b.idx;
+                    });
+                    if (JSON.stringify(this.tempAnswers) !== JSON.stringify(fullanswers)) {
+                        if (this.isInProgress()) {
+                            console.log("updating...")
+                            this.saveAnswers();
+                            
+                        }
+                    }
+                    this.tempAnswers = fullanswers;
+                }
+            });
+    }
+
+    ngOnDestroy() {
+        // Stops the timer
+        if (this.intervalSubscription) {
+            this.intervalSubscription.unsubscribe();
+        }
+    }
+    
+    saveAnswers() {
+        let fullanswers = [...(this.answers ?? []), ...(this.currentAnswers ?? [])].sort((a, b) => {
+            const questionIdComparison = a.questionId - b.questionId;
+            if (questionIdComparison !== 0) {
+                return questionIdComparison;
+            }
+            return a.idx - b.idx;
+        });
+        if (this.instance) {
+            this.instance.listAnswers = fullanswers;
+            
+            this.instanceService.updateInstanceWithAnswers(this.instance)
+                .subscribe(updatedInstance => {
+                    console.log("Updated answers!");
+                });
+        }
     }
     
     switchQuestion(nb: number) {
@@ -84,7 +144,6 @@ export class ViewInstanceComponent implements OnInit {
         }
     }
     
-    
     isInProgress(): boolean {
         return !this.instance?.completed;
     }
@@ -97,54 +156,54 @@ export class ViewInstanceComponent implements OnInit {
         console.log("saved button pressed");
     }
 
-    // received value after answering the question
-    public receiveValue($event : any){
-  
-        if (this.currentQuestion?.questionType == QuestionType.Check) {
-            
-            if ($event.length > 0) {
-                let count = 1;
-                let newAnswers : Answer[] = [];
-                $event?.forEach((value : number) => {
-                    
-                    const answerData = {
-                        instanceId: this.instance?.id,
-                        questionId: this.currentQuestion?.id,
-                        idx: count,
-                        value: value,
-                    }
-                    newAnswers.push(new Answer(answerData));
-                    ++count;
-                });
-                
-                this.currentAnswers = newAnswers;
-                this.updateAnswers();
-                this.updateCurrentAnswers();
-                //persist
-                
-            } else {
-                this.currentAnswers = [];
-                //persist
-            }
-            
+    public receiveValue($event: any): void {
+        if (!this.currentQuestion) {
+            return;
+        }
+        const questionType = this.currentQuestion.questionType;
+        if (questionType === QuestionType.Check) {
+            this.handleCheckAnswers($event);
         } else {
-        
-            if ($event) {
+            this.handleSingleAnswer($event, questionType);
+        }
+    }
+
+    private handleCheckAnswers(selectedValues: string[]): void {
+        if (!selectedValues.length) {
+            this.currentAnswers = [];
+        } else {
+            let count = 1;
+            let newAnswers : Answer[] = [];
+            selectedValues.forEach((value : string) => {
                 const answerData = {
                     instanceId: this.instance?.id,
                     questionId: this.currentQuestion?.id,
-                    idx: 0,
-                    value: $event,
+                    idx: count,
+                    value: value.toString(),
                 }
-                const answer = new Answer(answerData);
-                this.answers?.push(answer);
-                this.updateCurrentAnswers();
-                //persist
-            } else {
-                this.currentAnswers = [];
-                //persist
-            }
+                newAnswers.push(new Answer(answerData));
+                ++count;
+            });
+            this.currentAnswers = newAnswers;
         }
+        this.updateAnswers();
+        this.updateCurrentAnswers();
+    }
+
+    private handleSingleAnswer(value: any, questionType: QuestionType): void {
+        if (!value) {
+            this.currentAnswers = [];
+        } else {
+            const answerData = {
+                instanceId: this.instance?.id,
+                questionId: this.currentQuestion?.id,
+                idx: 0,
+                value: questionType === QuestionType.Date || questionType === QuestionType.Integer ? value : value?.trim(),
+            };
+            const answer = new Answer(answerData);
+            this.answers?.push(answer);
+        }
+        this.updateCurrentAnswers();
     }
 
     private fetchFormWithQuestions(formId : number) {
@@ -158,6 +217,9 @@ export class ViewInstanceComponent implements OnInit {
             error: (err) => {
                 console.log(err);
                 switch (err.status) {
+                    case 400:
+                        this.router.navigate(['/unknown']);
+                        break;
                     case 404:
                         this.router.navigate(['/unknown']);
                         break;
@@ -185,7 +247,13 @@ export class ViewInstanceComponent implements OnInit {
                 // ...
                 switch (err.status) {
                     case 404:
-
+                        this.router.navigate(['/unknown']);
+                        break;
+                    case 401:
+                        this.router.navigate(['/restricted']);
+                        break;
+                    default:
+                        this.router.navigate(['/unknown']);
                 }
             }
 
