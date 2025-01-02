@@ -25,6 +25,7 @@ export class NavBarComponent {
     @Input() saveDisabled: boolean = true;
     @Input() isAnalyseVisible: boolean = false;
     @Input() isEditVisible: boolean = false;
+    @Input() isOptionListVisible: boolean = false;
 
     constructor(private router: Router, private _location: Location, private authService : AuthenticationService) {
     }

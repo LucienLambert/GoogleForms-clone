@@ -58,7 +58,7 @@
     </button>
 
     <!-- Redirection vers manage option lists-->
-    <button mat-menu-item routerLink="/manage-option-lists">
+    <button *ngIf="isOptionListVisible" mat-menu-item routerLink="/manage-option-lists">
         <mat-icon>person</mat-icon>
         <span>My Option Lists</span>
     </button>

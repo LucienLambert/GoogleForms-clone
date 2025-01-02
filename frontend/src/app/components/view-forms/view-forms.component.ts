@@ -1,11 +1,10 @@
-import { Component, OnInit } from '@angular/core';
-import { AuthenticationService } from '../../services/authentication.service';
-import { Role, User } from '../../models/user';
-import { ActivatedRoute, Router } from '@angular/router';
-import { FormService } from '../../services/form.service';
-import { Form } from '../../models/form';
-import { forEach } from 'lodash-es';
-import { AccessType } from 'src/app/models/userFormAccess';
+import {Component, OnInit} from '@angular/core';
+import {AuthenticationService} from '../../services/authentication.service';
+import {Role, User} from '../../models/user';
+import {Router} from '@angular/router';
+import {FormService} from '../../services/form.service';
+import {Form} from '../../models/form';
+import {AccessType} from 'src/app/models/userFormAccess';
 
 @Component({
     selector: 'app-view-forms',
@@ -21,6 +20,7 @@ export class ViewFormsComponent implements OnInit {
     isSaveVisible: boolean = false;
     isSearchVisible: boolean = true;
     isAddVisible: boolean = true;
+    isOptionListVisible: boolean = false;
 
     constructor(private authService: AuthenticationService, private router: Router,
         private formService: FormService) {
@@ -31,6 +31,10 @@ export class ViewFormsComponent implements OnInit {
         if(this.authentification()) {
             console.log(this.user);
             this.getOwnerPublicAccessForm();
+        }
+        
+        if(this.user?.role != Role.Guest) {
+            this.isOptionListVisible = true;
         }
     }
 
