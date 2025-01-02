@@ -5,6 +5,7 @@ import {AuthenticationService} from "../../services/authentication.service";
 import {UserService} from "../../services/user.service";
 import {User} from "../../models/user";
 import { OptionList } from '../../models/optionList';
+import {lastValueFrom} from "rxjs";
 
 @Component({
     selector: 'app-manage-option-lists',
@@ -24,34 +25,36 @@ export class ManageOptionsListComponent implements OnInit {
     ngOnInit() {
         this.retrieveOptionLists();
     }
-    
-    retrieveOptionLists(){
-        this.fetchOwnerData();
 
-        this.userService.getUserOptionLists(1).subscribe({
-            next: (data) => {
-                this.optionLists = data;
-            },
-            error: (err) => {
-                console.error('Failed to fetch option lists:', err);
+
+    async retrieveOptionLists() {
+        try {
+            const owner = await this.fetchOwnerData();
+            this.owner = owner;
+            if (!owner?.id) {
+                throw new Error('Owner data is missing');
             }
-        })
+            this.optionLists = await lastValueFrom(this.userService.getUserOptionLists(owner.id));
+            console.log(this.optionLists);
+        } catch (err) {
+            console.error('Failed to fetch option lists:', err);
+        }
     }
 
-    fetchOwnerData(): void {
+    async fetchOwnerData(): Promise<User | undefined> {
         const userId = this.authenticationService.getCurrentUser()?.id;
-        this.userService.getUserById(userId!).subscribe({
-            next: (owner) => {
-                this.owner = owner;
-            },
-            error: (err) => {
-                console.error('Error fetching owner data:', err);
-            }
-        });
+        if (!userId) {
+            throw new Error('User ID not found');
+        }
+        return await lastValueFrom(this.userService.getUserById(userId));
+    }
+
+    get sortedOptionLists(): OptionList[] {
+        return (this.optionLists ?? []).slice().sort((a, b) => a.name.localeCompare(b.name));
     }
 
     onEdit(optionList: OptionList) {
-        console.log('Edit clicked for:', optionList);
+        this.router.navigate(['add-edit-option-lists', optionList.id]);
     }
 
     onDelete(optionList: OptionList) {
@@ -59,10 +62,10 @@ export class ManageOptionsListComponent implements OnInit {
     }
 
     onDuplicate(optionList: OptionList) {
-        console.log('Duplicate clicked for:', optionList);
+        this.router.navigate(['add-edit-option-lists', optionList.id]);
     }
 
     onAdd() {
-        console.log('Add option list clicked');
+        this.router.navigate(['add-edit-option-lists']);
     }
 }

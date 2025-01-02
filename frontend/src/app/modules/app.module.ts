@@ -30,6 +30,7 @@ import {OptionViewerComponent} from "../components/view-instance/options-viewer/
 import {AnalyseComponent} from "../components/analyse/analyse.component";
 import {ManageOptionsListComponent} from "../components/manage-option-lists/manage-option-lists.component";
 import {OptionListItemComponent} from "../components/option-list-item/option-list-item.component";
+import {AddEditOptionListComponent} from "../components/add-edit-option-list/add-edit-option-list.component";
 
 
 @NgModule({
@@ -52,7 +53,8 @@ import {OptionListItemComponent} from "../components/option-list-item/option-lis
         AnalyseComponent,
         OptionViewerComponent,
         ManageOptionsListComponent,
-        OptionListItemComponent
+        OptionListItemComponent,
+        AddEditOptionListComponent
     ],
     imports: [
         BrowserModule.withServerTransition({appId: 'ng-cli-universal'}),

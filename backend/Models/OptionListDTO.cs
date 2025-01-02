@@ -11,4 +11,9 @@ namespace prid_2425_a01.Models
     {
         public ICollection<OptionValueDTO> ListOptionValues { get; set; } = new List<OptionValueDTO>();
     }
+
+    public class OptionList_With_NotReferencedDTO : OptionListDTO
+    {
+        public bool NotReferenced { get; set; }
+    }
 }

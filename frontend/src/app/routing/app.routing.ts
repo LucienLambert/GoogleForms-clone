@@ -14,6 +14,7 @@ import { ViewInstanceComponent } from '../components/view-instance/view-instance
 import {CreateEditFormComponent} from "../components/create-edit-form/create-edit-form.component";
 import {AnalyseComponent} from "../components/analyse/analyse.component";
 import {ManageOptionsListComponent} from "../components/manage-option-lists/manage-option-lists.component";
+import {AddEditOptionListComponent} from "../components/add-edit-option-list/add-edit-option-list.component";
 
 const appRoutes: Routes = [
     //{ path: '', component: HomeComponent, pathMatch: 'full' },
@@ -34,6 +35,8 @@ const appRoutes: Routes = [
     { path: 'create-edit-form/:id', component: CreateEditFormComponent, canActivate: [AuthGuard] },
     { path: 'analyse/:id', component: AnalyseComponent, canActivate: [AuthGuard] },
     { path: 'manage-option-lists', component: ManageOptionsListComponent, canActivate: [AuthGuard] },
+    { path: 'add-edit-option-lists', component: AddEditOptionListComponent, canActivate: [AuthGuard] },
+    { path: 'add-edit-option-lists/:id', component: AddEditOptionListComponent, canActivate: [AuthGuard] },
     { path: '**', component: UnknownComponent }
 ];
 

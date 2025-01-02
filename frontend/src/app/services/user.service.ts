@@ -22,6 +22,6 @@ export class UserService {
     }
     
     getUserOptionLists(userId: number): Observable<Array<OptionList>> {
-        return this.http.get<Array<OptionList>>(`${this.baseUrl}api/users/optionLists/${userId}`);
+        return this.http.get<Array<OptionList>>(`${this.baseUrl}api/users/optionListsWithNotReferenced/${userId}`);
     }
 }

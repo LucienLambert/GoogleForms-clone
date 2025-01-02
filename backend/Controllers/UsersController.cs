@@ -10,6 +10,8 @@ using System.Security.Claims;
 
 
 using prid_2425_a01.Models;
+using System.Text.Json;
+
 namespace prid_2425_a01.Controllers;
 
 [Authorize]
@@ -130,12 +132,18 @@ public class UsersController : ControllerBase {
     }
 
     [Authorized(Role.Admin, Role.User)]
-    [HttpGet("optionLists/{userId:int}")]
-    public async Task<ActionResult<List<OptionListDTO>>> GetOptionLists(int userId) {
+    [HttpGet("optionListsWithNotReferenced/{userId:int}")]
+    public async Task<ActionResult<List<OptionList_With_NotReferencedDTO>>> GetOptionListsWithNotReferenced(int userId) {
         var optionLists = await _context.OptionLists.Where(op => op.OwnerId == userId || op.OwnerId == null)
-            .Include(op => op.ListOptionValues).ToListAsync();
-        var optionListsDTO = _mapper.Map<List<OptionListDTO>>(optionLists);
+            .Include(op => op.ListOptionValues)
+            .Select(op => new OptionList_With_NotReferencedDTO {
+                Id = op.Id,
+                Name = op.Name,
+                OwnerId = op.OwnerId,
+                NotReferenced = !_context.Questions.Any(q => q.OptionListId == op.Id)
+            })
+            .ToListAsync();
         
-        return optionListsDTO;
+        return optionLists;
     }
 }
