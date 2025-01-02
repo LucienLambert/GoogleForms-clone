@@ -34,7 +34,7 @@ export class AddEditOptionListComponent implements OnInit {
   
   BindReactiveForm(){
     this.form = this.formBuilder.group({
-      id: [''],
+      id: null,
       title: ['', [Validators.required, Validators.minLength(3)], [this.uniqueTitleValidator.bind(this)]],
       description: ['', Validators.minLength(3)],
       owner: ['', Validators.required],
