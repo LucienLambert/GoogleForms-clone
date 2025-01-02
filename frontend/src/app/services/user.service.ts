@@ -24,4 +24,8 @@ export class UserService {
     getUserOptionLists(userId: number): Observable<Array<OptionList>> {
         return this.http.get<Array<OptionList>>(`${this.baseUrl}api/users/optionListsWithNotReferenced/${userId}`);
     }
+
+    deleteOptionList(optionListId: number): Observable<boolean> {
+        return this.http.delete<boolean>(`${this.baseUrl}api/users/deleteOptionList/${optionListId}`);
+    }
 }

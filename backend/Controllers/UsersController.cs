@@ -146,4 +146,17 @@ public class UsersController : ControllerBase {
         
         return optionLists;
     }
+
+    [Authorized(Role.Admin, Role.User)]
+    [HttpDelete("deleteOptionList/{optionListId:int}")]
+    public async Task<ActionResult<bool>> DeleteOptionList(int optionListId) {
+        var optionList = await _context.OptionLists.FindAsync(optionListId);
+        if (optionList == null) {
+            return NotFound("OptionList not found.");
+        }
+        
+        _context.OptionLists.Remove(optionList);
+        await _context.SaveChangesAsync();
+        return true;
+    }
 }

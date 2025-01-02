@@ -35,7 +35,6 @@ export class ManageOptionsListComponent implements OnInit {
                 throw new Error('Owner data is missing');
             }
             this.optionLists = await lastValueFrom(this.userService.getUserOptionLists(owner.id));
-            console.log(this.optionLists);
         } catch (err) {
             console.error('Failed to fetch option lists:', err);
         }
@@ -58,7 +57,16 @@ export class ManageOptionsListComponent implements OnInit {
     }
 
     onDelete(optionList: OptionList) {
-        console.log('Delete clicked for:', optionList);
+        this.userService.deleteOptionList(optionList.id).subscribe({
+            next: (success) => {
+                if (success) {
+                    console.log('OptionList deleted successfully.');
+                }
+            },
+            error: (err) => {
+                console.error('Failed to delete OptionList:', err);
+            }
+        });
     }
 
     onDuplicate(optionList: OptionList) {

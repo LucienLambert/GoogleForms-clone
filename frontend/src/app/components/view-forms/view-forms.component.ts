@@ -19,7 +19,7 @@ export class ViewFormsComponent implements OnInit {
 
     isSaveVisible: boolean = false;
     isSearchVisible: boolean = true;
-    isAddVisible: boolean = true;
+    isAddVisible: boolean = false;
     isOptionListVisible: boolean = false;
 
     constructor(private authService: AuthenticationService, private router: Router,
@@ -35,6 +35,7 @@ export class ViewFormsComponent implements OnInit {
         
         if(this.user?.role != Role.Guest) {
             this.isOptionListVisible = true;
+            this.isAddVisible = true;
         }
     }
 
