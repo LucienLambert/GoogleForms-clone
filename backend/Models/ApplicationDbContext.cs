@@ -33,12 +33,25 @@ public class ApplicationDbContext : DbContext
         });
 
         //liaison entre Form.
-        modelBuilder.Entity<Form>()
-            .HasOne(f => f.Owner)               //Un form possède un User
-            .WithMany(u => u.ListForms)         //Un user possède plusieur Form
-            .HasForeignKey(f => f.OwnerId)      //indique que la clé étrangère est représenté par Owner dans Form
-            .OnDelete(DeleteBehavior.Cascade);  //si le user est Del on supprime tous les formulaires lié.         
+        modelBuilder.Entity<Form>(f => {
+            f.HasOne(f => f.Owner)               //Un form possède un User
+                .WithMany(u => u.ListForms)         //Un user possède plusieur Form
+                .HasForeignKey(f => f.OwnerId)      //indique que la clé étrangère est représenté par Owner dans Form
+                .OnDelete(DeleteBehavior.Cascade);  //si le user est Del on supprime tous les formulaires lié.
 
+            f.HasMany(f => f.ListUserFormAccesses)
+                .WithOne(u => u.Form)
+                .OnDelete(DeleteBehavior.Cascade);
+            
+            f.HasMany(f => f.ListInstances)
+                .WithOne(i => i.Form)
+                .OnDelete(DeleteBehavior.Cascade);
+            
+            f.HasMany(f => f.ListQuestions)
+                .WithOne(q => q.Form)
+                .OnDelete(DeleteBehavior.Cascade);
+        });
+            
         //liaisons Instance
         modelBuilder.Entity<Instance>(i => {
             i.HasOne(i => i.Form)
@@ -57,6 +70,7 @@ public class ApplicationDbContext : DbContext
                 .OnDelete(DeleteBehavior
                     .Cascade); // Si une Instance est supprimée, supprime les réponses en relation, parait inversé car c'est le possesseur de la collection qui est visé par la règle
         });
+
         //liaisons OptionValue
         modelBuilder.Entity<OptionValue>(ov => {
             ov.HasOne(ov => ov.OptionList)
@@ -64,12 +78,18 @@ public class ApplicationDbContext : DbContext
                 .HasForeignKey(ol => ol.OptionListId)
                 .OnDelete(DeleteBehavior.Cascade);
         });
-        
+
         modelBuilder.Entity<Question>()
-            .HasOne(q => q.Form)
-            .WithMany(f => f.ListQuestions)
-            .HasForeignKey(q => q.FormId)
-            .OnDelete(DeleteBehavior.NoAction);
+            .HasMany(q => q.ListAnswers)
+            .WithOne(a => a.Question)
+            .OnDelete(DeleteBehavior.Cascade);
+        
+        //plus utilie, j'ai fait la relation directement sur Form plus haut
+        // modelBuilder.Entity<Question>()
+        //     .HasOne(q => q.Form)
+        //     .WithMany(f => f.ListQuestions)
+        //     .HasForeignKey(q => q.FormId)
+        //     .OnDelete(DeleteBehavior.NoAction);
 
         //TODO ADD LIAISON ENTRE
         //ANSWER -> QUESTION

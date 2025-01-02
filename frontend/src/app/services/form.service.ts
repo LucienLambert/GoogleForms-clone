@@ -4,7 +4,8 @@ import { HttpClient } from '@angular/common/http';
 import { Form } from '../models/form';
 import { map } from 'rxjs/operators';
 import { Observable } from 'rxjs';
-import {Question, QuestionType} from '../models/question';
+import { Question, QuestionType } from '../models/question';
+
 import { AccessType } from '../models/userFormAccess';
 
 @Injectable({ providedIn: 'root' })
@@ -97,7 +98,22 @@ export class FormService {
         return this.http.get<boolean>(`${this.baseUrl}api/forms/isTitleUnique`, {
             params: { title, ownerId, formId }
         });
+    }
 
+    delFormById(formId: number) : Observable<boolean> {
+        return this.http.delete<boolean>(`${this.baseUrl}api/forms/${formId}/form`);
+    }
+
+    moveUpQuestion(formId: number, questionId : number) : Observable<boolean> {
+        return this.http.post<boolean>(`${this.baseUrl}api/forms/${formId}/moveUpQuestion/${questionId}`, null);
+    }
+
+    moveDownQuestion(formId: number, questionId : number) : Observable<boolean> {
+        return this.http.post<boolean>(`${this.baseUrl}api/forms/${formId}/moveDownQuestion/${questionId}`, null);
+    }
+
+    isPublicFormChange(formId: number) : Observable<boolean> {
+        return this.http.post<boolean>(`${this.baseUrl}api/forms/${formId}/isPublicFormChange`, null);
     }
 
     getFormQuestions(formId: number): Observable<Array<Question>> {

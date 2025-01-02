@@ -67,12 +67,6 @@ export class ViewFormsComponent implements OnInit {
             next: (data) => {
                 this.forms = data;
                 this.filteredForms = data;
-                console.log(this.forms);
-                this.forms.forEach( form => {
-                    if(form.listUserFormAccess[0] != null){
-                        console.log("[title form : "+form.title +"] [id form : " +form.id + "] [accessType Form : " + form.listUserFormAccess[0].accessType + "]");
-                    }
-                })
             },
             error: (err) => {
             this.errorMessage = "Erreur de récupération des formulaires.";
@@ -88,7 +82,7 @@ export class ViewFormsComponent implements OnInit {
     }
 
     // Le bouton "Open" ne doit pas être visible si le formulaire ne contient pas de questions.
-    openForm(form: Form){
+    openForm(form: Form) {
         console.log('Formulaire sélectionné:', form);
         this.router.navigate(['view-instance', form.id]);
     }
@@ -118,6 +112,7 @@ export class ViewFormsComponent implements OnInit {
         } else {
             // Filter forms based on the search term
             this.filteredForms = this.forms.filter(form =>
+                form.listQuestion?.some(question => question.title.toLowerCase().includes(term.toLowerCase())) ||
                 form.title.toLowerCase().includes(term.toLowerCase()) ||
                 form.description!.toLowerCase().includes(term.toLowerCase()) ||
                 form.owner?.firstName!.toLowerCase().includes(term.toLowerCase()) ||

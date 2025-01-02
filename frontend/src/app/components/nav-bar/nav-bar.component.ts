@@ -11,8 +11,12 @@ import { AuthenticationService } from 'src/app/services/authentication.service';
 export class NavBarComponent {
     @Output() searchEvent = new EventEmitter<string>();
     @Output() saveEvent = new EventEmitter<void>();
+<<<<<<< HEAD
     @Output() editEvent = new EventEmitter<void>();
     @Output() AnalyseEvent = new EventEmitter<void>();
+=======
+    @Output() delFormEvent = new EventEmitter<void>();
+>>>>>>> Lucien
 
     @ViewChild('searchInput') searchInput!: ElementRef<HTMLInputElement>;
 
@@ -23,9 +27,14 @@ export class NavBarComponent {
     @Input() isAddVisible: boolean = false;
     @Input() backButtonVisible: boolean = false;
     @Input() saveDisabled: boolean = true;
+<<<<<<< HEAD
     @Input() isAnalyseVisible: boolean = false;
     @Input() isEditVisible: boolean = false;
     @Input() isOptionListVisible: boolean = false;
+=======
+    @Input() analyseVisible: boolean = false;
+    @Input() delFormVisible: boolean = false;
+>>>>>>> Lucien
 
     constructor(private router: Router, private _location: Location, private authService : AuthenticationService) {
     }
@@ -68,6 +77,14 @@ export class NavBarComponent {
     }
     
     analyse() {
+<<<<<<< HEAD
         this.AnalyseEvent.emit();
+=======
+        this.router.navigate(['analyse']);
+    }
+
+    delForm(){
+        this.delFormEvent.emit();
+>>>>>>> Lucien
     }
 }
