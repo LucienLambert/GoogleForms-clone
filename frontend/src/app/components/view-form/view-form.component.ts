@@ -20,12 +20,10 @@ export class ViewFormComponent implements OnInit {
     user?: User;
     instanceInProgress : boolean = false;
     backButtonVisible: boolean = true;
-<<<<<<< HEAD
     isEditVisible: boolean = true;
     isAnalyseVisible: boolean = true;
-=======
     delFormButton : boolean = true;
->>>>>>> Lucien
+
 
     constructor(private authService: AuthenticationService, private router: Router,
         private formService: FormService, private route: ActivatedRoute, private modalDialog : MatDialog) {
@@ -115,6 +113,7 @@ export class ViewFormComponent implements OnInit {
     }
 
     analyse() {
+        console.log(this.form!.id)
         this.router.navigate(['analyse/', this.form!.id]);
     }
 
