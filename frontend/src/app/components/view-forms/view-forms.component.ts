@@ -40,7 +40,7 @@ export class ViewFormsComponent implements OnInit {
 
     authentification() {
         if (!this.authService.currentUser) {
-            this.router.navigate(['/login']);
+            this.router.navigate(['']);
             return false;
         } else {
             this.user = this.authService.currentUser;
