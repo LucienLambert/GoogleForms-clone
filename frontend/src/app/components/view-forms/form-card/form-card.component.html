@@ -17,7 +17,7 @@
       </mat-card-title>
     </mat-card-header>
     <mat-card-content>
-      <mat-card-subtitle>{{ form.description || 'No description' }}</mat-card-subtitle>
+      <mat-card-subtitle *ngIf="user?.role != 0">{{ form.description || 'No description' }}</mat-card-subtitle>
       <p>by <strong>{{ form.owner.firstName }} {{ form.owner.lastName }}</strong></p>
 
       <div *ngIf="user?.role != 0 && form.listInstance.length > 0">
@@ -34,7 +34,7 @@
       
     </mat-card-content>
     <mat-card-actions>
-      <button mat-raised-button color="primary" (click)="openForm()">Open</button>
+      <button *ngIf="form?.listQuestion!.length > 0" mat-raised-button color="primary" (click)="openForm()">Open</button>
       <button *ngIf="isManageButtonVisible" mat-raised-button color="primary" (click)="manageForm()">Manage</button>
     </mat-card-actions>
     <mat-card-footer>

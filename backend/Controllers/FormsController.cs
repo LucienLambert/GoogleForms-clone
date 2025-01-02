@@ -162,7 +162,7 @@ public class FormsController : ControllerBase {
 
     [Authorize]
     [HttpGet("Owner_Public_Access/forms")]
-    public async Task<ActionResult<IEnumerable<FormDTO_With_All_ListDTO>>> GetOwnerPublicAccessForm(){
+    public async Task<ActionResult<IEnumerable<FormDTO_With_All_ListDTO>>> GetOwnerPublicAccessForm() {
 
         var userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
 
@@ -181,6 +181,7 @@ public class FormsController : ControllerBase {
             .Include(f => f.ListInstances)
             .Include(f => f.Owner)
             .Include(f => f.ListUserFormAccesses.Where(ufa => ufa.UserId == userIdInt))
+            .Include(f => f.ListQuestions)
             .OrderBy(f => f.Title)
             .ToListAsync();
             
@@ -380,7 +381,7 @@ public class FormsController : ControllerBase {
     }
 
     private async Task<ActionResult<bool>> CanActionOnQuestionForm(int formId, int questionId){
-                var userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+        var userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
 
         if (string.IsNullOrEmpty(userId) || !int.TryParse(userId, out int userIdInt)){
             return Unauthorized("User Unfound");
@@ -400,7 +401,7 @@ public class FormsController : ControllerBase {
             return Forbid("User does not have permission to perform this action.");
         }
 
-    return Ok(true);
+        return Ok(true);
     }
 
     [Authorize]

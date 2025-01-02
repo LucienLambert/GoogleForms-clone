@@ -77,7 +77,7 @@ export class ViewFormsComponent implements OnInit {
     }
 
     // Le bouton "Open" ne doit pas être visible si le formulaire ne contient pas de questions.
-    openForm(form: Form){
+    openForm(form: Form) {
         console.log('Formulaire sélectionné:', form);
         this.router.navigate(['view-instance', form.id]);
     }
@@ -107,6 +107,7 @@ export class ViewFormsComponent implements OnInit {
         } else {
             // Filter forms based on the search term
             this.filteredForms = this.forms.filter(form =>
+                form.listQuestion?.some(question => question.title.toLowerCase().includes(term.toLowerCase())) ||
                 form.title.toLowerCase().includes(term.toLowerCase()) ||
                 form.description!.toLowerCase().includes(term.toLowerCase()) ||
                 form.owner?.firstName!.toLowerCase().includes(term.toLowerCase()) ||
