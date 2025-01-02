@@ -18,8 +18,8 @@ public class FormValidation : AbstractValidator<Form> {
             .MustAsync(BeUniqueTitleForOwner).WithMessage("il existe déjà un form portant se titre pour cet user");
 
         RuleFor(f => f.Description)
-            .MinimumLength(3).When(form => form.Description != null)
-            .WithMessage("la description doit faire 3 caractères min ou être vide");
+            .Must(description => string.IsNullOrEmpty(description) || description.Length >= 3)
+            .WithMessage("La description doit être vide ou contenir au moins 3 caractères.");
     }
 
     //need pour la requête POST (TODO POST)
