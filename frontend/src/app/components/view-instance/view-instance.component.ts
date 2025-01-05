@@ -9,7 +9,6 @@ import {Form} from '../../models/form';
 import {Question, QuestionType} from '../../models/question';
 import {Instance} from '../../models/instance';
 import {Answer} from "../../models/answer";
-import {interval, Subscription} from "rxjs";
 
 @Component({
     selector: 'app-view-instance',
@@ -51,74 +50,39 @@ export class ViewInstanceComponent implements OnInit, OnDestroy {
     }
 
 
-    // Timer 
-    private intervalSubscription: Subscription| undefined;
-    private tempAnswers: Answer[] = [];
-    
+
     ngOnInit() {
         
         const formId = Number(this.route.snapshot.paramMap.get('id'));
         
         this.fetchFormWithQuestions(formId);
         this.fetchInstance(formId);
-
-        // Sends the data to the backend if there are modifications in a four seconds loop
-        this.intervalSubscription = interval(4000)
-            .subscribe(() => {
-                if (this.answers && this.currentAnswers) {
-                    let fullanswers = [...(this.answers ?? []), ...(this.currentAnswers ?? [])].sort((a, b) => {
-                        const questionIdComparison = a.questionId - b.questionId;
-                        if (questionIdComparison !== 0) {
-                            return questionIdComparison;
-                        }
-                        return a.idx - b.idx;
-                    });
-                    this.tempAnswers = [...this.tempAnswers].sort((a, b) => {
-                        const questionIdComparison = a.questionId - b.questionId;
-                        if (questionIdComparison !== 0) {
-                            return questionIdComparison;
-                        }
-                        return a.idx - b.idx;
-                    });
-                    if (JSON.stringify(this.tempAnswers) !== JSON.stringify(fullanswers)) {
-                        if (this.isInProgress()) {
-                            console.log("updating...")
-                            this.saveAnswers();
-                            
-                        }
-                    }
-                    this.tempAnswers = fullanswers;
-                }
-            });
     }
 
     ngOnDestroy() {
-        // Stops the timer
-        if (this.intervalSubscription) {
-            this.intervalSubscription.unsubscribe();
-        }
     }
     
-    saveAnswers() {
-        let fullanswers = [...(this.answers ?? []), ...(this.currentAnswers ?? [])].sort((a, b) => {
-            const questionIdComparison = a.questionId - b.questionId;
-            if (questionIdComparison !== 0) {
-                return questionIdComparison;
-            }
-            return a.idx - b.idx;
-        });
-        if (this.instance) {
-            this.instance.listAnswers = fullanswers;
-            
-            this.instanceService.updateInstanceWithAnswers(this.instance)
-                .subscribe(updatedInstance => {
-                    console.log("Updated answers!");
-                });
+    saveCurrentAnswers() {
+        if (this.currentAnswers && this.currentAnswers.length == 0) {
+            console.log("reponse vide")
+            this.instanceService.DeleteAnswersByInstanceIdAndQuestionId(this.instance?.id!, this.currentQuestion?.id!)
+                .subscribe(res=> {
+                })
+        } else {
+            let instanceIdAndCurrentAnswers : [number, Answer[]] = [this.instance!.id, this.currentAnswers!];
+            this.instanceService.updateAnswers(instanceIdAndCurrentAnswers)
+                     .subscribe(updatedAnswers => {
+                         console.log("Updated answers!",updatedAnswers);
+                     });
         }
     }
     
     switchQuestion(nb: number) {
         if (nb > 0 && nb <= this.questions.length) {
+            if (this.isInProgress()) {
+                // Sends to the backend
+                this.saveCurrentAnswers();    
+            }
             this.currentQuestion = this.questions[nb-1];
             this.questionTracker = nb;
             this.updateAnswers();
@@ -153,7 +117,20 @@ export class ViewInstanceComponent implements OnInit, OnDestroy {
     }
 
     saveButtonAction() {
-        console.log("saved button pressed");
+        if (this.instance) {
+            this.instance.listAnswers.length = 0; 
+            this.instance.listAnswers.push(...(this.answers ?? []), ...(this.currentAnswers ?? []));
+            this.instanceService.updateInstance(this.instance)
+                .subscribe({
+                    next: (data) => {
+                        this.instance=data;
+                        this.isSaveable=false;
+                    },
+                    error: (err) => {
+                        console.log(err);
+                    }
+            });
+        }
     }
 
     public receiveValue($event: any): void {

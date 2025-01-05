@@ -8,6 +8,7 @@ namespace prid_2425_a01.Models;
 public class AnswerValidation : AbstractValidator<Answer>
 {
     private readonly FormContext _context;
+    private int dynamicCount;
 
     public AnswerValidation(FormContext context)
     {
@@ -36,14 +37,7 @@ public class AnswerValidation : AbstractValidator<Answer>
 
                         if (!existingAnswers.Any()) return idx == 1;
 
-                        int expectedIdx = 1;
-                        foreach (var ans in existingAnswers)
-                        {
-                            if (ans.Idx == answer.Idx) continue;
-                            if (ans.Idx != expectedIdx) return false;
-                            expectedIdx++;
-                        }
-                        return true;
+                        return idx == existingAnswers.Count +1;
                     }
                 })
                 .WithMessage("The index must be 0 for all question types except for Check, otherwise, it must be incremented starting from 1.");
@@ -75,7 +69,7 @@ public class AnswerValidation : AbstractValidator<Answer>
 
                     if (string.IsNullOrWhiteSpace(value)) return false;
 
-                    if (question.OptionList == null || question.OptionList.ListOptionValues.All(ov => ov.Idx != answer.Idx))
+                    if (question.OptionList == null)
                         return false;
 
                     return question.OptionList.ListOptionValues.Any(ov => ov.Idx.ToString() == value);
@@ -84,15 +78,18 @@ public class AnswerValidation : AbstractValidator<Answer>
         }); 
         
         
+        
+        
+        
+        
                 RuleSet("Update", () =>
         {
             RuleFor(a => a.Idx)
-                .MustAsync(async (answer, idx, cancellationToken) =>
+                .Must((answer, idx) =>
                 {
-                    var question = await _context.Questions.FindAsync(answer.QuestionId, cancellationToken);
-                    if (question == null) return false; 
+                    var question = _context.Questions.Find(answer.QuestionId);
+                    if (question == null) return false;
 
- 
                     if (question.QuestionType != QuestionType.Check)
                     {
                         return idx == 0;
@@ -100,13 +97,14 @@ public class AnswerValidation : AbstractValidator<Answer>
                     else
                     {
                         if (idx <= 0) return false;
-                        var existingAnswersCount = await _context.Answers
-                            .CountAsync(a => a.InstanceId == answer.InstanceId && a.QuestionId == answer.QuestionId, cancellationToken);
-                        return idx <= existingAnswersCount + 1;
+
+                        var existingAnswers = dynamicCount;
+                        
+                        return idx == existingAnswers +1;
                     }
                 })
-                .WithMessage("The index must be 0 for all question types except for Check, otherwise it must be incremented starting from 1.");
-            
+                .WithMessage("The index must be 0 for all question types except for Check, otherwise, it must be incremented starting from 1.");
+
             RuleFor(a => a.Value)
                 .Must((answer, value) =>
                 {
@@ -134,19 +132,20 @@ public class AnswerValidation : AbstractValidator<Answer>
 
                     if (string.IsNullOrWhiteSpace(value)) return false;
 
-                    if (question.OptionList == null || question.OptionList.ListOptionValues.All(ov => ov.Idx.ToString() != value))
+                    if (question.OptionList == null)
                         return false;
 
                     return question.OptionList.ListOptionValues.Any(ov => ov.Idx.ToString() == value);
                 })
                 .WithMessage("The value must correspond to an index within the option list.");
         }); 
-        
     }
     public async Task<FluentValidation.Results.ValidationResult> ValidateOnCreate(Answer answer) {
         return await this.ValidateAsync(answer, vs => vs.IncludeRuleSets("default", "Create"));
     }
-    public async Task<FluentValidation.Results.ValidationResult> ValidateOnUpdate(Answer answer) {
+    
+    public async Task<FluentValidation.Results.ValidationResult> ValidateOnUpdate(Answer answer, int count) {
+        dynamicCount = count;
         return await this.ValidateAsync(answer, vs => vs.IncludeRuleSets("default", "Update"));
     }
 }

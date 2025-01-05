@@ -3,6 +3,7 @@ using FluentValidation;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.IdentityModel.Tokens;
 using prid_2425_a01.Helpers;
 using System.Security.Claims;
@@ -59,7 +60,7 @@ public class InstancesController : ControllerBase
         Instance freshInstance = new() {
             FormId = id,
             UserId = user.Id,
-            Started = DateTime.Now,
+            Started = DateTime.UtcNow,
             Completed = null
         };
 
@@ -83,50 +84,145 @@ public class InstancesController : ControllerBase
         return Ok(_mapper.Map<Instance_With_AnswersDTO>(instance));
     }
 
-    [HttpPut("update/answers")]
-    public async Task<IActionResult> UpdateInstanceAnswers(Instance_With_AnswersDTO instanceWithAnswersDto) {
-        var userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
-        var currentUser = await _context.Users.FirstOrDefaultAsync(u => u.Id == int.Parse(userId));
 
+        // Updates the instance, its answers and make it completed
+        [HttpPut("instance/completed")]
+        public async Task<IActionResult> CompleteInstance(Instance_With_AnswersDTO instanceDto) {
+            
+            //TODO: Better security
+            var userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+            var currentUser = await _context.Users.FirstOrDefaultAsync(u => u.Id == int.Parse(userId!));
+            if (currentUser == null) {
+                return Unauthorized();
+            }
+
+            var instance = await _context.Instances
+                .Where(i => i.Id == instanceDto.Id)
+                .Include(i => i.ListAnswers)
+                .FirstOrDefaultAsync();
+            
+            if (instance == null)
+                return NotFound();
+            
+            instance.Completed = DateTime.UtcNow;
+            
+            var validator = new InstanceValidation(_context);
+            var result = await validator.ValidateOnUpdate(instance);
+
+            if (!result.IsValid)
+                return BadRequest(result);
+            
+            _context.RemoveRange(instance.ListAnswers);
+            
+            foreach (AnswerDTO instanceDtoListAnswer in instanceDto.ListAnswers)
+            {
+                instance.ListAnswers!.Add(_mapper.Map<Answer>(instanceDtoListAnswer));
+            }
+            
+            _context.Instances.Update(instance);
+            await _context.SaveChangesAsync();
+            
+            return Ok(_mapper.Map<Instance_With_AnswersDTO>(instance));
+        }
+
+
+
+    // update the instance - answers for a single question
+    [HttpPut("update/answers")]
+    public async Task<IActionResult> UpdateAnswers(Instance_With_AnswersDTO instanceDto) {
+        
+        //TODO: Better security
+        var userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+        var currentUser = await _context.Users.FirstOrDefaultAsync(u => u.Id == int.Parse(userId!));
+        if (currentUser == null) {
+            return Unauthorized();
+        }
+
+        var newAnswersDto = instanceDto.ListAnswers;
+        QuestionType questionType;
+        int questionId;
+        if (newAnswersDto.Count > 0) {
+            questionId = newAnswersDto.First().QuestionId;
+            if (newAnswersDto.Any(a => a.QuestionId != questionId)) {
+                return BadRequest("Answers of multiple questions provided.");
+            }
+            questionType = _context.Questions.FirstOrDefault(q => q.Id == questionId)!.QuestionType;
+            
+        } else {
+            return BadRequest("Empty list of answers provided.");
+        }
+        
+        var instance = await _context.Instances.Where(i=>i.Id == instanceDto.Id)
+            .Include(i=>i.ListAnswers)
+            .ThenInclude(a=>a.Question)
+            .FirstOrDefaultAsync();
+
+        if (instance != null) {
+            instance.ListAnswers = instance.ListAnswers.Where(a=>a.QuestionId != questionId).ToList();
+            ICollection<Answer> questionAnswers = new List<Answer>();
+            
+            if (questionType == QuestionType.Check) {
+                foreach (AnswerDTO answerDto in newAnswersDto) {
+                    questionAnswers.Add(_mapper.Map<Answer>(answerDto));    
+                }
+                //Index update
+                var count = 1;
+                questionAnswers = questionAnswers.OrderBy(a => int.Parse(a.Value)).ToList();
+                foreach (Answer questionAnswer in questionAnswers) {
+                    questionAnswer.Idx = count;
+                    ++count;
+                }
+            } else {
+                questionAnswers.Add(_mapper.Map<Answer>(newAnswersDto.First()));
+            }
+            
+            //validation
+            var validator = new AnswerValidation(_context);
+            var answersCount = 0;
+            foreach (Answer questionAnswer in questionAnswers)
+            {
+                var result = await validator.ValidateOnUpdate(questionAnswer, answersCount);
+                if (!result.IsValid)
+                    return BadRequest(result);
+                ++answersCount;
+            }
+            
+            foreach (Answer instanceQuestionAnswer in questionAnswers)
+            {
+                instance.ListAnswers.Add(instanceQuestionAnswer);
+            }
+            
+            instance.ListAnswers = instance.ListAnswers.OrderBy(a=>a.QuestionId).ToList();
+            _context.Instances.Update(instance);
+            await _context.SaveChangesAsync();
+            return Ok(_mapper.Map<Instance_With_AnswersDTO>(instance));
+        } else {
+            return BadRequest("Incorrect datas.");    
+        }
+    }
+    
+    //delete answers for one question
+    [HttpDelete("{instanceId:int}/question/{questionId:int}")]
+    public async Task<ActionResult<bool>> DelQuestionFormById(int instanceId, int questionId) {
+
+        //TODO: Better security
+        var userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+        var currentUser = await _context.Users.FirstOrDefaultAsync(u => u.Id == int.Parse(userId!));
         if (currentUser == null) {
             return Unauthorized();
         }
         
-        var instance = await _context.Instances.Where(instance => instance.Id == instanceWithAnswersDto.Id)
-            .Include(i => i.User)
+        var instance = _context.Instances
             .Include(i => i.ListAnswers)
-            .Include(i => i.Form)
-            .ThenInclude(f => f.Owner)
-            .FirstOrDefaultAsync();
-
+            .FirstOrDefault(i => i.Id == instanceId);
         if (instance == null) {
             return NotFound();
         }
         
-        if (currentUser != instance.User && currentUser != instance.Form.Owner) {
-            return Unauthorized();
-        }
-        
-        var answers = _mapper.Map<List<Answer>>(instanceWithAnswersDto.ListAnswers)
-            .OrderBy(a => a.QuestionId)
-            .ThenBy(a => a.Idx)
-            .ToList();
-            
-        var validator = new AnswerValidation(_context);
-        
-        foreach (Answer answer in answers)
-        {
-            var result = await validator.ValidateOnUpdate(answer);
-            if (!result.IsValid)
-                return BadRequest(answer);
-        }
-        
-        instance.ListAnswers = answers;
-        
+        instance.ListAnswers = instance.ListAnswers.Where(a => a.QuestionId != questionId).ToList();
         _context.Instances.Update(instance);
         await _context.SaveChangesAsync();
 
-        return Ok(_mapper.Map<Instance_With_AnswersDTO>(instance));
+        return Ok(true);
     }
-
 }
