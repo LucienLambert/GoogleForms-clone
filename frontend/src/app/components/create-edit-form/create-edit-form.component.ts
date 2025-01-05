@@ -37,37 +37,37 @@ export class CreateEditFormComponent implements OnInit {
 
     ngOnInit() {
         this.form = this.formBuilder.group({
-            id: [''],
+            id: [0],
             title: ['', [Validators.required, Validators.minLength(3)], [this.uniqueTitleValidator.bind(this)]],
             description: ['', Validators.minLength(3)],
             owner: ['', Validators.required],
             isPublic: [false]
         });
 
-        this.fetchOwnerData(); // Fetch owner data at initialization
-
-        this.route.paramMap.subscribe(params => {
-            const idParam = params.get('id');
-            if (idParam) {
-                const id = Number(idParam);
-                if (!isNaN(id)) {
-                    this.navBarTitle = 'Edit Form';
-                    this.loadForm(id);
-                } else {
-                    console.error('Invalid form ID:', idParam);
-                }
-            } else {
-                this.navBarTitle = 'New Form';
-            }
-        });
-
+        this.fetchOwnerData().subscribe({
+            next: () => {
+                this.route.paramMap.subscribe(params => {
+                    const idParam = params.get('id');
+                    if (idParam) {
+                        const id = Number(idParam);
+                        if (!isNaN(id)) {
+                            this.navBarTitle = 'Edit Form';
+                            this.loadForm(id);
+                        } else {
+                            console.error('Invalid form ID:', idParam);
+                        }
+                    } else {
+                        this.navBarTitle = 'New Form';
+                    }
+                });
+            }})
+        
         this.form.statusChanges.subscribe((status) => {
             this.isSaveDisabled = status !== 'VALID';
         });
     }
 
     loadForm(id: number) {
-        this.fetchOwnerData();
         this.formService.getFormByFormId(id).subscribe({
             next: (formData: Form) => {
                 this.form.patchValue({
@@ -84,51 +84,44 @@ export class CreateEditFormComponent implements OnInit {
         });
     }
 
-    fetchOwnerData(): void {
+    fetchOwnerData(): Observable<User> {
         const userId = this.authenticationService.getCurrentUser()?.id;
-        this.userService.getUserById(userId!).subscribe({
-            next: (owner) => {
+        return this.userService.getUserById(userId!).pipe(
+            tap(owner => {
                 this.owner = owner;
-                this.ownerLoaded.next(owner); // Notify that owner is loaded
+                this.ownerLoaded.next(owner);
                 this.form.patchValue({ owner: `${owner.firstName} ${owner.lastName}` });
-            },
-            error: (err) => {
-                console.error('Error fetching owner data:', err);
-            }
-        });
+            })
+        );
     }
 
     onSave() {
         if (this.form.valid) {
-            this.fetchOwnerData();
-            const formData: Form = this.form.value;
-            formData.owner = this.owner!;
-            formData.ownerId = this.owner!.id;
+            // Wait for owner data to load before saving
+            this.fetchOwnerData().subscribe({
+                next: () => {
+                    const formData: Form = this.form.value;
+                    formData.owner = this.owner!;
+                    formData.ownerId = this.owner!.id;
 
-            this.formService.saveForm(formData).subscribe({
-                next: (response) => {
-                    this.fetchOwnerData();
-                    // Update the page with the new data and title
-                    this.form.patchValue(response);
-                    this.navBarTitle = response.title || 'New Form';
-                    
-                    // Show success message
-                    this.showSuccessMessage = true;
-                    setTimeout(() => {
-                        this.showSuccessMessage = false;
-                    }, 3000);
-                    this.router.navigate(['/home']);
+                    this.formService.saveForm(formData).subscribe({
+                        next: (response) => {
+                            this.form.patchValue(response);
+                            this.navBarTitle = response.title || 'New Form';
+                            this.showSuccessMessage = true;
+                            setTimeout(() => (this.showSuccessMessage = false), 3000);
+                            this.router.navigate(['/home']);
+                        },
+                        error: (err) => {
+                            this.showErrorMessage = true;
+                            setTimeout(() => (this.showErrorMessage = false), 3000);
+                        }
+                    });
                 },
                 error: (err) => {
-                    // Show error message
-                    this.showErrorMessage = true;
-                    setTimeout(() => {
-                        this.showErrorMessage = false;
-                    }, 3000);
+                    console.error('Error fetching owner data:', err);
                 }
             });
-        } else {
-            console.log('Form is invalid');
         }
     }
 
