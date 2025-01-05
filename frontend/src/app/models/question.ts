@@ -17,6 +17,7 @@ export class Question {
     
     id: number;
     idx: number;
+    formId: number;
     form: Form; 
     title: string;
     description?: string;
@@ -28,6 +29,7 @@ export class Question {
     constructor(data: any) {
         this.id = data.id;
         this.idx = data.idx;
+        this.formId = data.formId;
         this.form = data.form;
         this.title = data.title;
         this.description = data.description;

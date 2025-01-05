@@ -1,0 +1,61 @@
+<app-nav-bar [title]="navBarTitle" [backButtonVisible]="backButtonVisible" 
+             [isSaveVisible]="isSaveVisible" [saveDisabled]="isSaveDisabled"
+             (saveEvent)="onSave()" class="toolbar-actions">
+</app-nav-bar>
+
+<form [formGroup]="questionForm">
+    <div class="content">
+        <!-- Titre de la question -->
+        <mat-form-field appearance="fill">
+            <!-- étiquette du field -->
+            <mat-label>Title</mat-label>
+            <!-- Afficher le titre s'il existe -->
+            <input matInput formControlName="title">
+            <mat-error *ngIf="questionForm.get('title')?.errors?.['required']">Required</mat-error>
+            <mat-error *ngIf="questionForm.get('title')?.errors?.['minlength']">Title must be at least 3 characters.</mat-error>
+        </mat-form-field>
+    
+        <!-- Description de la question -->
+        <mat-form-field appearance="fill">
+        <mat-label>Description</mat-label>
+        <input matInput formControlName="description">
+        <mat-error *ngIf="questionForm.get('description')?.errors?.['minlength']">Description 3 characters.</mat-error>
+        </mat-form-field>
+        
+        <!-- Type de la question -->
+        <mat-form-field appearance="fill">
+            <mat-label>Type</mat-label>
+            <mat-select formControlName="questionType">
+            <mat-option *ngFor="let type of questionTypes" [value]="type">
+                {{ type }}
+            </mat-option>
+            </mat-select>
+        </mat-form-field>
+    </div>
+    <div class="optionList" *ngIf="showOptionList">
+        <!-- Affichage conditionnel de l'option list -->
+        <mat-form-field appearance="fill">
+            <mat-label>Option List</mat-label>
+                <mat-select formControlName="optionList">
+                    <mat-option *ngFor="let option of optionList" [value]="option">
+                        {{ option.name }}
+                    </mat-option>
+                </mat-select>
+        </mat-form-field>
+        <!-- Affichage des boutons add et edit -->
+        <div class="buttons">
+            <button mat-icon-button (click)="addOptionList()">
+                <mat-icon>add</mat-icon>
+            </button>
+            <button mat-icon-button >
+                <mat-icon>edit</mat-icon>
+            </button>
+        </div>
+    </div>
+
+    <div class="required">   
+        <mat-checkbox formControlName="required">
+            Is Required
+        </mat-checkbox>
+    </div>
+</form>

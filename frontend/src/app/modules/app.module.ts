@@ -31,6 +31,7 @@ import {AnalyseComponent} from "../components/analyse/analyse.component";
 import {ManageOptionsListComponent} from "../components/manage-option-lists/manage-option-lists.component";
 import {OptionListItemComponent} from "../components/option-list-item/option-list-item.component";
 import {AddEditOptionListComponent} from "../components/add-edit-option-list/add-edit-option-list.component";
+import { CreateEditQuestionComponent } from '../components/create-edit-question/create-edit-question.component';
 
 
 @NgModule({
@@ -54,7 +55,8 @@ import {AddEditOptionListComponent} from "../components/add-edit-option-list/add
         OptionViewerComponent,
         ManageOptionsListComponent,
         OptionListItemComponent,
-        AddEditOptionListComponent
+        AddEditOptionListComponent,
+        CreateEditQuestionComponent
     ],
     imports: [
         BrowserModule.withServerTransition({appId: 'ng-cli-universal'}),

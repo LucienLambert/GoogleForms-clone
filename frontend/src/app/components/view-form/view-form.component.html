@@ -52,7 +52,7 @@
     </ng-template>
     <div>
         <mat-card-actions *ngIf="!instanceInProgress">
-            <button mat-raised-button color="primary">Add Question</button>
+            <button mat-raised-button color="primary" (click)="addQuestion()">Add Question</button>
         </mat-card-actions>
     </div>
 </div>

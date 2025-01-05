@@ -99,13 +99,17 @@ export class ViewFormComponent implements OnInit {
     }
     
     //faire un redirect vers le component Edit_question
-    editQuestion(question: Question) {
-        console.log("edit : " + question);
+    editQuestion(editQuestion: Question) {
+        this.router.navigate(['/create-edit-question'], {
+            state: { question: editQuestion }
+        });
     }
 
     //faire un redirect vers le component Add_question
     addQuestion(){
-        console.log("add question")
+        this.router.navigate(['create-edit-question'], {
+            state: { formId: this.form?.id }
+        });
     }
     
     editForm() {
