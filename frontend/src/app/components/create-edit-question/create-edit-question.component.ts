@@ -2,6 +2,7 @@ import { Component, OnInit } from "@angular/core";
 import { AbstractControl, FormBuilder, FormGroup, ValidationErrors, Validators } from "@angular/forms";
 import { ActivatedRoute, Router } from "@angular/router";
 import { values } from "lodash-es";
+import { catchError, map, Observable, of } from "rxjs";
 import { OptionList } from "src/app/models/optionList";
 import { Question, QuestionType } from "src/app/models/question";
 import { User } from "src/app/models/user";
@@ -53,8 +54,9 @@ export class CreateEditQuestionComponent implements OnInit {
         } else {
             this.navBarTitle = 'Add a new Question';
             this.question = new Question({
+                id: 0,
                 formId: state.formId,
-                title: undefined,
+                title: '',
                 description: '',
                 optionList: undefined,
                 questionType: undefined,
@@ -76,7 +78,7 @@ export class CreateEditQuestionComponent implements OnInit {
 
     createForm() {
         this.questionForm = this.formBuilder.group({
-            title: [this.question.title, [Validators.required, Validators.minLength(3)]],
+            title: [this.question.title, [Validators.required, Validators.minLength(3)], [this.uniqueTitleValidator.bind(this)]],
             description: [this.question.description,[Validators.minLength(3)]],
             questionType: [this.question.questionType, [Validators.required]],
             optionList: [this.question.optionList],
@@ -129,14 +131,16 @@ export class CreateEditQuestionComponent implements OnInit {
         this.router.navigate(['/manage-option-lists']);
     }
 
-    // uniqueTitleValidator() {
-    //     return (control: any) => {
-    //       return this.questionService.isTitleUnique(control.value, this.question.formId, this.question.id)
-    //         .pipe(
-    //           map(isUnique => isUnique ? null : { titleNotUnique: true }),
-    //           catchError(() => of(null)) // En cas d'erreur, on retourne null pour ne pas casser la validation
-    //         );
-    //     };
-    //   }
+    uniqueTitleValidator(control: AbstractControl) : Observable<ValidationErrors | null> {
+        if(!control.value){
+            return of(null);
+        }
+        
+        return this.questionService.isTitleUnique(control.value, this.question.formId, this.question.id)
+            .pipe(
+              map((isUnique) => (isUnique ? null : { unique: true })),
+              catchError(() => of(null)));
+    }
+
 
 }

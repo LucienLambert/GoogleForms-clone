@@ -11,8 +11,9 @@
             <mat-label>Title</mat-label>
             <!-- Afficher le titre s'il existe -->
             <input matInput formControlName="title" required>
-            <mat-error *ngIf="questionForm.get('title')?.errors?.['required']">Required</mat-error>
+            <mat-error *ngIf="questionForm?.get('title')?.errors?.['required']">Required</mat-error>
             <mat-error *ngIf="questionForm.get('title')?.errors?.['minlength']">Title must be at least 3 characters.</mat-error>
+            <mat-error *ngIf="questionForm.get('title')?.errors?.['unique']">unique</mat-error>
         </mat-form-field>
     
         <!-- Description de la question -->

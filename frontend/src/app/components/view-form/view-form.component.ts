@@ -79,6 +79,7 @@ export class ViewFormComponent implements OnInit {
     moveDown(question: Question) {
         this.formService.moveDownQuestion(this.form!.id, question.id).subscribe({
             next : (reponse) => {
+                // faire également la modification coté frontend pour éviter de recharger la page. 
                 this.getOnFormManager();
             },
             error : (err) => {

@@ -20,8 +20,8 @@ public class QuestionController : ControllerBase {
     }
 
     [Authorize]
-    [HttpGet("isUniqueTitle")]
-    public async Task<ActionResult<bool>> IsUniqueTitle(string title, int formId, int? questionId) {
+    [HttpGet("isTitleUnique")]
+    public async Task<ActionResult<bool>> IsUniqueTitle(string title, int formId, int questionId) {
         var exist = await _context.Questions
                     .AnyAsync(q => q.Title == title &&
                              q.Id != questionId &&
