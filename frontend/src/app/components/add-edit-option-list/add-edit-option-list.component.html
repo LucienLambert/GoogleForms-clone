@@ -1,29 +1,56 @@
 <app-nav-bar [title]="navBarTitle" [backButtonVisible]="backButtonVisible"></app-nav-bar>
 
-<form [formGroup]="form" class="input-container">
-    <!-- Title Input -->
-    <div>
-        <label for="title">Title*</label>
-        <input id="title" type="text" formControlName="title" class="form-control" placeholder="Title*" required/>
+<form [formGroup]="form" class="form-container">
+    <!-- Option List Name -->
+    <div class="form-group">
+        <label for="optionListName">Option List Name*</label>
+        <input id="optionListName" type="text" formControlName="name" class="form-control"
+               placeholder="Enter the name of the option list" required/>
+        
         <!-- Validation Errors -->
-        <div *ngIf="form.get('title')?.invalid && form.get('title')?.dirty" class="error-message">
-            <small *ngIf="form.get('title')?.errors?.['required']">Title is required.</small>
-            <small *ngIf="form.get('title')?.errors?.['minlength']">Title must be at least 3 characters.</small>
-            <small *ngIf="form.get('title')?.errors?.['unique']">This title already exists for this owner.</small>
+        <div *ngIf="form.get('name')?.invalid && form.get('name')?.dirty" class="error-message">
+            <small *ngIf="form.get('name')?.errors?.['required']">Name is required.</small>
+            <small *ngIf="form.get('name')?.errors?.['minlength']">Name must be at least 3 characters.</small>
+            <small *ngIf="form.get('name')?.errors?.['unique']">This name already exists for this owner.</small>
         </div>
     </div>
 
-    <!-- Owner Input -->
-    <div>
-        <label for="owner">Owner</label>
-        <input id="owner" type="text" formControlName="owner" class="form-control" readonly/>
+    <!-- List of Existing Options (with checkboxes) -->
+    <div *ngFor="let option of optionList?.listOptionValues; let i = index" class="option-item">
+        <mat-checkbox [formControl]="getControl(i)" (change)="onOptionSelectChange(option)">
+            {{ option.value }}
+        </mat-checkbox>
     </div>
 
-    <!-- Checkbox Input -->
-    <div>
-        <label for="checkbox">
-            <input id="checkbox" type="checkbox" formControlName="isPublic"/>
-            Is Public
-        </label>
+    <div class="action-buttons">
+        <!-- Cancel Button Button -->
+        <button mat-raised-button color="warn" type="button" (click)="onCancelSelection()" *ngIf="isAnyOptionSelected">
+            Cancel selection
+        </button>
+        
+        <!-- Delete Button -->
+        <button mat-raised-button color="primary" type="button" (click)="onDeleteSelectedOptions()" *ngIf="isAnyOptionSelected">
+            Delete Selected Options
+        </button>
+    </div>
+
+    <!-- Add New Option -->
+    <div class="add-option-container">
+        <input id="newOption" type="text" placeholder="New Value" class="form-control" formControlName="newOption"
+        (input)="onNewOptionChange()"/>
+        <button mat-icon-button color="primary" type="button" (click)="addOption()" aria-label="Add option" 
+                [disabled]="addOptionDisabled">
+            <mat-icon>add</mat-icon>
+        </button>
+    </div>
+
+    <!-- Buttons at the Bottom: Cancel & Save -->
+    <div class="action-buttons">
+        <button mat-raised-button color="warn" type="button" (click)="onCancel()">
+            Cancel
+        </button>
+        <button mat-raised-button color="primary" type="submit" (click)="onSave()">
+            Save List
+        </button>
     </div>
 </form>

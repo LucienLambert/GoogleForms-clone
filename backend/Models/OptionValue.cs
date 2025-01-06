@@ -13,5 +13,6 @@ public class OptionValue {
     public string Value { get; set; } = "";
     
     [ForeignKey(nameof(OptionListId))]
+    [NotMapped]
     public OptionList OptionList { get; set; } = null!;
 }

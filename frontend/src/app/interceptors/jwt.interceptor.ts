@@ -28,7 +28,7 @@ export class JwtInterceptor implements HttpInterceptor {
 
     private handle401Error(request: HttpRequest<any>, next: HttpHandler): Observable<HttpEvent<any>> {
         this.authenticationService.logout();
-        this.router.navigateByUrl("/login");
+        this.router.navigateByUrl("");
         return EMPTY;   // Just emits 'complete', and nothing else.
     }
 

@@ -134,17 +134,26 @@ public class UsersController : ControllerBase {
     [Authorized(Role.Admin, Role.User)]
     [HttpGet("optionListsWithNotReferenced/{userId:int}")]
     public async Task<ActionResult<List<OptionList_With_NotReferencedDTO>>> GetOptionListsWithNotReferenced(int userId) {
-        var optionLists = await _context.OptionLists.Where(op => op.OwnerId == userId || op.OwnerId == null)
+        // Step 1: Fetch data into memory
+        var optionLists = await _context.OptionLists
+            .Where(op => op.OwnerId == userId || op.OwnerId == null)
             .Include(op => op.ListOptionValues)
-            .Select(op => new OptionList_With_NotReferencedDTO {
-                Id = op.Id,
-                Name = op.Name,
-                OwnerId = op.OwnerId,
-                NotReferenced = !_context.Questions.Any(q => q.OptionListId == op.Id)
-            })
             .ToListAsync();
-        
-        return optionLists;
+
+        // Step 2: Perform the projection in-memory
+        var result = optionLists.Select(op => new OptionList_With_NotReferencedDTO {
+            Id = op.Id,
+            Name = op.Name,
+            OwnerId = op.OwnerId,
+            NotReferenced = !_context.Questions.Any(q => q.OptionListId == op.Id),
+            ListOptionValues = op.ListOptionValues.Select(ov => new OptionValueDTO {
+                Idx = ov.Idx,
+                Value = ov.Value,
+                OptionListId = op.Id
+            }).ToList()
+        }).ToList();
+
+        return result;
     }
 
     [Authorized(Role.Admin, Role.User)]
@@ -158,5 +167,50 @@ public class UsersController : ControllerBase {
         _context.OptionLists.Remove(optionList);
         await _context.SaveChangesAsync();
         return true;
+    }
+    
+    [Authorized(Role.Admin, Role.User)]
+    [HttpGet("optionList/{optionListId:int}")]
+    public async Task<ActionResult<OptionList_With_OptionValuesDTO>> GetOptionList(int optionListId) {
+        var optionList = await _context.OptionLists
+            .Include(ol => ol.ListOptionValues)
+            .FirstOrDefaultAsync(ol => ol.Id == optionListId);
+    
+        if (optionList == null) {
+            return NotFound("OptionList not found.");
+        }
+        
+        var optionListDto = _mapper.Map<OptionList_With_OptionValuesDTO>(optionList);
+        return optionListDto;
+    }
+    
+    [Authorized(Role.Admin, Role.User)]
+    [HttpPost("createOptionList")]
+    public async Task<ActionResult<OptionListDTO>> CreateForm(OptionListDTO optionListDto) {
+        var optionList = _mapper.Map<OptionList>(optionListDto);
+        
+        _context.OptionLists.Add(optionList);
+        await _context.SaveChangesAsync();
+        return CreatedAtAction("GetOptionList", new { id = optionList.Id }, _mapper.Map<OptionListDTO>(optionList));
+    }
+
+    [Authorized(Role.Admin, Role.User)]
+    [HttpPut("updateOptionList")]
+    public async Task<IActionResult> UpdateForm(OptionList_With_OptionValuesDTO optionListDto) {
+        // Load existing OptionList, including its OptionValues
+        var existingOptionList = await _context.OptionLists
+            .Include(o => o.ListOptionValues) // Include nested collection
+            .FirstOrDefaultAsync(f => f.Id == optionListDto.Id);
+
+        if (existingOptionList == null)
+            return NotFound();
+
+        // Use AutoMapper to map the DTO to the existing entity
+        _mapper.Map(optionListDto, existingOptionList);
+
+        // Save changes to the database
+        await _context.SaveChangesAsync();
+
+        return Ok(new { message = "OptionList updated successfully.", form = existingOptionList });
     }
 }

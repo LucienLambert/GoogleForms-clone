@@ -144,4 +144,17 @@ export class CreateEditFormComponent implements OnInit {
             catchError(() => of(null)) // Handle errors gracefully
         );
     }
+    
+    /*uniqueTitleValidator(control: AbstractControl): Observable<ValidationErrors | null> {
+        if (!control.value) {
+            return of(null); // Pass validation if no value is provided
+        }
+
+        const formId = Number(this.route.snapshot.paramMap.get('id')); // Retrieve the form ID
+
+        return this.formService.isTitleUnique(control.value, formId).pipe(
+            map((isUnique) => (isUnique ? null : { unique: true })), // Return validation result
+            catchError(() => of(null)) // Handle errors gracefully
+        );
+    }*/
 }

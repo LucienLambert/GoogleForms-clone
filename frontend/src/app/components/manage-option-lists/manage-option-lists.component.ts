@@ -6,6 +6,8 @@ import {UserService} from "../../services/user.service";
 import {User} from "../../models/user";
 import { OptionList } from '../../models/optionList';
 import {lastValueFrom} from "rxjs";
+import {ModalDialogComponent} from "../modal-dialog/modal-dialog.component";
+import {MatDialog} from "@angular/material/dialog";
 
 @Component({
     selector: 'app-manage-option-lists',
@@ -19,13 +21,16 @@ export class ManageOptionsListComponent implements OnInit {
     backButtonVisible: boolean = true;
     
     constructor(private router: Router, private _location: Location, private authenticationService: AuthenticationService,
-                private userService: UserService) {
+                private userService: UserService, private modalDialog: MatDialog ) {
     }
     
     ngOnInit() {
         this.retrieveOptionLists();
-    }
 
+        this.userService.optionLists.subscribe((data) => {
+            this.optionLists = data;
+        });
+    }
 
     async retrieveOptionLists() {
         try {
@@ -34,7 +39,7 @@ export class ManageOptionsListComponent implements OnInit {
             if (!owner?.id) {
                 throw new Error('Owner data is missing');
             }
-            this.optionLists = await lastValueFrom(this.userService.getUserOptionLists(owner.id));
+            this.userService.getUserOptionLists(owner.id)
         } catch (err) {
             console.error('Failed to fetch option lists:', err);
         }
@@ -56,17 +61,24 @@ export class ManageOptionsListComponent implements OnInit {
         this.router.navigate(['add-edit-option-lists', optionList.id]);
     }
 
-    onDelete(optionList: OptionList) {
-        this.userService.deleteOptionList(optionList.id).subscribe({
-            next: (success) => {
-                if (success) {
-                    console.log('OptionList deleted successfully.');
+    async onDelete(optionList: OptionList) {
+        const userConfirmed = await this.modalDelOptionList(optionList);
+
+        if (userConfirmed) {
+            this.userService.deleteOptionList(optionList.id).subscribe({
+                next: (success) => {
+                    if (success) {
+                        console.log('OptionList deleted successfully.');
+                        this.retrieveOptionLists();
+                    }
+                },
+                error: (err) => {
+                    console.error('Failed to delete OptionList:', err);
                 }
-            },
-            error: (err) => {
-                console.error('Failed to delete OptionList:', err);
-            }
-        });
+            });
+        } else {
+            console.log('User canceled the deletion.');
+        }
     }
 
     onDuplicate(optionList: OptionList) {
@@ -75,5 +87,22 @@ export class ManageOptionsListComponent implements OnInit {
 
     onAdd() {
         this.router.navigate(['add-edit-option-lists']);
+    }
+
+    modalDelOptionList(optionList: OptionList): Promise<boolean> {
+        return new Promise<boolean>((resolve) => {
+            const dialogRef = this.modalDialog.open(ModalDialogComponent, {
+                disableClose: true,
+                data: {
+                    title: 'Delete Option List',
+                    message: `Are you sure you want to delete this option list: ${optionList.name}?`,
+                    context: 'editForm'
+                }
+            });
+            
+            dialogRef.afterClosed().subscribe((result) => {
+                resolve(result);
+            });
+        });
     }
 }
