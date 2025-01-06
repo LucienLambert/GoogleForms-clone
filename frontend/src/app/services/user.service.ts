@@ -1,13 +1,10 @@
 import { Injectable, Inject } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-
 import { User } from '../models/user';
 import { catchError, map } from 'rxjs/operators';
 import {BehaviorSubject, Observable, of, switchMap, tap} from 'rxjs';
 import { plainToInstance } from 'class-transformer';
 import {OptionList} from "../models/optionList";
-import {OptionValue} from "../models/optionValue";
-import {Form} from "../models/form";
 
 @Injectable({ providedIn: 'root' })
 export class UserService {

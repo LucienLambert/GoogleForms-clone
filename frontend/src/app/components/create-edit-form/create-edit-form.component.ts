@@ -85,7 +85,7 @@ export class CreateEditFormComponent implements OnInit {
     }
 
     fetchOwnerData(): Observable<User> {
-        const userId = this.authenticationService.getCurrentUser()?.id;
+        const userId = this.authenticationService.getUserIdFromToken();
         return this.userService.getUserById(userId!).pipe(
             tap(owner => {
                 this.owner = owner;

@@ -2,22 +2,22 @@
 
 <form [formGroup]="form" class="form-container">
     <!-- Option List Name -->
-    <div class="form-group">
+    <div>
         <label for="optionListName">Option List Name*</label>
         <input id="optionListName" type="text" formControlName="name" class="form-control"
                placeholder="Enter the name of the option list" required/>
         
         <!-- Validation Errors -->
         <div *ngIf="form.get('name')?.invalid && form.get('name')?.dirty" class="error-message">
-            <small *ngIf="form.get('name')?.errors?.['required']">Name is required.</small>
-            <small *ngIf="form.get('name')?.errors?.['minlength']">Name must be at least 3 characters.</small>
-            <small *ngIf="form.get('name')?.errors?.['unique']">This name already exists for this owner.</small>
+            <mat-error *ngIf="form.get('name')?.errors?.['required']">Name is required.</mat-error>
+            <mat-error *ngIf="form.get('name')?.errors?.['minlength']">Name must be at least 3 characters.</mat-error>
+            <mat-error *ngIf="form.get('name')?.errors?.['unique']">This name already exists for this owner.</mat-error>
         </div>
     </div>
 
     <!-- List of Existing Options (with checkboxes) -->
     <div *ngFor="let option of optionList?.listOptionValues; let i = index" class="option-item">
-        <mat-checkbox [formControl]="getControl(i)" (change)="onOptionSelectChange(option)">
+        <mat-checkbox [formControl]="getControl(i)">
             {{ option.value }}
         </mat-checkbox>
     </div>
@@ -44,12 +44,20 @@
         </button>
     </div>
 
+    <!-- Checkbox Input -->
+    <div>
+        <label for="checkbox" *ngIf="isSystemCheckboxVisible">
+            <input id="checkbox" type="checkbox" formControlName="isSystem"/>
+            Is System
+        </label>
+    </div>
+
     <!-- Buttons at the Bottom: Cancel & Save -->
     <div class="action-buttons">
         <button mat-raised-button color="warn" type="button" (click)="onCancel()">
             Cancel
         </button>
-        <button mat-raised-button color="primary" type="submit" (click)="onSave()">
+        <button mat-raised-button color="primary" type="submit" (click)="onSave()" [disabled]="isSaveDisabled">
             Save List
         </button>
     </div>

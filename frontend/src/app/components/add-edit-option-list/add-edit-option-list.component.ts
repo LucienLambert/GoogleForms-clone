@@ -6,7 +6,7 @@ import {
   FormBuilder,
   FormControl,
   FormGroup,
-  ValidationErrors,
+  ValidationErrors, ValidatorFn,
   Validators
 } from "@angular/forms";
 import {ActivatedRoute, Router} from "@angular/router";
@@ -14,9 +14,9 @@ import {Location} from "@angular/common";
 import {AuthenticationService} from "../../services/authentication.service";
 import {UserService} from "../../services/user.service";
 import {FormService} from "../../services/form.service";
-import {BehaviorSubject, Observable, of, switchMap, take} from "rxjs";
+import {BehaviorSubject, Observable, of, switchMap, take, tap} from "rxjs";
 import {catchError, filter, map} from "rxjs/operators";
-import {User} from "../../models/user";
+import {Role, User} from "../../models/user";
 import {ModalDialogComponent} from "../modal-dialog/modal-dialog.component";
 import {MatDialog} from "@angular/material/dialog";
 import {OptionValue} from "../../models/optionValue";
@@ -32,11 +32,15 @@ export class AddEditOptionListComponent implements OnInit {
   backButtonVisible: boolean = true;
   addOptionDisabled: boolean = true;
   isAnyOptionSelected = false;
+  isSaveDisabled: boolean = true;
+  isSystemCheckboxVisible: boolean = false;
 
   optionList?: OptionList;
   private originalOptionList!: any;
   form!: FormGroup;
   ownerLoaded = new BehaviorSubject<User | null>(null);
+  userRole?: string;
+  owner?: User;
 
   constructor(private router: Router, private route: ActivatedRoute, private formBuilder: FormBuilder,
               private authenticationService: AuthenticationService, private formService: FormService,
@@ -44,20 +48,65 @@ export class AddEditOptionListComponent implements OnInit {
 
   ngOnInit(): void {
     this.BindReactiveForm();
-    this.loadOptionList();
-  }
-  
-  BindReactiveForm(){
-    this.form = this.formBuilder.group({
-      id: [0],
-      name: ['', [Validators.required]],
-      ownerId: [null],
-      optionValues: this.formBuilder.array([]),
-      newOption: ['']
+    this.fetchOwnerData().subscribe({
+      next: () => {
+        this.LoadOptionList();
+        this.SaveDisablingLogic();
+        this.Admin();
+      },
+      error: (err) => {
+        console.error('Error fetching owner data:', err);
+      }
     });
   }
 
-  loadOptionList() {
+  Admin(){
+    this.userRole = this.authenticationService.getRoleFromToken();
+    if (this.userRole === 'Admin') {
+      this.isSystemCheckboxVisible = true;
+    }
+  }
+
+  fetchOwnerData(): Observable<User> {
+    const userId = this.authenticationService.getUserIdFromToken();
+    return this.userService.getUserById(userId!).pipe(
+        tap(owner => {
+          this.owner = owner;
+          this.ownerLoaded.next(owner);
+        })
+    );
+  }
+  
+  BindReactiveForm() {
+    this.optionList = {
+      id: 0,
+      name: '',
+      ownerId: undefined,
+      listOptionValues: []
+    };
+
+    this.form = this.formBuilder.group({
+      id: [this.optionList.id],
+      name: [this.optionList.name, [Validators.required, Validators.minLength(3)]],
+      ownerId: [this.optionList.ownerId],
+      optionValues: this.formBuilder.array(
+          this.optionList.listOptionValues!.map(() =>
+              this.formBuilder.control(false)
+          ),
+          [this.minLengthArrayValidator(1)]
+      ),
+      newOption: [''],
+      isSystem: [false],
+    });
+  }
+
+  private SaveDisablingLogic(){
+    this.form.statusChanges.subscribe((status) => {
+      this.isSaveDisabled = status !== 'VALID';
+    });
+  }
+
+  private LoadOptionList() {
     this.route.paramMap.subscribe(params => {
       const idParam = params.get('id');
       if (idParam) {
@@ -131,18 +180,34 @@ export class AddEditOptionListComponent implements OnInit {
     // 5. Optionally disable the add button again if you’re controlling that in code
     this.addOptionDisabled = true;
   }
-  
-  onSave(){
-    console.log(this.optionList);
-    this.userService.saveOptionList(this.optionList!).subscribe({
-      next: (success) => {
-        if (success) {
-          this.router.navigate(['/manage-option-lists']);
-        }
+
+  onSave() {
+    if (this.form.valid) {
+      // Update optionList with form values
+      this.optionList = {
+        ...this.form.getRawValue(),
+        listOptionValues: this.optionList!.listOptionValues // Preserve existing options
+      };
+      
+      console.log("onSave : " + this.owner?.id);
+      if (this.form.get('isSystem')?.value == false) {
+        this.optionList!.ownerId = this.owner?.id;
       }
-    });
+
+      console.log('Saving OptionList:', this.optionList);
+
+      // Save to backend
+      this.userService.saveOptionList(this.optionList!).subscribe({
+        next: () => {
+          this.router.navigate(['/manage-option-lists']);
+        },
+        error: (err) => console.error('Error saving option list:', err)
+      });
+    } else {
+      console.error('Form is invalid:', this.form);
+    }
   }
-  
+
   onCancel(){
     // Restore the original option list
     this.optionList = JSON.parse(JSON.stringify(this.originalOptionList));
@@ -172,20 +237,29 @@ export class AddEditOptionListComponent implements OnInit {
     this.addOptionDisabled = !newOptionValue.trim();
   }
 
-  onOptionSelectChange(opt: any) {
+  onDeleteSelectedOptions() {
     const optionArray = this.form.get('optionValues') as FormArray;
-    this.isAnyOptionSelected = optionArray.controls.some(control => control.value === true);
+
+    // Identify indices of selected options
+    const selectedIndices = optionArray.controls
+        .map((control, index) => (control.value ? index : -1)) // Mark selected controls with their index
+        .filter(index => index !== -1); // Filter out unselected controls
+
+    // Remove options from `listOptionValues` using the selected indices
+    this.optionList!.listOptionValues = this.optionList!.listOptionValues!.filter(
+        (_, index) => !selectedIndices.includes(index)
+    );
+
+    // Clear and recreate FormArray controls after removal
+    optionArray.clear();
+    this.optionList!.listOptionValues!.forEach(() => {
+      optionArray.push(this.formBuilder.control(false)); // Reinitialize checkboxes
+    });
+
+    // Reset selection state
+    this.isAnyOptionSelected = false;
   }
 
-  onDeleteSelectedOptions() {
-    const selectedOptions = this.optionList!.listOptionValues!.filter((_, index) => {
-      const control = this.form.get('optionValues')!.get(index.toString()) as FormControl;
-      return control.value === true;
-    }).map(option => option.idx);
-    
-    this.optionList?.listOptionValues;
-  }
-  
   onCancelSelection(){
     const optionArray = this.form.get('optionValues') as FormArray;
     optionArray.controls.forEach(control => {
@@ -193,5 +267,12 @@ export class AddEditOptionListComponent implements OnInit {
     })
     
     this.isAnyOptionSelected = false;
+  }
+
+  private minLengthArrayValidator(minLength: number): ValidatorFn {
+    return (control: AbstractControl): ValidationErrors | null => {
+      const formArray = control as FormArray;
+      return formArray.length >= minLength ? null : { minLengthArray: { requiredLength: minLength, actualLength: formArray.length } };
+    };
   }
 }

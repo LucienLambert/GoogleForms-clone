@@ -4,6 +4,7 @@ import { map, mergeMap } from 'rxjs/operators';
 import { User } from '../models/user';
 import { plainToClass } from 'class-transformer';
 import { Observable } from 'rxjs';
+import {jwtDecode} from "jwt-decode";
 
 @Injectable({ providedIn: 'root' })
 export class AuthenticationService {
@@ -47,5 +48,55 @@ export class AuthenticationService {
     getCurrentUser() {
         return this.currentUser;
     }
-    
+
+    getRoleFromToken(): string | undefined {
+        const currentUser = sessionStorage.getItem('currentUser'); // Retrieve the stored user object
+        if (!currentUser) {
+            return undefined;
+        }
+
+        try {
+            const parsedUser = JSON.parse(currentUser); // Parse the stored JSON
+            const token = parsedUser.token; // Extract the token
+
+            if (!token) {
+                return undefined;
+            }
+
+            // Decode the token
+            const decodedToken: any = jwtDecode(token);
+
+            // Extract the role
+            return decodedToken.role || undefined; // Adjust based on the actual key name in your token
+        } catch (error) {
+            console.error('Error decoding token:', error);
+            return undefined;
+        }
+    }
+
+    getUserIdFromToken(): number | undefined {
+        const currentUser = sessionStorage.getItem('currentUser'); // Retrieve the stored user object
+        if (!currentUser) {
+            return undefined;
+        }
+
+        try {
+            const parsedUser = JSON.parse(currentUser); // Parse the stored JSON
+            const token = parsedUser.token; // Extract the token
+
+            if (!token) {
+                return undefined;
+            }
+
+            // Decode the token
+            const decodedToken: any = jwtDecode(token);
+
+            console.log("hello : " + decodedToken.nameid);
+            // Extract the role
+            return Number(decodedToken.nameid) || undefined; // Adjust based on the actual key name in your token
+        } catch (error) {
+            console.error('Error decoding token:', error);
+            return undefined;
+        }
+    }
 }

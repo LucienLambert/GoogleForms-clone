@@ -160,6 +160,7 @@ public class UsersController : ControllerBase {
     [HttpDelete("deleteOptionList/{optionListId:int}")]
     public async Task<ActionResult<bool>> DeleteOptionList(int optionListId) {
         var optionList = await _context.OptionLists.FindAsync(optionListId);
+        
         if (optionList == null) {
             return NotFound("OptionList not found.");
         }
@@ -186,18 +187,23 @@ public class UsersController : ControllerBase {
     
     [Authorized(Role.Admin, Role.User)]
     [HttpPost("createOptionList")]
-    public async Task<ActionResult<OptionListDTO>> CreateForm(OptionList_With_OptionValuesDTO optionListDto) {
+    public async Task<ActionResult<OptionListDTO>> CreateOptionList(OptionList_With_OptionValuesDTO optionListDto) {
         var optionList = _mapper.Map<OptionList>(optionListDto);
+        
+        var lastIdx = optionList.ListOptionValues.Any()
+            ? optionList.ListOptionValues.Max(v => v.Idx) + 1 : 1; 
+        
+        optionList.ListOptionValues.Where(ov => ov.Idx == 0).ToList().ForEach(ov => ov.Idx = lastIdx++);
         
         _context.OptionLists.Add(optionList);
         
         await _context.SaveChangesAsync();
-        return CreatedAtAction("GetOptionList", new { id = optionList.Id }, _mapper.Map<OptionList_With_OptionValuesDTO>(optionList));
+        return CreatedAtAction("GetOptionList", new { optionListId = optionList.Id }, _mapper.Map<OptionList_With_OptionValuesDTO>(optionList));
     }
 
     [Authorized(Role.Admin, Role.User)]
     [HttpPut("updateOptionList")]
-    public async Task<IActionResult> UpdateForm(OptionList_With_OptionValuesDTO optionListDto) {
+    public async Task<IActionResult> UpdateOptionList(OptionList_With_OptionValuesDTO optionListDto) {
         // Load existing OptionList, including its OptionValues
         var existingOptionList = await _context.OptionLists
             .Include(o => o.ListOptionValues) // Include nested collection
@@ -209,7 +215,9 @@ public class UsersController : ControllerBase {
         // Use AutoMapper to map the DTO to the existing entity
         _mapper.Map(optionListDto, existingOptionList);
 
-        var lastIdx = existingOptionList.ListOptionValues.Max(v => v.Idx) + 1;
+        var lastIdx = existingOptionList.ListOptionValues.Any()
+            ? existingOptionList.ListOptionValues.Max(v => v.Idx) + 1 : 1; 
+        
         existingOptionList.ListOptionValues.Where(ov => ov.Idx == 0).ToList().ForEach(ov => ov.Idx = lastIdx++);
 
         // Save changes to the database

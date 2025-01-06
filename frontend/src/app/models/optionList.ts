@@ -9,7 +9,7 @@ export class OptionList {
     ownerId?: number;
     owner?: User;
     listOptionValues?: OptionValue[];
-    notReferenced:boolean;
+    notReferenced?:boolean;
 
     constructor(data:any) {
         this.id = data.id;

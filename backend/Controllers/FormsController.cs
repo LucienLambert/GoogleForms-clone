@@ -329,9 +329,11 @@ public class FormsController : ControllerBase {
             return NotFound("No questions or answers found for the provided Form ID.");
         }
 
-        var answers = await _context.Answers
-            .Where(a => questions.Select(q => q.Id).Contains(a.QuestionId))
-            .ToListAsync();
+        var completedInstances = _context.Instances.Where(i => i.FormId == formId && i.Completed != null)
+            .Select(i => i.Id).ToList();
+        
+        var answers = await _context.Answers.Where(a => questions.Select(q => q.Id)
+                .Contains(a.QuestionId) && completedInstances.Contains(a.InstanceId)).ToListAsync();
 
         var result = questions.Select(question =>
         {
