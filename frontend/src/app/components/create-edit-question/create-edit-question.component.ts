@@ -1,6 +1,7 @@
 import { Component, OnInit } from "@angular/core";
-import { FormBuilder, FormGroup, Validators } from "@angular/forms";
+import { AbstractControl, FormBuilder, FormGroup, ValidationErrors, Validators } from "@angular/forms";
 import { ActivatedRoute, Router } from "@angular/router";
+import { values } from "lodash-es";
 import { OptionList } from "src/app/models/optionList";
 import { Question, QuestionType } from "src/app/models/question";
 import { User } from "src/app/models/user";
@@ -24,9 +25,9 @@ export class CreateEditQuestionComponent implements OnInit {
     navBarTitle? : string ;
     backButtonVisible : boolean = true;
     isSaveVisible : boolean = true;
-    isSaveDisabled : boolean = false;
+    isSaveDisabled : boolean = true;
     showOptionList?: boolean;
-    isAddVisible : boolean = true;
+    // isAddVisible : boolean = true;
 
     constructor(private router: Router, private route: ActivatedRoute, private formBuilder : FormBuilder,
                 private authenticationService: AuthenticationService, private questionService: QuestionService,
@@ -35,19 +36,20 @@ export class CreateEditQuestionComponent implements OnInit {
     }
 
     ngOnInit() {
-        // récup l'objet passer par le navigate "state"
+        // initialise la question en fonction de si c'est edit or creat question
         this.initializeQuestion();
     }
 
     // permet de créer une question vide ou de récupérer la question via le state
     initializeQuestion(){
+        // récup l'objet passer par le navigate "state"
         const state = history.state;
         if (state && state.question) {
             this.question = state.question;
             this.navBarTitle = 'Edit Question';
             this.isSaveDisabled = false;
-            this.showOptionList = this.question.questionType.valueOf().toString() === 'Combo';
-            console.log(this.showOptionList);
+            //passe à true visible optionList si type === check or combo
+            this.showOptionList = ['Combo', 'Check'].includes(this.question.questionType.toString());
         } else {
             this.navBarTitle = 'Add a new Question';
             this.question = new Question({
@@ -55,10 +57,11 @@ export class CreateEditQuestionComponent implements OnInit {
                 title: undefined,
                 description: '',
                 optionList: undefined,
-                questionType: QuestionType.Short,
+                questionType: undefined,
                 required: false,
               });
         }
+        console.log(this.question.optionList);
         this.getOptionList();
         this.createForm();
     }
@@ -75,16 +78,39 @@ export class CreateEditQuestionComponent implements OnInit {
         this.questionForm = this.formBuilder.group({
             title: [this.question.title, [Validators.required, Validators.minLength(3)]],
             description: [this.question.description,[Validators.minLength(3)]],
-            questionType: [this.question.questionType, Validators.required],
-            required: [this.question.required],
-            optionList: [this.question.optionList]
+            questionType: [this.question.questionType, [Validators.required]],
+            optionList: [this.question.optionList],
+            required: [this.question.required] 
         });
-          
-        this.questionForm.get('questionType')?.valueChanges.subscribe((value) => {
-          this.showOptionList = value === 'Combo';
-        });
+        this.changeStatusQuestionForm();
     }
 
+    changeStatusQuestionForm () {
+        // subscribe pour gérer l'affichage l'option liste si question type === combo
+        this.questionForm.get('questionType')?.valueChanges.subscribe((value) => {
+            this.showOptionList = value === 'Combo' || value === 'Check';
+        });
+
+        // subscribe pour gérer le changement de type questionType
+        this.questionForm.get('questionType')?.valueChanges.subscribe((value) => {
+            const optionListControl = this.questionForm.get('optionList');
+            
+            if (value === 'Combo' || value === 'Check') {
+            optionListControl?.setValidators([Validators.required]);
+            } else {
+            optionListControl?.clearValidators();
+            }
+            
+            optionListControl?.updateValueAndValidity();
+        });
+
+        //permet de passer le bouton save visible si le questionForm est complet
+        this.questionForm.statusChanges.subscribe((status) => {
+            this.isSaveDisabled = status !== 'VALID';
+        });           
+    }
+
+    //bouton save pour crée ou éditer une question
     onSave() {
         if(this.questionForm.valid){
             this.question = this.questionForm.value;
@@ -102,4 +128,15 @@ export class CreateEditQuestionComponent implements OnInit {
     addOptionList() {
         this.router.navigate(['/manage-option-lists']);
     }
+
+    // uniqueTitleValidator() {
+    //     return (control: any) => {
+    //       return this.questionService.isTitleUnique(control.value, this.question.formId, this.question.id)
+    //         .pipe(
+    //           map(isUnique => isUnique ? null : { titleNotUnique: true }),
+    //           catchError(() => of(null)) // En cas d'erreur, on retourne null pour ne pas casser la validation
+    //         );
+    //     };
+    //   }
+
 }
