@@ -26,7 +26,6 @@ public class QuestionController : ControllerBase {
                     .AnyAsync(q => q.Title == title &&
                              q.Id != questionId &&
                              q.FormId == formId);
-        
         return Ok(!exist);
     }
 
