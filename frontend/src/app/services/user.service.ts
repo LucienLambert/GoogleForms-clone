@@ -81,7 +81,7 @@ export class UserService {
     }
 
     saveOptionList(optionList: OptionList): Observable<OptionList> {
-        if (optionList.id) {
+        if (optionList.id != 0) {
             return this.updateOptionList(optionList);
         } else {
             return this.createOptionList(optionList);

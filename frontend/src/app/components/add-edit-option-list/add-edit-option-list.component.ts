@@ -183,7 +183,7 @@ export class AddEditOptionListComponent implements OnInit {
       return control.value === true;
     }).map(option => option.idx);
     
-    this.userService.deleteOptionValues(selectedOptions);
+    this.optionList?.listOptionValues;
   }
   
   onCancelSelection(){

@@ -186,12 +186,13 @@ public class UsersController : ControllerBase {
     
     [Authorized(Role.Admin, Role.User)]
     [HttpPost("createOptionList")]
-    public async Task<ActionResult<OptionListDTO>> CreateForm(OptionListDTO optionListDto) {
+    public async Task<ActionResult<OptionListDTO>> CreateForm(OptionList_With_OptionValuesDTO optionListDto) {
         var optionList = _mapper.Map<OptionList>(optionListDto);
         
         _context.OptionLists.Add(optionList);
+        
         await _context.SaveChangesAsync();
-        return CreatedAtAction("GetOptionList", new { id = optionList.Id }, _mapper.Map<OptionListDTO>(optionList));
+        return CreatedAtAction("GetOptionList", new { id = optionList.Id }, _mapper.Map<OptionList_With_OptionValuesDTO>(optionList));
     }
 
     [Authorized(Role.Admin, Role.User)]
@@ -208,9 +209,12 @@ public class UsersController : ControllerBase {
         // Use AutoMapper to map the DTO to the existing entity
         _mapper.Map(optionListDto, existingOptionList);
 
+        var lastIdx = existingOptionList.ListOptionValues.Max(v => v.Idx) + 1;
+        existingOptionList.ListOptionValues.Where(ov => ov.Idx == 0).ToList().ForEach(ov => ov.Idx = lastIdx++);
+
         // Save changes to the database
         await _context.SaveChangesAsync();
 
-        return Ok(new { message = "OptionList updated successfully.", form = existingOptionList });
+        return Ok(new { message = "OptionList updated successfully.", form = _mapper.Map<OptionList_With_OptionValuesDTO>(existingOptionList) });
     }
 }
