@@ -31,22 +31,27 @@ export class CreateEditQuestionComponent implements OnInit {
     isSaveDisabled : boolean = true;
     showOptionList?: boolean;
     // isAddVisible : boolean = true;
+    previousUrl: string | null = null;
 
     constructor(private router: Router, private route: ActivatedRoute, private formBuilder : FormBuilder,
                 private authenticationService: AuthenticationService, private questionService: QuestionService,
                 private userService: UserService){
         this.user = this.authenticationService.currentUser;
+
     }
 
     ngOnInit() {
+        const state = history.state;
+        this.previousUrl = state?.previousUrl ?? '/home';
+        console.log(this.previousUrl)
         // initialise la question en fonction de si c'est edit or creat question
-        this.initializeQuestion();
+        this.initializeQuestion(state);
+
     }
 
     // permet de créer une question vide ou de récupérer la question via le state
-    initializeQuestion(){
+    initializeQuestion(state: any){
         // récup l'objet passer par le navigate "state"
-        const state = history.state;
         if (state && state.question) {
             this.question = state.question;
             this.navBarTitle = 'Edit Question';
@@ -69,14 +74,13 @@ export class CreateEditQuestionComponent implements OnInit {
               });
             this.form = state.form;
         }
-        console.log(this.question);
         this.getOptionList();
         this.createForm();
     }
 
     //récup l'ol du owner et du systeme
     getOptionList(){
-        this.userService.getOptionListUser(this.question.form.ownerId).subscribe({
+        this.userService.getUserOptionLists(this.question.form.ownerId).subscribe({
             next : (data) => {
                 this.optionList = data;
             }
@@ -142,14 +146,18 @@ export class CreateEditQuestionComponent implements OnInit {
             if(this.question.id == 0){
                 this.questionService.createQuestion(questionToSend).subscribe({
                     next : (res) => {
-                        this.router.navigate(['view-form', this.question.formId]);
+                        this.router.navigate(['/view-form', this.question.formId], {
+                            state: { previousUrl: '/home' }
+                        });
+                        // this.router.navigate(['view-form', this.question.formId]);
                     },
                 });
             } else {
-                console.log(questionToSend);
                 this.questionService.updateQuestion(questionToSend).subscribe({
                     next : (res) => {
-                        this.router.navigate(['view-form', this.question.formId]);
+                        this.router.navigate(['/view-form', this.question.formId], {
+                            state: { previousUrl: '/home' }
+                        });
                     }
                 })
             }

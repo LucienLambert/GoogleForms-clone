@@ -1,6 +1,6 @@
 <app-nav-bar [title]="navBarTitle" [backButtonVisible]="backButtonVisible" 
              [isSaveVisible]="isSaveVisible" [saveDisabled]="isSaveDisabled"
-             (saveEvent)="onSave()" class="toolbar-actions">
+             (saveEvent)="onSave()" [previousUrl]="previousUrl" class="toolbar-actions">
 </app-nav-bar>
 
 <form [formGroup]="questionForm">

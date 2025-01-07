@@ -23,7 +23,7 @@ export class ViewFormComponent implements OnInit {
     isEditVisible: boolean = true;
     isAnalyseVisible: boolean = true;
     delFormButton : boolean = true;
-
+    previousUrl: string | null = null;
 
     constructor(private authService: AuthenticationService, private router: Router,
         private formService: FormService, private route: ActivatedRoute, private modalDialog : MatDialog) {
@@ -34,6 +34,9 @@ export class ViewFormComponent implements OnInit {
     
     ngOnInit() {
         this.getOnFormManager();
+        const state = history.state;
+        this.previousUrl = state?.previousUrl ?? '/home';
+        console.log(this.previousUrl)
     }
 
     getOnFormManager(){
@@ -102,14 +105,14 @@ export class ViewFormComponent implements OnInit {
     //faire un redirect vers le component Edit_question
     editQuestion(editQuestion: Question) {
         this.router.navigate(['/create-edit-question'], {
-            state: { question: editQuestion }
+            state: { question: editQuestion, previousUrl: this.router.url}
         });
     }
 
-    //faire un redirect vers le component Add_question
+    //faire un redirect vers le component create-edite-question
     addQuestion(){
         this.router.navigate(['create-edit-question'], {
-            state: { form: this.form }
+            state: { form: this.form, previousUrl: this.router.url }
         });
     }
     
@@ -118,7 +121,6 @@ export class ViewFormComponent implements OnInit {
     }
 
     analyse() {
-        console.log(this.form!.id)
         this.router.navigate(['analyse/', this.form!.id]);
     }
 

@@ -136,6 +136,7 @@ public class UsersController : ControllerBase {
     public async Task<ActionResult<List<OptionList_With_NotReferencedDTO>>> GetOptionListsWithNotReferenced(int userId) {
         var optionLists = await _context.OptionLists.Where(op => op.OwnerId == userId || op.OwnerId == null)
             .Include(op => op.ListOptionValues)
+            .OrderBy(ol => ol.Name)
             .Select(op => new OptionList_With_NotReferencedDTO {
                 Id = op.Id,
                 Name = op.Name,
@@ -159,6 +160,7 @@ public class UsersController : ControllerBase {
         return true;
     }
 
+    //n'est plus utile, mais garder au cas ou.
     [Authorized(Role.Admin, Role.User)]
     [HttpGet("optionListOwnerForm/{idOwner:int}")]
     public async Task<ActionResult<IEnumerable<OptionListDTO>>> GetOptionListUser(int idOwner){
