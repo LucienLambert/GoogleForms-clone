@@ -85,7 +85,7 @@ export class ViewFormsComponent implements OnInit {
     // Le bouton "Open" ne doit pas être visible si le formulaire ne contient pas de questions.
     async openForm(form: Form){
         let instanceId;
-        if (form.listInstance.length > 0) {
+        if (form.listInstance.length > 0 && this.user?.role != Role.Guest) {
             instanceId = form.listInstance[0].id;
         } else {
             instanceId = await this.createNewInstance(form);
@@ -93,6 +93,7 @@ export class ViewFormsComponent implements OnInit {
         await this.router.navigate(['view-instance', instanceId]);
     }
     private async createNewInstance(form: Form): Promise<number> {
+        // Deletes the last instance if not a guest, and creates a new one
         return new Promise((resolve, reject) => {
             this.instanceService.RefreshInstance(form.id).subscribe({
                 next: (data) => {

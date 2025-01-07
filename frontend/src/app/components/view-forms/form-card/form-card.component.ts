@@ -36,17 +36,14 @@ export class FormCardComponent {
 
         if (this.user?.role != Role.Guest && this.form.listInstance.length > 0) {
             if (this.form.listInstance[0].completed) {
-                console.log("ça passe", this.form.listInstance);
                 const openResponse = await this.modalDialogOpenInstance();
                 switch(openResponse){
                     case 0 :
                         break;
                     case 1 :
-                        console.log(this.form);
                         this.openFormEvent.emit(this.form);
                         break;
                     case 2 :
-                        console.log("2")
                         // Removing the list of instances to imply we want a fresh one
                         this.form.listInstance.length = 0;
                         this.openFormEvent.emit(this.form);
