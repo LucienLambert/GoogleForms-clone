@@ -11,6 +11,8 @@ import { AuthenticationService } from 'src/app/services/authentication.service';
 export class NavBarComponent {
     @Output() searchEvent = new EventEmitter<string>(); // Emits search input to parent
     @Output() saveEvent = new EventEmitter<void>();
+    @Output() backButtonEvent = new EventEmitter<void>();
+    
 
     @ViewChild('searchInput') searchInput!: ElementRef<HTMLInputElement>;
 
@@ -50,6 +52,7 @@ export class NavBarComponent {
     }
     
     backClicked() {
+        this.backButtonEvent.emit();
         this._location.back();
     }
 

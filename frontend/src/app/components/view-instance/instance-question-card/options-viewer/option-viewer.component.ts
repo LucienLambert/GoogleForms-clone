@@ -1,9 +1,9 @@
 import {Component, EventEmitter, Input, OnInit, Output} from '@angular/core';
 import {OptionList} from 'src/app/models/optionList';
-import {QuestionType} from "../../../models/question";
+import {QuestionType} from "../../../../models/question";
 import {NgModel} from "@angular/forms";
-import {Answer} from "../../../models/answer";
-import {OptionValue} from "../../../models/optionValue";
+import {Answer} from "../../../../models/answer";
+import {OptionValue} from "../../../../models/optionValue";
 import {MatCheckboxChange} from "@angular/material/checkbox";
 import {MatSelectChange} from "@angular/material/select";
 import {MatRadioChange} from "@angular/material/radio";

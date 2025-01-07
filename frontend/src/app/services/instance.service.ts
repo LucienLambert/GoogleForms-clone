@@ -14,6 +14,14 @@ export class InstanceService {
 
     }
 
+    getOneById(id: number): Observable<Instance> {
+        return this.http.get<Instance>(`${this.baseUrl}/${id}`, {})
+    }
+
+    getOneByIdFull(id: number): Observable<Instance> {
+        return this.http.get<Instance>(`${this.baseUrl}api/instances/${id}/full`, {})
+    }
+
     getExistingOrFreshInstanceByFormId(id: number): Observable<Instance> {
         return this.http.get<Instance>(`${this.baseUrl}api/instances/by_form_or_fresh/${id}`)
             .pipe(map(res => new Instance(res))
@@ -31,12 +39,23 @@ export class InstanceService {
     }
 
     DeleteAnswersByInstanceIdAndQuestionId(instanceId: number, questionId : number): Observable<boolean>{
-        console.log(`${this.baseUrl}api/instances/${instanceId}/question/${questionId}`)
         return this.http.delete<boolean>(`${this.baseUrl}api/instances/${instanceId}/question/${questionId}`);
     }
 
     updateInstance(instance: Instance): Observable<Instance> {
         return this.http.put<Instance>(`${this.baseUrl}api/instances/instance/completed`, instance);
+    }
+    
+    deleteInstance(id : number): Observable<boolean>{
+        return this.http.delete<boolean>(`${this.baseUrl}api/instances/${id}`);
+    }
+
+    updateAllInstance(instance: Instance): Observable<Instance> {
+        return this.http.put<Instance>(`${this.baseUrl}api/instances/instance/updateAll`, instance);
+    }
+    
+    RefreshInstance(formId: number) : Observable<Instance> {
+        return this.http.post<Instance>(`${this.baseUrl}api/instances/refresh/by_form_id/${formId}`, formId);
     }
 
 

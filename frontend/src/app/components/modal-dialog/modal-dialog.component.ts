@@ -19,4 +19,15 @@ export class ModalDialogComponent {
     clickOnYes() : void {
         this.dialogRef.close(true);
     }
+
+    clickOnFirstChoice() {
+        this.dialogRef.close(1);
+    }
+    clickOnSecondChoice() {
+        this.dialogRef.close(2);
+    }
+    clickOnCancel() {
+        this.dialogRef.close(0);
+    }
+
 }

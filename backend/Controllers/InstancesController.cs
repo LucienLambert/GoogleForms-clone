@@ -40,6 +40,35 @@ public class InstancesController : ControllerBase
             return NotFound();
         return _mapper.Map<InstanceDTO>(instance);
     }
+    
+    // Including Answers, Form, Form-Questions, Question-optionlist etc.
+    [HttpGet("{instanceId}/full")]
+    public async Task<ActionResult<InstanceDTO>> GetOneByIdFull(int instanceId) {
+        
+        var userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+        var user = await _context.Users.FirstOrDefaultAsync(u => u.Id == int.Parse(userId));
+        
+        if (user == null) {
+            return Unauthorized();
+        }
+
+        var instance = await _context.Instances
+            .Where(i => i.Id == instanceId)
+            .Include(i => i.ListAnswers)
+            .Include(i => i.Form)
+            .ThenInclude(f => f.ListQuestions)
+            .ThenInclude(q => q.OptionList)
+            .ThenInclude(ol => ol.ListOptionValues)
+            .FirstOrDefaultAsync();
+        
+        if (instance == null)
+            return NotFound();
+        if (user.Id != instance.UserId && user.Id != instance.Form.OwnerId)
+            return Unauthorized();
+        
+        return Ok(_mapper.Map<Instance_With_Answers_And_Form_With_Questions_CompleteDTO>(instance));
+    }
+    
 
     [HttpGet("by_form_or_fresh/{id}")]
     public async Task<ActionResult<IEnumerable<InstanceDTO>>> GetExistingOrFreshInstanceByFormId(int id) {
@@ -60,7 +89,7 @@ public class InstancesController : ControllerBase
         Instance freshInstance = new() {
             FormId = id,
             UserId = user.Id,
-            Started = DateTime.UtcNow,
+            Started = DateTime.Now,
             Completed = null
         };
 
@@ -84,46 +113,86 @@ public class InstancesController : ControllerBase
         return Ok(_mapper.Map<Instance_With_AnswersDTO>(instance));
     }
 
-
-        // Updates the instance, its answers and make it completed
-        [HttpPut("instance/completed")]
-        public async Task<IActionResult> CompleteInstance(Instance_With_AnswersDTO instanceDto) {
+    
+    // Updates the instance, its answers and doesn't mark it as completed
+    [HttpPut("instance/updateAll")]
+    public async Task<IActionResult> UpdateAllInstance(Instance_With_AnswersDTO instanceDto) {
             
-            //TODO: Better security
-            var userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
-            var currentUser = await _context.Users.FirstOrDefaultAsync(u => u.Id == int.Parse(userId!));
-            if (currentUser == null) {
-                return Unauthorized();
-            }
-
-            var instance = await _context.Instances
-                .Where(i => i.Id == instanceDto.Id)
-                .Include(i => i.ListAnswers)
-                .FirstOrDefaultAsync();
-            
-            if (instance == null)
-                return NotFound();
-            
-            instance.Completed = DateTime.UtcNow;
-            
-            var validator = new InstanceValidation(_context);
-            var result = await validator.ValidateOnUpdate(instance);
-
-            if (!result.IsValid)
-                return BadRequest(result);
-            
-            _context.RemoveRange(instance.ListAnswers);
-            
-            foreach (AnswerDTO instanceDtoListAnswer in instanceDto.ListAnswers)
-            {
-                instance.ListAnswers!.Add(_mapper.Map<Answer>(instanceDtoListAnswer));
-            }
-            
-            _context.Instances.Update(instance);
-            await _context.SaveChangesAsync();
-            
-            return Ok(_mapper.Map<Instance_With_AnswersDTO>(instance));
+        //TODO: Better security
+        var userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+        var currentUser = await _context.Users.FirstOrDefaultAsync(u => u.Id == int.Parse(userId!));
+        if (currentUser == null) {
+            return Unauthorized();
         }
+
+        var instance = await _context.Instances
+            .Where(i => i.Id == instanceDto.Id)
+            .Include(i => i.ListAnswers)
+            .FirstOrDefaultAsync();
+            
+        if (instance == null)
+            return NotFound();
+            
+        var validator = new InstanceValidation(_context);
+        var result = await validator.ValidateOnUpdate(instance);
+
+        if (!result.IsValid)
+            return BadRequest(result);
+            
+        _context.RemoveRange(instance.ListAnswers);
+            
+        foreach (AnswerDTO instanceDtoListAnswer in instanceDto.ListAnswers)
+        {
+            instance.ListAnswers.Add(_mapper.Map<Answer>(instanceDtoListAnswer));
+        }
+            
+        _context.Instances.Update(instance);
+        await _context.SaveChangesAsync();
+            
+        return Ok(_mapper.Map<Instance_With_AnswersDTO>(instance));
+    }
+    
+    
+
+    // Updates the instance, its answers and marks it as completed
+    [HttpPut("instance/completed")]
+    public async Task<IActionResult> CompleteInstance(Instance_With_AnswersDTO instanceDto) {
+        
+        //TODO: Better security
+        var userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+        var currentUser = await _context.Users.FirstOrDefaultAsync(u => u.Id == int.Parse(userId!));
+        if (currentUser == null) {
+            return Unauthorized();
+        }
+
+        var instance = await _context.Instances
+            .Where(i => i.Id == instanceDto.Id)
+            .Include(i => i.ListAnswers)
+            .FirstOrDefaultAsync();
+        
+        if (instance == null)
+            return NotFound();
+        
+        instance.Completed = DateTime.Now;
+        
+        var validator = new InstanceValidation(_context);
+        var result = await validator.ValidateOnUpdate(instance);
+
+        if (!result.IsValid)
+            return BadRequest(result);
+        
+        _context.RemoveRange(instance.ListAnswers);
+        
+        foreach (AnswerDTO instanceDtoListAnswer in instanceDto.ListAnswers)
+        {
+            instance.ListAnswers.Add(_mapper.Map<Answer>(instanceDtoListAnswer));
+        }
+        
+        _context.Instances.Update(instance);
+        await _context.SaveChangesAsync();
+        
+        return Ok(_mapper.Map<Instance_With_AnswersDTO>(instance));
+    }
 
 
 
@@ -225,4 +294,66 @@ public class InstancesController : ControllerBase
 
         return Ok(true);
     }
+
+    [HttpDelete("{instanceId:int}")]
+    public async Task<ActionResult<bool>> DeleteInstanceById(int instanceId) {
+        
+        //TODO: Better security
+        var userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+        var currentUser = await _context.Users.FirstOrDefaultAsync(u => u.Id == int.Parse(userId!));
+        
+        var instanceToDelete = await _context.Instances.FirstOrDefaultAsync(i => i.Id == instanceId);
+        if (instanceToDelete == null) {
+            return NotFound();
+        }
+        
+        if (currentUser == null || instanceToDelete.UserId != int.Parse(userId)) {
+            return Unauthorized();
+        }
+
+        _context.Instances.Remove(instanceToDelete);
+        await _context.SaveChangesAsync();
+
+        return Ok(true);
+    }
+
+    // deletes if not guest and returns a new instance 
+    [HttpPost("refresh/by_form_id/{formId:int}")]
+    public async Task<ActionResult> CreateByFormId(int formId) {
+        var userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+        var currentUser = await _context.Users.FirstOrDefaultAsync(u => u.Id == int.Parse(userId!));
+        var form = await _context.Forms.FirstOrDefaultAsync(f => f.Id == formId);
+        if (currentUser == null) {
+            return Unauthorized();
+        }
+        if (form == null) {
+            return BadRequest();
+        }
+        var canAccess = _context.UserFormAccesses.Any(ufc => ufc.FormId == form.Id && ufc.UserId == currentUser.Id);
+        if (!canAccess && !form.IsPublic && form.OwnerId != int.Parse(userId)) {
+            return Unauthorized();
+        }
+        
+        Instance freshInstance = new() {
+            FormId = form.Id,
+            UserId = currentUser.Id,
+            Started = DateTime.Now,
+            Completed = null
+        };
+        
+        if (!currentUser.IsInRole(Role.Guest)) {
+            var instanceToDelete = await _context.Instances.FirstOrDefaultAsync(i => i.FormId == formId && i.UserId == currentUser.Id);
+            if (instanceToDelete != null){
+                _context.Instances.Remove(instanceToDelete);
+                await _context.SaveChangesAsync();
+            }
+            
+        }
+        
+        var savedInstance = await _context.Instances.AddAsync(freshInstance);
+        await _context.SaveChangesAsync();
+        
+        return Ok(_mapper.Map<InstanceDTO>(savedInstance.Entity));
+    }
+    
 }

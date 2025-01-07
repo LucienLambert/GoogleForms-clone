@@ -26,7 +26,7 @@ import {MatRadioButton, MatRadioGroup} from "@angular/material/radio";
 import {ViewFormComponent} from "../components/view-form/view-form.component";
 import { FormQuestionCardComponent } from '../components/view-form/form-question-card/form-question-card.component';
 import { ModalDialogComponent } from '../components/modal-dialog/modal-dialog.component';
-import {OptionViewerComponent} from "../components/view-instance/options-viewer/option-viewer.component";
+import {OptionViewerComponent} from "../components/view-instance/instance-question-card/options-viewer/option-viewer.component";
 import {AnalyseComponent} from "../components/analyse/analyse.component";
 
 

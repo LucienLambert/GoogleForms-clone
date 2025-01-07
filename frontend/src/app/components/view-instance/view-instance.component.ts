@@ -9,6 +9,8 @@ import {Form} from '../../models/form';
 import {Question, QuestionType} from '../../models/question';
 import {Instance} from '../../models/instance';
 import {Answer} from "../../models/answer";
+import {ModalDialogComponent} from "../modal-dialog/modal-dialog.component";
+import { MatDialog } from '@angular/material/dialog';
 
 @Component({
     selector: 'app-view-instance',
@@ -36,27 +38,17 @@ export class ViewInstanceComponent implements OnInit, OnDestroy {
     currentAnswers?: Answer[];
     isSaveable: boolean = false;
     
-    
-    //TODO:refactor
+    //navbar
     backButtonVisible: boolean = true;
-    isSearchVisible: boolean = false;
-    isAddVisible: boolean = false;
-    isSaveVisible: boolean = false;
-    
     
     constructor(private authService: AuthenticationService, private router: Router,
-                private instanceService: InstanceService, private formService: FormService, private route: ActivatedRoute) {
+                private instanceService: InstanceService, private formService: FormService, private route: ActivatedRoute, private modalDialog : MatDialog) {
 
     }
-
-
-
+    
     ngOnInit() {
-        
-        const formId = Number(this.route.snapshot.paramMap.get('id'));
-        
-        this.fetchFormWithQuestions(formId);
-        this.fetchInstance(formId);
+        const instanceId = Number(this.route.snapshot.paramMap.get('id'));
+        this.fetchInstance(instanceId);
     }
 
     ngOnDestroy() {
@@ -64,7 +56,6 @@ export class ViewInstanceComponent implements OnInit, OnDestroy {
     
     saveCurrentAnswers() {
         if (this.currentAnswers && this.currentAnswers.length == 0) {
-            console.log("reponse vide")
             this.instanceService.DeleteAnswersByInstanceIdAndQuestionId(this.instance?.id!, this.currentQuestion?.id!)
                 .subscribe(res=> {
                 })
@@ -112,10 +103,6 @@ export class ViewInstanceComponent implements OnInit, OnDestroy {
         return !this.instance?.completed;
     }
 
-    deleteButtonAction(){
-        console.log("delete button pressed");
-    }
-
     saveButtonAction() {
         if (this.instance) {
             this.instance.listAnswers.length = 0; 
@@ -123,8 +110,7 @@ export class ViewInstanceComponent implements OnInit, OnDestroy {
             this.instanceService.updateInstance(this.instance)
                 .subscribe({
                     next: (data) => {
-                        this.instance=data;
-                        this.isSaveable=false;
+                        this.router.navigate(['/home']);
                     },
                     error: (err) => {
                         console.log(err);
@@ -183,40 +169,16 @@ export class ViewInstanceComponent implements OnInit, OnDestroy {
         this.updateCurrentAnswers();
     }
 
-    private fetchFormWithQuestions(formId : number) {
-        this.formService.getFormWithQuestions(formId).subscribe({
+    private fetchInstance(instanceId: number) {
+        
+        this.instanceService.getOneByIdFull(instanceId).subscribe({
             next: (data) => {
-                this.form=data;
-                this.questions=this.form.listQuestion;
-                this.currentQuestion=this.questions[0];
-                this.updateCurrentAnswers();
-            },
-            error: (err) => {
-                console.log(err);
-                switch (err.status) {
-                    case 400:
-                        this.router.navigate(['/unknown']);
-                        break;
-                    case 404:
-                        this.router.navigate(['/unknown']);
-                        break;
-                    case 401:
-                        this.router.navigate(['/restricted']);
-                        break;
-                    default:
-                        this.router.navigate(['/unknown']);
+                this.instance = new Instance(data);
+                this.form = new Form(data.form);
+                this.questions = this.form?.listQuestion;
+                if (this.questions.length > 0) {
+                    this.currentQuestion = this.questions[0];
                 }
-            }
-        });
-    }
-
-
-    private fetchInstance(formId: number) {
-
-
-        this.instanceService.getExistingOrFreshInstanceByFormId(formId).subscribe({
-            next: (data) => {
-                this.instance=data;
                 this.answers=data.listAnswers;
                 this.updateCurrentAnswers();
             },
@@ -255,4 +217,42 @@ export class ViewInstanceComponent implements OnInit, OnDestroy {
         }
         this.isSaveable = saveable;
     }
+    
+    backButtonAction() {
+        if (this.isInProgress() && this.questions.length > 0) {
+            this.saveCurrentAnswers()
+        }
+    }
+    
+    async deleteButtonAction(){
+        const canDel = await this.modalDialogDelInstance();
+        if(canDel && this.instance){
+            this.instanceService.deleteInstance(this.instance.id).subscribe({
+                next : (data) => {
+                    this.router.navigate(['/home']);   
+                }
+            })
+        }
+        
+
+    }
+    private async modalDialogDelInstance() {
+        return new Promise<boolean>((resolve) => {
+
+            const modal = this.modalDialog.open(ModalDialogComponent, {
+                disableClose: true,
+                data : {
+                    title: 'Delete Instance?',
+                    message: "Are you sure you want to delete the current instance and go back to the forms list?",
+                    context : 'editForm'
+                },
+            });
+
+            modal.afterClosed().subscribe(result => {
+                resolve(result);
+            });
+        });
+    }
+    
+    
 }

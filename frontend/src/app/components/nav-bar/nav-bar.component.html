@@ -41,6 +41,15 @@
     <button mat-icon-button *ngIf="analyseVisible" (click)="analyse()">
         <mat-icon>insights</mat-icon>
     </button>
+
+
+    <!-- view-instance buttons -->
+    <ng-content select="[prevQuestion]"></ng-content>
+    <ng-content select="[nextQuestion]"></ng-content>
+    <ng-content select="[deleteButton]"></ng-content>
+    <ng-content select="[saveButton]"></ng-content>
+    
+    
 </mat-toolbar>
 
 <!--Menu déroulant quand on click dessus-->

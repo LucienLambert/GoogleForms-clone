@@ -1,6 +1,27 @@
-<app-nav-bar title="Answer Form" [isSaveVisible]="isSaveVisible" [isSearchVisible]="isSearchVisible"
-             [isAddVisible]="isAddVisible" [backButtonVisible]="backButtonVisible" class="toolbar-actions"
-             (saveEvent)="saveButtonAction()"></app-nav-bar>
+<app-nav-bar title="Answer Form"
+             [backButtonVisible] = "backButtonVisible"
+             class="toolbar-actions"
+             (saveEvent)="saveButtonAction()"
+            (backButtonEvent)="backButtonAction()">
+    
+    
+    <button mat-icon-button prevQuestion class="navbarbtn" (click)="switchQuestion(questionTracker - 1)" [disabled]="questionTracker == 1">
+        <span>&lt;</span>
+    </button>
+
+    <button mat-icon-button nextQuestion class="navbarbtn" (click)="switchQuestion(questionTracker + 1)" [disabled]="questionTracker >= questions.length ">
+        <span>&gt;</span>
+    </button>
+
+    <button mat-icon-button deleteButton class="navbarbtn" [disabled]="!isInProgress()" (click)="deleteButtonAction()">
+        <mat-icon>delete</mat-icon>
+    </button>
+
+    <button mat-icon-button saveButton class="navbarbtn" [disabled]="!isSaveable" (click)="saveButtonAction()">
+        <mat-icon>save</mat-icon>
+    </button>
+
+</app-nav-bar>
 
 <div class="instance-container">
     <div class="form-container">
@@ -25,28 +46,13 @@
                     In Progress
                 </ng-template>
         </div>
+        
         <div *ngIf="questions.length > 0; else noQuestion">
-
-            <button mat-icon-button (click)="switchQuestion(questionTracker - 1)" [disabled]="questionTracker == 1">
-                <span>&lt;</span>
-            </button>
-
-            <button mat-icon-button (click)="switchQuestion(questionTracker + 1)" [disabled]="questionTracker >= questions.length ">
-                <span>&gt;</span>
-            </button>
-
-            <button mat-icon-button [disabled]="!isInProgress()" (click)="deleteButtonAction()">
-                <mat-icon>delete</mat-icon>
-            </button>
-
-            <button mat-icon-button [disabled]="!isSaveable" (click)="saveButtonAction()">
-                <mat-icon>save</mat-icon>
-            </button>
-            
             
             <p>Question {{questionTracker}}/{{questions.length}}</p>
         <app-instance-question-card [question]="currentQuestion" [questionType]="currentQuestion?.questionType" [answers]="currentAnswers" [isCompleted]="!isInProgress()" (updatedValuesEvent)="receiveValue($event)"></app-instance-question-card>
         </div>
+        
         <ng-template #noQuestion>
             This form doesn't have any question!
         </ng-template>

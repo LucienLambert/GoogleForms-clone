@@ -1,6 +1,6 @@
 <!--<p *ngFor="let answer of answers">{{ answer.value }}</p>-->
 
-<div [ngSwitch]="questionType?.valueOf()">
+<div  [ngSwitch]="questionType?.valueOf()">
     <div *ngSwitchCase="QuestionType.Short">
         <mat-form-field>
             <input matInput [required]="isRequired" [(ngModel)]="currentValue" #shortInput="ngModel" [disabled]="isCompleted" (input)="onFieldInput(shortInput)">

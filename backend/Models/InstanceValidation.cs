@@ -17,7 +17,7 @@ public class InstanceValidation : AbstractValidator<Instance>
             RuleFor(i => i.Completed)
                 .GreaterThan(i => i.Started)
                 .WithMessage("The completion date must be posterior to the starting date.")
-                .LessThanOrEqualTo(DateTime.UtcNow)
+                .LessThanOrEqualTo(DateTime.Now)
                 .WithMessage("The completion date must be less than or equal to the current date.");
         });
     }
