@@ -10,16 +10,18 @@ using System.Security.Claims;
 
 
 using prid_2425_a01.Models;
+using System.Text.Json;
+
 namespace prid_2425_a01.Controllers;
 
 [Authorize]
 [Route("api/[controller]")]
 [ApiController]
 public class UsersController : ControllerBase {
-    private readonly FormContext _context;
+    private readonly ApplicationDbContext _context;
     private readonly IMapper _mapper;
 
-    public UsersController(FormContext context, IMapper mapper) {
+    public UsersController(ApplicationDbContext context, IMapper mapper) {
         _context = context;
         _mapper = mapper;
     }
@@ -128,6 +130,99 @@ public class UsersController : ControllerBase {
 
         return user;
     }
+
+    [Authorized(Role.Admin, Role.User)]
+    [HttpGet("optionListsWithNotReferenced/{userId:int}")]
+    public async Task<ActionResult<List<OptionList_With_NotReferencedDTO>>> GetOptionListsWithNotReferenced(int userId) {
+        // Step 1: Fetch data into memory
+        var optionLists = await _context.OptionLists
+            .Where(op => op.OwnerId == userId || op.OwnerId == null)
+            .Include(op => op.ListOptionValues)
+            .ToListAsync();
+
+        // Step 2: Perform the projection in-memory
+        var result = optionLists.Select(op => new OptionList_With_NotReferencedDTO {
+            Id = op.Id,
+            Name = op.Name,
+            OwnerId = op.OwnerId,
+            NotReferenced = !_context.Questions.Any(q => q.OptionListId == op.Id),
+            ListOptionValues = op.ListOptionValues.Select(ov => new OptionValueDTO {
+                Idx = ov.Idx,
+                Value = ov.Value,
+                OptionListId = op.Id
+            }).ToList()
+        }).ToList();
+
+        return result;
+    }
+
+    [Authorized(Role.Admin, Role.User)]
+    [HttpDelete("deleteOptionList/{optionListId:int}")]
+    public async Task<ActionResult<bool>> DeleteOptionList(int optionListId) {
+        var optionList = await _context.OptionLists.FindAsync(optionListId);
+        
+        if (optionList == null) {
+            return NotFound("OptionList not found.");
+        }
+        
+        _context.OptionLists.Remove(optionList);
+        await _context.SaveChangesAsync();
+        return true;
+    }
     
+    [Authorized(Role.Admin, Role.User)]
+    [HttpGet("optionList/{optionListId:int}")]
+    public async Task<ActionResult<OptionList_With_OptionValuesDTO>> GetOptionList(int optionListId) {
+        var optionList = await _context.OptionLists
+            .Include(ol => ol.ListOptionValues)
+            .FirstOrDefaultAsync(ol => ol.Id == optionListId);
     
+        if (optionList == null) {
+            return NotFound("OptionList not found.");
+        }
+        
+        var optionListDto = _mapper.Map<OptionList_With_OptionValuesDTO>(optionList);
+        return optionListDto;
+    }
+    
+    [Authorized(Role.Admin, Role.User)]
+    [HttpPost("createOptionList")]
+    public async Task<ActionResult<OptionListDTO>> CreateOptionList(OptionList_With_OptionValuesDTO optionListDto) {
+        var optionList = _mapper.Map<OptionList>(optionListDto);
+        
+        var lastIdx = optionList.ListOptionValues.Any()
+            ? optionList.ListOptionValues.Max(v => v.Idx) + 1 : 1; 
+        
+        optionList.ListOptionValues.Where(ov => ov.Idx == 0).ToList().ForEach(ov => ov.Idx = lastIdx++);
+        
+        _context.OptionLists.Add(optionList);
+        
+        await _context.SaveChangesAsync();
+        return CreatedAtAction("GetOptionList", new { optionListId = optionList.Id }, _mapper.Map<OptionList_With_OptionValuesDTO>(optionList));
+    }
+
+    [Authorized(Role.Admin, Role.User)]
+    [HttpPut("updateOptionList")]
+    public async Task<IActionResult> UpdateOptionList(OptionList_With_OptionValuesDTO optionListDto) {
+        // Load existing OptionList, including its OptionValues
+        var existingOptionList = await _context.OptionLists
+            .Include(o => o.ListOptionValues) // Include nested collection
+            .FirstOrDefaultAsync(f => f.Id == optionListDto.Id);
+
+        if (existingOptionList == null)
+            return NotFound();
+
+        // Use AutoMapper to map the DTO to the existing entity
+        _mapper.Map(optionListDto, existingOptionList);
+
+        var lastIdx = existingOptionList.ListOptionValues.Any()
+            ? existingOptionList.ListOptionValues.Max(v => v.Idx) + 1 : 1; 
+        
+        existingOptionList.ListOptionValues.Where(ov => ov.Idx == 0).ToList().ForEach(ov => ov.Idx = lastIdx++);
+
+        // Save changes to the database
+        await _context.SaveChangesAsync();
+
+        return Ok(new { message = "OptionList updated successfully.", form = _mapper.Map<OptionList_With_OptionValuesDTO>(existingOptionList) });
+    }
 }

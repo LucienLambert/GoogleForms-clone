@@ -28,6 +28,9 @@ import { FormQuestionCardComponent } from '../components/view-form/form-question
 import { ModalDialogComponent } from '../components/modal-dialog/modal-dialog.component';
 import {OptionViewerComponent} from "../components/view-instance/instance-question-card/options-viewer/option-viewer.component";
 import {AnalyseComponent} from "../components/analyse/analyse.component";
+import {ManageOptionsListComponent} from "../components/manage-option-lists/manage-option-lists.component";
+import {OptionListItemComponent} from "../components/option-list-item/option-list-item.component";
+import {AddEditOptionListComponent} from "../components/add-edit-option-list/add-edit-option-list.component";
 
 
 @NgModule({
@@ -48,8 +51,10 @@ import {AnalyseComponent} from "../components/analyse/analyse.component";
         FormQuestionCardComponent,
         ModalDialogComponent,
         AnalyseComponent,
-        OptionViewerComponent
-
+        OptionViewerComponent,
+        ManageOptionsListComponent,
+        OptionListItemComponent,
+        AddEditOptionListComponent
     ],
     imports: [
         BrowserModule.withServerTransition({appId: 'ng-cli-universal'}),

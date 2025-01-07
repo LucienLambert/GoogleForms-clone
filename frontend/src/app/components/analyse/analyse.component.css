@@ -1,0 +1,6 @@
+.statistics-container {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    margin: var(--navbar-margin) 20px 20px;
+}

@@ -1,13 +1,10 @@
 import { Component, OnInit } from '@angular/core';
 import { AuthenticationService } from '../../services/authentication.service';
 import { Role, User } from '../../models/user';
-import {ActivatedRoute, NavigationExtras, Router} from '@angular/router';
+import {Router} from '@angular/router';
 import { FormService } from '../../services/form.service';
 import { Form } from '../../models/form';
-import { forEach } from 'lodash-es';
 import { AccessType } from 'src/app/models/userFormAccess';
-import {ModalDialogComponent} from "../modal-dialog/modal-dialog.component";
-import { MatDialog } from '@angular/material/dialog';
 import {InstanceService} from "../../services/instance.service";
 
 @Component({
@@ -23,10 +20,11 @@ export class ViewFormsComponent implements OnInit {
 
     isSaveVisible: boolean = false;
     isSearchVisible: boolean = true;
-    isAddVisible: boolean = true;
+    isAddVisible: boolean = false;
+    isOptionListVisible: boolean = false;
 
     constructor(private authService: AuthenticationService, private router: Router,
-        private formService: FormService, private instanceService: InstanceService, private modalDialog: MatDialog) {
+        private formService: FormService, private instanceService: InstanceService) {
 
     }
 
@@ -35,11 +33,16 @@ export class ViewFormsComponent implements OnInit {
             console.log(this.user);
             this.getOwnerPublicAccessForm();
         }
+        
+        if(this.user?.role != Role.Guest) {
+            this.isOptionListVisible = true;
+            this.isAddVisible = true;
+        }
     }
 
     authentification() {
         if (!this.authService.currentUser) {
-            this.router.navigate(['/login']);
+            this.router.navigate(['']);
             return false;
         } else {
             this.user = this.authService.currentUser;
@@ -65,12 +68,6 @@ export class ViewFormsComponent implements OnInit {
             next: (data) => {
                 this.forms = data;
                 this.filteredForms = data;
-                console.log(this.forms);
-                this.forms.forEach( form => {
-                    if(form.listUserFormAccess[0] != null){
-                        console.log("[title form : "+form.title +"] [id form : " +form.id + "] [accessType Form : " + form.listUserFormAccess[0].accessType + "]");
-                    }
-                })
             },
             error: (err) => {
             this.errorMessage = "Erreur de récupération des formulaires.";
@@ -136,6 +133,7 @@ export class ViewFormsComponent implements OnInit {
         } else {
             // Filter forms based on the search term
             this.filteredForms = this.forms.filter(form =>
+                form.listQuestion?.some(question => question.title.toLowerCase().includes(term.toLowerCase())) ||
                 form.title.toLowerCase().includes(term.toLowerCase()) ||
                 form.description!.toLowerCase().includes(term.toLowerCase()) ||
                 form.owner?.firstName!.toLowerCase().includes(term.toLowerCase()) ||
@@ -151,5 +149,4 @@ export class ViewFormsComponent implements OnInit {
         }
         return form.listUserFormAccess[0]?.accessType === AccessType.Editor;
     }
-    
 }

@@ -1,5 +1,8 @@
-<app-nav-bar [title]="form?.title"
-             [backButtonVisible]="backButtonVisible"
+
+<app-nav-bar [title]="form?.title" [backButtonVisible]="backButtonVisible" [isEditVisible]="isEditVisible" 
+             [isAnalyseVisible]="isAnalyseVisible" (editEvent)="editForm()" (AnalyseEvent)="analyse()"
+             [delFormVisible]="delFormButton"
+             (delFormEvent)="delForm()"
              class="toolbar-actions">
 </app-nav-bar>
 
@@ -18,19 +21,20 @@
             <div class="form-value">{{ form?.owner?.firstName }} {{ form?.owner?.lastName }}</div>
         </div>
         <div class="form-item">
-            <div class="form-label">Public :</div>
+            <div class="form-label">Public : </div>
             <mat-slide-toggle
-                [disabled]="instanceInProgress"
-                [checked]="form?.isPublic" 
-                (change)="toggleIsPublic()">
+                [disabled]="!(user?.role === 2 || form?.owner?.id === user?.id)"
+                [checked]="form?.isPublic"
+                (change)="toggleIsPublic($event)">
             </mat-slide-toggle>
         </div>
         <div *ngIf="listQuestion.length > 0; else noQuestions">
             <h2 class="mb-4">Questions</h2>
-            <div *ngFor="let question of listQuestion">
+            <div *ngFor="let question of listQuestion let i = index">
                 <app-form-question-card
                     [question]="question"
-                    [totalQuestion]="listQuestion.length"
+                    [indexQuestion]="i"
+                    [sizeListQuestion]="listQuestion.length -1"
                     (moveDownEvent)="moveDown($event)"
                     (moveUpEvent)="moveUp($event)"
                     (editQuestionEvent)="editQuestion($event)"
@@ -47,7 +51,7 @@
         <h1 style="text-align: center">No Question</h1>
     </ng-template>
     <div>
-        <mat-card-actions>
+        <mat-card-actions *ngIf="!instanceInProgress">
             <button mat-raised-button color="primary">Add Question</button>
         </mat-card-actions>
     </div>

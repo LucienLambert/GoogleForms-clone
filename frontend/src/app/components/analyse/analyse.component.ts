@@ -1,4 +1,7 @@
 import { Component, OnInit } from '@angular/core';
+import { FormService } from '../../services/form.service';
+import { Question } from '../../models/question';
+import { ActivatedRoute } from '@angular/router';
 
 @Component({
     selector: 'app-analyse',
@@ -6,20 +9,28 @@ import { Component, OnInit } from '@angular/core';
     styleUrls: ['./analyse.component.css']
 })
 export class AnalyseComponent implements OnInit {
-    questions = [
-        { id: 1, text: 'What is your favorite color?' },
-        { id: 2, text: 'How often do you exercise?' },
-        { id: 3, text: 'Do you like Angular?' }
-    ];
-
+    questions: Question[] = [];
     selectedQuestion: number | null = null;
     statistics: { answer: string; count: number; ratio: number }[] = [];
+    formId?: number;
+
+    constructor(private formService: FormService, private route: ActivatedRoute) {}
 
     ngOnInit(): void {
-        // Default statistics for the first question
-        if (this.questions.length > 0) {
-            this.selectedQuestion = this.questions[0].id;
-            this.loadStatistics(this.selectedQuestion);
+        this.formId = Number(this.route.snapshot.paramMap.get('id'));
+        this.retrieveQuestions();
+    }
+
+    retrieveQuestions() {
+        if (this.formId != undefined) {
+
+            this.formService.getFormQuestions(this.formId).subscribe((data: Question[]) => {
+                this.questions = data;
+                if (this.questions.length > 0) {
+                    this.selectedQuestion = this.questions[0].id;
+                    this.loadStatistics(this.selectedQuestion);
+                }
+            });
         }
     }
 
@@ -30,23 +41,39 @@ export class AnalyseComponent implements OnInit {
     }
 
     loadStatistics(questionId: number): void {
-        // Replace this mock data with actual API calls to fetch statistics
-        if (questionId === 1) {
-            this.statistics = [
-                { answer: 'Red', count: 10, ratio: 0.4 },
-                { answer: 'Blue', count: 15, ratio: 0.6 }
-            ];
-        } else if (questionId === 2) {
-            this.statistics = [
-                { answer: 'Daily', count: 20, ratio: 0.5 },
-                { answer: 'Weekly', count: 15, ratio: 0.375 },
-                { answer: 'Rarely', count: 5, ratio: 0.125 }
-            ];
-        } else if (questionId === 3) {
-            this.statistics = [
-                { answer: 'Yes', count: 25, ratio: 0.833 },
-                { answer: 'No', count: 5, ratio: 0.167 }
-            ];
+        const selectedQuestion = this.questions.find(q => q.id === questionId);
+
+        if (selectedQuestion) {
+            const answerCounts = new Map<string, number>();
+
+            selectedQuestion.answersList!.forEach(answer => {
+                let answerValue = answer.value;
+
+                // Check if the question has an OptionList and the answer is numeric
+                if (selectedQuestion.optionList && !isNaN(+answerValue)) {
+                    const optionValue = selectedQuestion.optionList.listOptionValues?.find(
+                        ov => ov.idx === +answerValue
+                    );
+
+                    // Update answerValue to the corresponding string value if found
+                    answerValue = optionValue ? optionValue.value : `Unknown (${answerValue})`;
+                }
+                answerCounts.set(answerValue, (answerCounts.get(answerValue) || 0) + 1);
+            });
+
+            const totalAnswers = selectedQuestion.answersList!.length;
+
+            // Calculate statistics
+            this.statistics = Array.from(answerCounts.entries()).map(([answer, count]) => ({
+                answer,
+                count,
+                ratio: count / totalAnswers
+            }));
+
+            console.log('Updated Statistics:', this.statistics);
+        } else {
+            console.warn('No answers found for the selected question.');
+            this.statistics = [];
         }
     }
 }

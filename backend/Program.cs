@@ -10,7 +10,7 @@ var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 builder.Services.AddControllers();
-builder.Services.AddDbContext<FormContext>(opt => opt.UseSqlite("Data Source=prid-2425-a01.db"));
+builder.Services.AddDbContext<ApplicationDbContext>(opt => opt.UseSqlite("Data Source=prid-2425-a01.db"));
 
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
@@ -46,7 +46,7 @@ builder.Services.AddSwaggerGen(c =>
 
 // Auto Mapper Configurations
 builder.Services.AddScoped(provider => new MapperConfiguration(cfg => {
-    cfg.AddProfile(new MappingProfile(provider.GetService<FormContext>()!));
+    cfg.AddProfile(new MappingProfile(provider.GetService<ApplicationDbContext>()!));
     // see: https://github.com/AutoMapper/AutoMapper.Collection
     cfg.AddCollectionMappers();
 }).CreateMapper());
@@ -105,7 +105,7 @@ if (app.Environment.IsDevelopment()) {
 
 // Seed the database
 using var scope = app.Services.CreateScope();
-using var context = scope.ServiceProvider.GetService<FormContext>();
+using var context = scope.ServiceProvider.GetService<ApplicationDbContext>();
 if (context?.Database.IsSqlite() == true)
     /*
     La suppression complète de la base de données n'est pas possible si celle-ci est ouverte par un autre programme,

@@ -1,0 +1,11 @@
+<app-nav-bar title="My Option Lists" [backButtonVisible]="backButtonVisible"></app-nav-bar>
+
+<div class="option-list">
+    <app-option-list-item *ngFor="let optionList of sortedOptionLists" [optionList]="optionList" [owner]="owner" 
+                          (edit)="onEdit($event)" (delete)="onDelete($event)" (duplicate)="onDuplicate($event)">
+        
+    </app-option-list-item>
+    <button class="add-button" (click)="onAdd()">Add Option List</button>
+</div>
+
+

@@ -1,6 +1,6 @@
 <app-nav-bar [title]="navBarTitle" [isSaveVisible]="isSaveVisible" [isSearchVisible]="isSearchVisible"
              [isAddVisible]="isAddVisible" [backButtonVisible]="backButtonVisible" class="toolbar-actions"
-             (saveEvent)="onSave()" [saveDisabled]="isSaveDisabled" [analyseVisible]="isAnalyseVisible"></app-nav-bar>
+             (saveEvent)="onSave()" [saveDisabled]="isSaveDisabled" [isAnalyseVisible]="isAnalyseVisible"></app-nav-bar>
 
 <form [formGroup]="form" class="input-container">
     <!-- Title Input -->
@@ -9,9 +9,9 @@
         <input id="title" type="text" formControlName="title" class="form-control" placeholder="Title*" required/>
         <!-- Validation Errors -->
         <div *ngIf="form.get('title')?.invalid && form.get('title')?.dirty" class="error-message">
-            <small *ngIf="form.get('title')?.errors?.['required']">Title is required.</small>
-            <small *ngIf="form.get('title')?.errors?.['minlength']">Title must be at least 3 characters.</small>
-            <small *ngIf="form.get('title')?.errors?.['unique']">This title already exists for this owner.</small>
+            <mat-error *ngIf="form.get('title')?.errors?.['required']">Title is required.</mat-error>
+            <mat-error *ngIf="form.get('title')?.errors?.['minlength']">Title must be at least 3 characters.</mat-error>
+            <mat-error *ngIf="form.get('title')?.errors?.['unique']">This title already exists for this owner.</mat-error>
         </div>
     </div>
 

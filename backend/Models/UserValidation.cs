@@ -7,12 +7,11 @@ namespace prid_2425_a01.Models;
 
 public class UserValidation : AbstractValidator<User>
 {
-    private readonly FormContext _context;
+    private readonly ApplicationDbContext _context;
 
-    public UserValidation(FormContext context) {
+    public UserValidation(ApplicationDbContext context) {
         _context = context;
-
-        // Les règles ci-après sont conformes aux validations métier à implémenter lors de l'itération 1.
+        
         RuleFor(u => u.Email)
             .NotEmpty()
                 .WithMessage("Email is required.")

@@ -1,0 +1,20 @@
+.add-button {
+    color: blue; 
+    background-color: white;
+    border: 1px solid black; 
+    border-radius: 30px;
+    padding: 10px 20px;
+    font-size: 16px; 
+    display: flex;
+    align-items: center; 
+    gap: 10px;
+    cursor: pointer; 
+    transition: all 0.3s ease;
+    margin: 10px;
+}
+
+.add-button:hover {
+    background-color: #f0f0f0; 
+    color: darkblue;
+    border-color: darkblue;
+}

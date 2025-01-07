@@ -9,7 +9,7 @@
     <div class="form-group">
         <label for="questionSelect">Select Question:</label>
         <select id="questionSelect" class="form-control" [(ngModel)]="selectedQuestion" (change)="onQuestionChange()">
-            <option *ngFor="let question of questions" [value]="question.id">{{ question.text }}</option>
+            <option *ngFor="let question of questions" [ngValue]="question.id">{{ question.title }}</option>
         </select>
     </div>
 

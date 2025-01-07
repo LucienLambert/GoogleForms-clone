@@ -32,16 +32,20 @@
         <mat-icon>add</mat-icon>
     </button>
 
+    <!-- Edit button -->
+    <button mat-icon-button *ngIf="isEditVisible" (click)="editForm()">
+        <mat-icon>edit</mat-icon>
+    </button>
+    
     <!-- Save button -->
     <button mat-icon-button *ngIf="isSaveVisible" (click)="onSave()" [disabled]="saveDisabled">
         <mat-icon>save</mat-icon>
     </button>
 
     <!-- Analyse button -->
-    <button mat-icon-button *ngIf="analyseVisible" (click)="analyse()">
+    <button mat-icon-button *ngIf="isAnalyseVisible" (click)="analyse()">
         <mat-icon>insights</mat-icon>
     </button>
-
 
     <!-- view-instance buttons -->
     <ng-content select="[prevQuestion]"></ng-content>
@@ -49,7 +53,7 @@
     <ng-content select="[deleteButton]"></ng-content>
     <ng-content select="[saveButton]"></ng-content>
     
-    
+
 </mat-toolbar>
 
 <!--Menu déroulant quand on click dessus-->
@@ -59,6 +63,13 @@
         <mat-icon>home</mat-icon>
         <span>Accueil</span>
     </button>
+
+    <!-- Redirection vers manage option lists-->
+    <button *ngIf="isOptionListVisible" mat-menu-item routerLink="/manage-option-lists">
+        <mat-icon>person</mat-icon>
+        <span>My Option Lists</span>
+    </button>
+    
     <!-- Redirection vers la page de login-->
     <!--il faut surement déplacer la logique du logout dans le nav-bar.comporent.ts au lieu de home.component.ts (à vérifier)-->
     <button mat-menu-item (click)="logout()">

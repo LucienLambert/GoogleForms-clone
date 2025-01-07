@@ -1,4 +1,5 @@
 ﻿using AutoMapper;
+using AutoMapper.QueryableExtensions;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.AspNetCore.Authorization;
@@ -7,7 +8,6 @@ using prid_2425_a01.Helpers;
 using prid_2425_a01.Models;
 using prid_2425_a01.Models.form;
 using System.Security.Claims;
-using System.Diagnostics.Eventing.Reader;
 namespace prid_2425_a01.Controllers;
 
 
@@ -15,10 +15,10 @@ namespace prid_2425_a01.Controllers;
 [Route("api/[controller]")]
 [ApiController]
 public class FormsController : ControllerBase {
-    private readonly FormContext _context;
+    private readonly ApplicationDbContext _context;
     private readonly IMapper _mapper;
     
-    public FormsController(FormContext context, IMapper mapper) {
+    public FormsController(ApplicationDbContext context, IMapper mapper) {
         _context = context;
         _mapper = mapper;
     }
@@ -86,16 +86,16 @@ public class FormsController : ControllerBase {
         return Ok(_mapper.Map<Form_With_QuestionsDTO>(form));
     }
 
-
-    [HttpDelete("{id}")]
-    public async Task<ActionResult<FormDTO>> DeleteForm(int id){
+    [Authorize]
+    [HttpDelete("{id:int}/form")]
+    public async Task<ActionResult<bool>> DeleteForm(int id){
         var form = await _context.Forms.FirstOrDefaultAsync(f => f.Id == id);
         if(form == null) {
-            return NotFound();
+            return NotFound(false);
         }
         _context.Forms.Remove(form);
         await _context.SaveChangesAsync();
-        return _mapper.Map<FormDTO>(form);
+        return Ok(true);
     }
 
     //TO FIX : fonctionne mais la modification du form est trop complexe et donc illisible
@@ -163,7 +163,7 @@ public class FormsController : ControllerBase {
 
     [Authorize]
     [HttpGet("Owner_Public_Access/forms")]
-    public async Task<ActionResult<IEnumerable<FormDTO_With_All_ListDTO>>> GetOwnerPublicAccessForm(){
+    public async Task<ActionResult<IEnumerable<FormDTO_With_All_ListDTO>>> GetOwnerPublicAccessForm() {
 
         var userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
 
@@ -182,6 +182,7 @@ public class FormsController : ControllerBase {
             .Include(f => f.ListInstances)
             .Include(f => f.Owner)
             .Include(f => f.ListUserFormAccesses.Where(ufa => ufa.UserId == userIdInt))
+            .Include(f => f.ListQuestions)
             .OrderBy(f => f.Title)
             .ToListAsync();
             
@@ -214,7 +215,8 @@ public class FormsController : ControllerBase {
     [HttpPut("updateForm")]
     public async Task<IActionResult> UpdateForm(FormDTO formDto) {
         var existingForm = await _context.Forms.FirstOrDefaultAsync(f => f.Id == formDto.Id);
-                if (existingForm == null)
+        
+        if (existingForm == null)
             return NotFound();
         
         _mapper.Map(formDto, existingForm);
@@ -228,7 +230,7 @@ public class FormsController : ControllerBase {
         _context.Forms.Update(existingForm);
         await _context.SaveChangesAsync();
 
-        return NoContent();
+        return Ok(new { message = "Form updated successfully.", form = existingForm });
     }
 
     [Authorize]
@@ -272,15 +274,17 @@ public class FormsController : ControllerBase {
         }
         var currentUser = await _context.Users.Where(u => u.Id == userIdInt).FirstOrDefaultAsync();
 
-        var form = await _context.Forms
-            .Where(f => _context.Questions.Any(q => q.Id == questionId && q.FormId == formId) && 
-                    (f.Owner.Id == currentUser!.Id ||
-                    currentUser.Role == Role.Admin ||
-                    _context.UserFormAccesses.Any(ufa => ufa.UserId == userIdInt && 
-                        ufa.FormId == f.Id &&
-                        ufa.AccessType == AccessType.Editor)))
-            .FirstOrDefaultAsync();
-        
+        // var form = await _context.Forms
+        //     .Where(f => _context.Questions.Any(q => q.Id == questionId && q.FormId == formId) && 
+        //             (f.Owner.Id == currentUser!.Id ||
+        //             currentUser.Role == Role.Admin ||
+        //             _context.UserFormAccesses.Any(ufa => ufa.UserId == userIdInt && 
+        //                 ufa.FormId == f.Id &&
+        //                 ufa.AccessType == AccessType.Editor)))
+        //     .FirstOrDefaultAsync();
+
+        var form = await CanActionOnQuestionForm(formId, questionId);
+
         if(form == null){
             return NotFound(false);
         }
@@ -302,6 +306,187 @@ public class FormsController : ControllerBase {
                 (formId == null || f.Id != formId)
         );
         return Ok(!exists);
-
     }
+
+    
+    [Authorized(Role.Admin, Role.User)]
+    [HttpGet("getFormQuestionsById")]
+    public async Task<ActionResult<List<Question_CompleteDTO_With_AnswersDTO>>> GetFormQuestions(int? formId)
+    {
+        if (formId == null)
+        {
+            return BadRequest("Form ID cannot be null.");
+        }
+
+        var questions = await _context.Questions
+            .Where(q => q.FormId == formId)
+            .Include(q => q.OptionList)
+            .ThenInclude(ol => ol.ListOptionValues)
+            .ToListAsync();
+
+        if (!questions.Any())
+        {
+            return NotFound("No questions or answers found for the provided Form ID.");
+        }
+
+        var completedInstances = _context.Instances.Where(i => i.FormId == formId && i.Completed != null)
+            .Select(i => i.Id).ToList();
+        
+        var answers = await _context.Answers.Where(a => questions.Select(q => q.Id)
+                .Contains(a.QuestionId) && completedInstances.Contains(a.InstanceId)).ToListAsync();
+
+        var result = questions.Select(question =>
+        {
+            var questionDto = _mapper.Map<Question_CompleteDTO_With_AnswersDTO>(question);
+            questionDto.AnswersList = answers
+                .Where(a => a.QuestionId == question.Id)
+                .Select(a => _mapper.Map<AnswerDTO>(a))
+                .ToList();
+
+            return questionDto;
+        }).ToList();
+
+        return Ok(result);
+    }
+
+
+    [Authorize]
+    [HttpPost("{formId:int}/moveUpQuestion/{questionId:int}")]
+    public async Task<ActionResult<bool>> MoveUpQuestionForm(int formId, int questionId){
+        // Vérifie si l'utilisateur a les droits d'action sur la question
+        var canAct = await CanActionOnQuestionForm(formId, questionId);
+        
+        if (canAct == null) {
+            return NotFound("pas droit d'acces au form");
+        }
+
+        var question = await _context.Questions.Where(q => q.Id == questionId).FirstOrDefaultAsync();
+        
+        if (question == null) {
+            return NotFound("no question found");
+        }
+
+        // Récupère la question située juste au-dessus
+        var questionTemp = await _context.Questions
+            .Where(q => q.FormId == formId && q.Idx < question.Idx)
+            .OrderByDescending(q => q.Idx)
+            .FirstOrDefaultAsync();
+
+        if (questionTemp == null) {
+            return NotFound("no question above found");
+        }
+
+        // Échange les indices
+        var tempIdx = question.Idx;
+        question.Idx = questionTemp.Idx;
+        questionTemp.Idx = tempIdx;
+
+        // Sauvegarde les modifications dans la base de données
+        await _context.SaveChangesAsync();
+
+        return Ok(true);
+    }
+
+    [Authorize]
+    [HttpPost("{formId:int}/moveDownQuestion/{questionId:int}")]
+    public async Task<ActionResult<bool>> MoveDownQuestionForm(int formId, int questionId){
+        // Vérifie si l'utilisateur a les droits d'action sur la question
+        var canAct = await CanActionOnQuestionForm(formId, questionId);
+        
+        if (canAct == null) {
+            return NotFound("pas droit d'acces au form");
+        }
+
+        var question = await _context.Questions.Where(q => q.Id == questionId).FirstOrDefaultAsync();
+        
+        if (question == null) {
+            return NotFound("no question found");
+        }
+
+        // Récupère la question située juste au-dessus
+        var questionTemp = await _context.Questions
+            .Where(q => q.FormId == formId && q.Idx > question.Idx)
+            .OrderBy(q => q.Idx)
+            .FirstOrDefaultAsync();
+
+        if (questionTemp == null) {
+            return NotFound("no question above found");
+        }
+
+        // Échange les indices
+        var tempIdx = question.Idx;
+        question.Idx = questionTemp.Idx;
+        questionTemp.Idx = tempIdx;
+
+        // Sauvegarde les modifications dans la base de données
+        await _context.SaveChangesAsync();
+
+        return Ok(true);
+    }
+
+    private async Task<ActionResult<bool>> CanActionOnQuestionForm(int formId, int questionId){
+        var userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+
+        if (string.IsNullOrEmpty(userId) || !int.TryParse(userId, out int userIdInt)){
+            return Unauthorized("User Unfound");
+        }
+
+        var currentUser = await _context.Users.Where(u => u.Id == userIdInt).FirstOrDefaultAsync();
+
+        var form = await _context.Forms
+            .Where(f => _context.Questions.Any(q => q.Id == questionId && q.FormId == formId) && 
+                    (f.Owner.Id == currentUser!.Id ||
+                    currentUser.Role == Role.Admin ||
+                    _context.UserFormAccesses.Any(ufa => ufa.UserId == userIdInt && 
+                        ufa.FormId == f.Id &&
+                        ufa.AccessType == AccessType.Editor)))
+            .FirstOrDefaultAsync();
+        if (form == null){
+            return Forbid("User does not have permission to perform this action.");
+        }
+
+        return Ok(true);
+    }
+
+    [Authorize]
+    [HttpPost("{formId:int}/isPublicFormChange")]
+    public async Task<ActionResult<bool>> IsPublicFormChange(int formId){
+        //form exits
+        //access to Form
+        //check IsPublic or Not
+
+        var userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+
+        if (string.IsNullOrEmpty(userId) || !int.TryParse(userId, out int userIdInt)){
+            return Unauthorized("User not found");
+        }
+
+        var currentUser = await _context.Users.Where(u => u.Id == userIdInt).FirstOrDefaultAsync();
+
+        //récupère le form + la liste des UserFormAccess correspondant
+        var form = await _context.Forms
+            .Include(f => f.ListUserFormAccesses)
+            .FirstOrDefaultAsync(f => f.Id == formId);
+
+        if(form == null){
+            return NotFound(false);
+        }
+        
+        if(currentUser?.Role == Role.Admin || form.OwnerId == userIdInt || _context.UserFormAccesses
+        .Any(ufa => ufa.UserId == userIdInt && ufa.FormId == form.Id && ufa.AccessType == AccessType.Editor)){
+            //si form == false, ça veut dire que l'on doit passer le form en public ou inversément.
+            if(form.IsPublic == false) {
+                var userAccess = _context.UserFormAccesses.Where(ufa => ufa.AccessType == AccessType.User && ufa.FormId == formId).ToList();
+                if(userAccess.Any()){
+                    _context.UserFormAccesses.RemoveRange(userAccess);
+                }
+            }
+            form.IsPublic = !form.IsPublic;
+        }
+        await _context.SaveChangesAsync();
+
+        return Ok(form.IsPublic);
+    }
+
+
 }

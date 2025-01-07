@@ -19,7 +19,6 @@ export class FormCardComponent {
 
     //renvoie le formulaire sur lequel on à clické grâce à la fonction openForm() ou manageForm()
     @Output() openFormEvent = new EventEmitter<Form>();
-
     @Output() manageFormEvent = new EventEmitter<Form>();
 
 
@@ -29,6 +28,7 @@ export class FormCardComponent {
     
     ngOnInit(){
       this.user = this.authService.currentUser;
+      console.log(this.form.listQuestion != null);
     }
 
     //permet à la form-card (enfant) de récupérer le formulaire sur lequel on à clické
@@ -76,6 +76,5 @@ export class FormCardComponent {
     }
     manageForm() {
       this.manageFormEvent.emit(this.form);
-
     }
 }

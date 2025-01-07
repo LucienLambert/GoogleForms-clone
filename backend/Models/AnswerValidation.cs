@@ -7,10 +7,10 @@ namespace prid_2425_a01.Models;
 
 public class AnswerValidation : AbstractValidator<Answer>
 {
-    private readonly FormContext _context;
+    private readonly ApplicationDbContext _context;
     private int dynamicCount;
 
-    public AnswerValidation(FormContext context)
+    public AnswerValidation(ApplicationDbContext context)
     {
         _context = context;
 

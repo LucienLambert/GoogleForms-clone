@@ -2,6 +2,7 @@ import { Form } from './form';
 import { OptionList } from './optionList' ;
 import {User} from "./user";
 import {OptionValue} from "./optionValue";
+import {Answer} from "./answer";
 export enum QuestionType {
     Short,
     Long,
@@ -22,6 +23,7 @@ export class Question {
     questionType: QuestionType;
     required: boolean;
     optionList?: OptionList;
+    answersList?: Answer[];
 
     constructor(data: any) {
         this.id = data.id;
@@ -32,6 +34,7 @@ export class Question {
         this.questionType = data.questionType;
         this.required = data.required;
         this.optionList = data.optionList ? new OptionList(data.optionList) : undefined;
+        this.answersList = data.answersList ? data.answersList.map((a: any) => new Answer(a)) : undefined;
     }
 
     toString(): string {

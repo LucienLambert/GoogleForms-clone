@@ -14,7 +14,7 @@ export class UnknownComponent implements OnInit {
 
     ngOnInit() {
         setTimeout(() => {
-            this.router.navigate(['/']);
+            this.router.navigate(['']);
         }, 2000);
     }
 }

@@ -5,9 +5,9 @@ namespace prid_2425_a01.Models;
 
 public class MappingProfile : Profile
 {
-    private FormContext _context;
+    private ApplicationDbContext _context;
 
-    public MappingProfile(FormContext context) {
+    public MappingProfile(ApplicationDbContext context) {
         _context = context;
         
         //USER
@@ -60,6 +60,10 @@ public class MappingProfile : Profile
         
         CreateMap<Question, Question_CompleteDTO>();
         CreateMap<Question_CompleteDTO, Question>();
+        
+        CreateMap<Question, Question_CompleteDTO_With_AnswersDTO>()
+            .IncludeBase<Question, Question_CompleteDTO>()
+            .ForMember(dest => dest.AnswersList, opt => opt.Ignore());
         
         //OPTION_LIST
         CreateMap<OptionList, OptionListDTO>();

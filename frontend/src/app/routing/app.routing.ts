@@ -13,6 +13,8 @@ import { Role } from '../models/user';
 import { ViewInstanceComponent } from '../components/view-instance/view-instance.component';
 import {CreateEditFormComponent} from "../components/create-edit-form/create-edit-form.component";
 import {AnalyseComponent} from "../components/analyse/analyse.component";
+import {ManageOptionsListComponent} from "../components/manage-option-lists/manage-option-lists.component";
+import {AddEditOptionListComponent} from "../components/add-edit-option-list/add-edit-option-list.component";
 
 const appRoutes: Routes = [
     //{ path: '', component: HomeComponent, pathMatch: 'full' },
@@ -25,14 +27,16 @@ const appRoutes: Routes = [
         data: { roles: [Role.Admin] }
     },*/
     { path: '', component: LoginComponent, pathMatch: 'full' },
-    { path: 'login', component: LoginComponent },
     { path: 'restricted', component: RestrictedComponent },
     { path: 'home', component: ViewFormsComponent, canActivate: [AuthGuard] },
     { path: 'view-instance/:id', component: ViewInstanceComponent, canActivate: [AuthGuard] },
     { path: 'create-edit-form', component: CreateEditFormComponent, canActivate: [AuthGuard] },
     { path: 'view-form/:id', component: ViewFormComponent, canActivate: [AuthGuard] },
     { path: 'create-edit-form/:id', component: CreateEditFormComponent, canActivate: [AuthGuard] },
-    { path: 'analyse', component: AnalyseComponent, canActivate: [AuthGuard] },
+    { path: 'analyse/:id', component: AnalyseComponent, canActivate: [AuthGuard] },
+    { path: 'manage-option-lists', component: ManageOptionsListComponent, canActivate: [AuthGuard] },
+    { path: 'add-edit-option-lists', component: AddEditOptionListComponent, canActivate: [AuthGuard] },
+    { path: 'add-edit-option-lists/:id', component: AddEditOptionListComponent, canActivate: [AuthGuard] },
     { path: '**', component: UnknownComponent }
 ];
 

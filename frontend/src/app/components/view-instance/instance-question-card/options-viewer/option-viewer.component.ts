@@ -159,11 +159,11 @@ export class OptionViewerComponent implements OnInit {
         this.updateValues();
     }
     indexFinder(value: string){
-        return (this.optionList?.optionValues?.findIndex(option => option.value === value))!+1;
+        return (this.optionList?.listOptionValues?.findIndex(option => option.value === value))!+1;
     }
     valueFinder(index: number){
-        if (this.optionList?.optionValues) {
-            return this.optionList.optionValues[index-1].value;
+        if (this.optionList?.listOptionValues) {
+            return this.optionList.listOptionValues[index-1].value;
         }
         return undefined;
     }
