@@ -23,6 +23,7 @@ export class Question {
     description?: string;
     questionType: QuestionType;
     required: boolean;
+    optionListId?: number;
     optionList?: OptionList;
     answersList?: Answer[];
 
@@ -35,6 +36,7 @@ export class Question {
         this.description = data.description;
         this.questionType = data.questionType;
         this.required = data.required;
+        this.optionListId = data.optionListId;
         this.optionList = data.optionList ? new OptionList(data.optionList) : undefined;
         this.answersList = data.answersList ? data.answersList.map((a: any) => new Answer(a)) : undefined;
     }

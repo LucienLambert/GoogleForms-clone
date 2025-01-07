@@ -77,6 +77,5 @@ export class NavBarComponent {
 
     delForm(){
         this.delFormEvent.emit();
-
     }
 }

@@ -32,10 +32,6 @@ public class QuestionValidation : AbstractValidator<Question> {
         RuleFor(q => q.Description)
             .Must(description => string.IsNullOrEmpty(description) || description.Length >= 3)
             .WithMessage("La description doit être vide ou contenir au moins 3 caractères.");
-        
-        // required requis
-        RuleFor(q => q.Required)
-            .NotEmpty().WithMessage("Required doit prendre la valeur 0 (faux) ou 1 (vrai)");
 
         // option_list doit référencer une liste d'options si type vaut 'check', 'combo' ou 'radio', sinon doit être null.
         RuleFor(q => q.OptionList)
@@ -67,7 +63,7 @@ public class QuestionValidation : AbstractValidator<Question> {
 
     public async Task<bool> BeUniqueTitleForForm(Question question, string title, CancellationToken cancellationToken) {
         return !await _context.Questions
-                .AnyAsync(q => q.Title == title && q.FormId == question.FormId && q.Id == question.Id, cancellationToken);
+            .AnyAsync(q => q.Title == title && q.FormId == question.FormId && q.Id != question.Id, cancellationToken);
     }
     
 }

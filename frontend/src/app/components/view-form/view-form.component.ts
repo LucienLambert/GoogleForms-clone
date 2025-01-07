@@ -109,7 +109,7 @@ export class ViewFormComponent implements OnInit {
     //faire un redirect vers le component Add_question
     addQuestion(){
         this.router.navigate(['create-edit-question'], {
-            state: { formId: this.form?.id }
+            state: { form: this.form }
         });
     }
     

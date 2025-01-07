@@ -55,15 +55,15 @@ export class CreateEditQuestionComponent implements OnInit {
             this.navBarTitle = 'Add a new Question';
             this.question = new Question({
                 id: 0,
-                formId: state.formId,
+                idx: 0,
+                formId: state.form.id,
                 title: '',
                 description: '',
-                optionList: undefined,
-                questionType: undefined,
+                optionListId: null,
                 required: false,
               });
         }
-        console.log(this.question.optionList);
+        console.log(this.question);
         this.getOptionList();
         this.createForm();
     }
@@ -77,10 +77,18 @@ export class CreateEditQuestionComponent implements OnInit {
     }
 
     createForm() {
+        /*
+        id;form;idx;title;description;type;required;option_list
+        1;1;1;Your last name?;Your last name;short;1;
+        */
         this.questionForm = this.formBuilder.group({
+            id: [this.question.id],
+            idx: [this.question.idx],
+            formId:[this.question.formId],
             title: [this.question.title, [Validators.required, Validators.minLength(3)], [this.uniqueTitleValidator.bind(this)]],
             description: [this.question.description,[Validators.minLength(3)]],
             questionType: [this.question.questionType, [Validators.required]],
+            optionListId: [this.question.optionList?.id],
             optionList: [this.question.optionList],
             required: [this.question.required] 
         });
@@ -111,17 +119,38 @@ export class CreateEditQuestionComponent implements OnInit {
             this.isSaveDisabled = status !== 'VALID';
         });           
     }
+    //permet l'affichage du nom de l'option2 en la comparant à la liste d'option1
+    compareOptionLists(option1: OptionList, option2: OptionList): boolean {
+        return option1 && option2 ? option1.id === option2.id : option1 === option2;
+    }
 
     //bouton save pour crée ou éditer une question
     onSave() {
         if(this.questionForm.valid){
             this.question = this.questionForm.value;
-            // this.question.title = formData.title;
-            // this.question.description = formData.description;
-            // this.question.questionType = formData.questionType;
-            // this.question.required = formData.required;
-            // this.question.optionList = formData.optionList;
-            console.log(this.question);
+            const formValue = this.questionForm.value;
+            // Conversion de string à enum et récupération de optionListId
+            const questionToSend = {
+                ...formValue,
+                questionType: QuestionType[formValue.questionType as keyof typeof QuestionType],
+                optionListId: formValue.optionList ? formValue.optionList.id : null,
+            };
+            if(this.question.id == 0){
+                this.questionService.createQuestion(questionToSend).subscribe({
+                    next : (res) => {
+                        this.router.navigate(['view-form', this.question.formId]);
+                    },
+                });
+            }else {
+                console.log(questionToSend);
+                this.questionService.updateQuestion(questionToSend).subscribe({
+                    next : (res) => {
+                        this.router.navigate(['view-form', this.question.formId]);
+                    }
+                })
+            }
+
+            
         } else {
             console.log("questionForm non valide");
         }
@@ -131,11 +160,14 @@ export class CreateEditQuestionComponent implements OnInit {
         this.router.navigate(['/manage-option-lists']);
     }
 
+    editOptionList(){
+        console.log("editOptionList");
+    }
+
     uniqueTitleValidator(control: AbstractControl) : Observable<ValidationErrors | null> {
         if(!control.value){
             return of(null);
         }
-        
         return this.questionService.isTitleUnique(control.value, this.question.formId, this.question.id)
             .pipe(
               map((isUnique) => (isUnique ? null : { unique: true })),

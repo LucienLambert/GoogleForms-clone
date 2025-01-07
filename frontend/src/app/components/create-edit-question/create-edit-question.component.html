@@ -13,7 +13,7 @@
             <input matInput formControlName="title" required>
             <mat-error *ngIf="questionForm?.get('title')?.errors?.['required']">Required</mat-error>
             <mat-error *ngIf="questionForm.get('title')?.errors?.['minlength']">Title must be at least 3 characters.</mat-error>
-            <mat-error *ngIf="questionForm.get('title')?.errors?.['unique']">unique</mat-error>
+            <mat-error *ngIf="questionForm.get('title')?.errors?.['unique']">Title must be unique by form</mat-error>
         </mat-form-field>
     
         <!-- Description de la question -->
@@ -27,9 +27,9 @@
         <mat-form-field appearance="fill">
             <mat-label>Type</mat-label>
             <mat-select formControlName="questionType">
-            <mat-option *ngFor="let type of questionTypes" [value]="type">
-                {{ type }}
-            </mat-option>
+                <mat-option *ngFor="let type of questionTypes" [value]="type">
+                    {{ type }}
+                </mat-option>
             </mat-select>
         </mat-form-field>
     </div>
@@ -37,18 +37,19 @@
         <!-- Affichage conditionnel de l'option list -->
         <mat-form-field appearance="fill">
             <mat-label>Option List</mat-label>
-                <mat-select formControlName="optionList">
+                <mat-select formControlName="optionList" [compareWith]="compareOptionLists">
                     <mat-option *ngFor="let option of optionList" [value]="option">
                         {{ option.name }}
                     </mat-option>
                 </mat-select>
+                <mat-error *ngIf="questionForm.get('optionList')?.errors?.['required']">Required</mat-error>
         </mat-form-field>
         <!-- Affichage des boutons add et edit -->
         <div class="buttons">
             <button mat-icon-button (click)="addOptionList()">
                 <mat-icon>add</mat-icon>
             </button>
-            <button mat-icon-button >
+            <button mat-icon-button (click)="editOptionList()">
                 <mat-icon>edit</mat-icon>
             </button>
         </div>
