@@ -143,7 +143,6 @@ public class UsersController : ControllerBase {
                 NotReferenced = !_context.Questions.Any(q => q.OptionListId == op.Id)
             })
             .ToListAsync();
-        
         return optionLists;
     }
 
@@ -158,5 +157,16 @@ public class UsersController : ControllerBase {
         _context.OptionLists.Remove(optionList);
         await _context.SaveChangesAsync();
         return true;
+    }
+
+    [Authorized(Role.Admin, Role.User)]
+    [HttpGet("optionListOwnerForm/{idOwner:int}")]
+    public async Task<ActionResult<IEnumerable<OptionListDTO>>> GetOptionListUser(int idOwner){
+        var optionList = await _context.OptionLists.Where(ol => ol.OwnerId == idOwner || ol.OwnerId == null)
+            .OrderBy(ol => ol.Name)
+            .ToListAsync();
+
+            var optionListDTO = _mapper.Map<List<OptionListDTO>>(optionList);
+        return Ok(optionListDTO);
     }
 }

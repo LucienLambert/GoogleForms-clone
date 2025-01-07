@@ -31,6 +31,7 @@
                     {{ type }}
                 </mat-option>
             </mat-select>
+            <mat-error *ngIf="questionForm.get('questionType')?.errors?.['required']">Required</mat-error>
         </mat-form-field>
     </div>
     <div class="optionList" *ngIf="showOptionList">
@@ -46,7 +47,7 @@
         </mat-form-field>
         <!-- Affichage des boutons add et edit -->
         <div class="buttons">
-            <button mat-icon-button (click)="addOptionList()">
+            <button mat-icon-button (click)="addOptionList()" [disabled]="this.form?.ownerId != user?.id">
                 <mat-icon>add</mat-icon>
             </button>
             <button mat-icon-button (click)="editOptionList()">

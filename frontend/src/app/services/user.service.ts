@@ -28,4 +28,8 @@ export class UserService {
     deleteOptionList(optionListId: number): Observable<boolean> {
         return this.http.delete<boolean>(`${this.baseUrl}api/users/deleteOptionList/${optionListId}`);
     }
+
+    getOptionListUser(userId: number): Observable<Array<OptionList>> {
+        return this.http.get<Array<OptionList>>(`${this.baseUrl}api/users/optionListOwnerForm/${userId}`);
+    }
 }

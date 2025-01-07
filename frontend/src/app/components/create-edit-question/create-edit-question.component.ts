@@ -3,6 +3,7 @@ import { AbstractControl, FormBuilder, FormGroup, ValidationErrors, Validators }
 import { ActivatedRoute, Router } from "@angular/router";
 import { values } from "lodash-es";
 import { catchError, map, Observable, of } from "rxjs";
+import { Form } from "src/app/models/form";
 import { OptionList } from "src/app/models/optionList";
 import { Question, QuestionType } from "src/app/models/question";
 import { User } from "src/app/models/user";
@@ -22,6 +23,7 @@ export class CreateEditQuestionComponent implements OnInit {
     questionTypes: string[] = Object.keys(QuestionType).filter(key => isNaN(Number(key)));
     optionList?: OptionList[];
     user?: User;
+    form?: Form;
 
     navBarTitle? : string ;
     backButtonVisible : boolean = true;
@@ -50,26 +52,31 @@ export class CreateEditQuestionComponent implements OnInit {
             this.navBarTitle = 'Edit Question';
             this.isSaveDisabled = false;
             //passe à true visible optionList si type === check or combo
-            this.showOptionList = ['Combo', 'Check'].includes(this.question.questionType.toString());
+            this.showOptionList = ['Combo', 'Check', 'Radio'].includes(this.question.questionType.toString());
+            this.form = this.question.form;
         } else {
             this.navBarTitle = 'Add a new Question';
             this.question = new Question({
                 id: 0,
                 idx: 0,
+                form: state.form,
                 formId: state.form.id,
                 title: '',
                 description: '',
+                optionList: null,
                 optionListId: null,
                 required: false,
               });
+            this.form = state.form;
         }
         console.log(this.question);
         this.getOptionList();
         this.createForm();
     }
 
+    //récup l'ol du owner et du systeme
     getOptionList(){
-        this.userService.getUserOptionLists(this.user!.id).subscribe({
+        this.userService.getOptionListUser(this.question.form.ownerId).subscribe({
             next : (data) => {
                 this.optionList = data;
             }
@@ -88,32 +95,28 @@ export class CreateEditQuestionComponent implements OnInit {
             title: [this.question.title, [Validators.required, Validators.minLength(3)], [this.uniqueTitleValidator.bind(this)]],
             description: [this.question.description,[Validators.minLength(3)]],
             questionType: [this.question.questionType, [Validators.required]],
-            optionListId: [this.question.optionList?.id],
+            // optionListId: [this.question.optionList?.id],
             optionList: [this.question.optionList],
             required: [this.question.required] 
         });
-        this.changeStatusQuestionForm();
+        this.changeValueOptionListQuestion();
     }
 
-    changeStatusQuestionForm () {
-        // subscribe pour gérer l'affichage l'option liste si question type === combo
-        this.questionForm.get('questionType')?.valueChanges.subscribe((value) => {
-            this.showOptionList = value === 'Combo' || value === 'Check';
-        });
-
+    //permet de changer reset le valeur de l'optionList en cas de changement de questionType
+    //pour éviter la conservation de l'option list dans question apres le changement de typage de la question
+    changeValueOptionListQuestion () {
         // subscribe pour gérer le changement de type questionType
         this.questionForm.get('questionType')?.valueChanges.subscribe((value) => {
+            this.showOptionList = (value === 'Combo' || value === 'Check' || value == 'Radio');
             const optionListControl = this.questionForm.get('optionList');
-            
-            if (value === 'Combo' || value === 'Check') {
+            if (value === 'Combo' || value === 'Check' || value == 'Radio') {
             optionListControl?.setValidators([Validators.required]);
             } else {
             optionListControl?.clearValidators();
+            optionListControl?.setValue(null);
             }
-            
             optionListControl?.updateValueAndValidity();
         });
-
         //permet de passer le bouton save visible si le questionForm est complet
         this.questionForm.statusChanges.subscribe((status) => {
             this.isSaveDisabled = status !== 'VALID';
@@ -129,19 +132,20 @@ export class CreateEditQuestionComponent implements OnInit {
         if(this.questionForm.valid){
             this.question = this.questionForm.value;
             const formValue = this.questionForm.value;
-            // Conversion de string à enum et récupération de optionListId
+            // premet de copié toutes les value de formValue apres Conversion de string à enum et récupération de optionListId
             const questionToSend = {
                 ...formValue,
                 questionType: QuestionType[formValue.questionType as keyof typeof QuestionType],
                 optionListId: formValue.optionList ? formValue.optionList.id : null,
             };
+            //if(id == 0) alors c'est une nouvelle question et on appel createQuestion
             if(this.question.id == 0){
                 this.questionService.createQuestion(questionToSend).subscribe({
                     next : (res) => {
                         this.router.navigate(['view-form', this.question.formId]);
                     },
                 });
-            }else {
+            } else {
                 console.log(questionToSend);
                 this.questionService.updateQuestion(questionToSend).subscribe({
                     next : (res) => {
@@ -164,6 +168,7 @@ export class CreateEditQuestionComponent implements OnInit {
         console.log("editOptionList");
     }
 
+
     uniqueTitleValidator(control: AbstractControl) : Observable<ValidationErrors | null> {
         if(!control.value){
             return of(null);
@@ -174,5 +179,7 @@ export class CreateEditQuestionComponent implements OnInit {
               catchError(() => of(null)));
     }
 
+    //si optionList est référencé sur une question || optionList.ownerId != currentUser.id alors disable editOptionList
+    //si currentUser.id != de currentUser.id alors disable addOptionList
 
 }

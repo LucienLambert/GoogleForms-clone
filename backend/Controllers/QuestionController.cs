@@ -73,21 +73,41 @@ public class QuestionController : ControllerBase {
     [Authorized(Role.Admin, Role.User)]
     [HttpPut("updateQuestion")]
     public async Task<IActionResult> UpdateQuestion(QuestionDTO questionDTO){
-        var question = _mapper.Map<Question>(questionDTO);
 
-        if(question == null){
+        var existingQuestion = await _context.Questions.FirstOrDefaultAsync(q => q.Id == questionDTO.Id);
+        
+        if (existingQuestion == null)
             return NotFound();
-        }
+        
+        _mapper.Map(questionDTO, existingQuestion);
+        
+        var quesitonValidationService = new QuestionValidation(_context);
+        var result = await quesitonValidationService.ValidateOnCreate(existingQuestion);
 
-        var questionValidation = new QuestionValidation(_context);
-
-        var result = await questionValidation.ValidateAsync(question);
-
-        if(!result.IsValid){
+        if (!result.IsValid)
             return BadRequest(result);
-        }
-
+        
+        _context.Questions.Update(existingQuestion);
         await _context.SaveChangesAsync();
-        return NoContent();
+
+        return Ok(new { message = "Question updated successfully.", question = existingQuestion });
+
+        // var question = _mapper.Map<Question>(questionDTO);
+        // Console.WriteLine(question);
+
+        // if(question == null){
+        //     return NotFound();
+        // }
+
+        // var questionValidation = new QuestionValidation(_context);
+
+        // var result = await questionValidation.ValidateAsync(question);
+
+        // if(!result.IsValid){
+        //     return BadRequest(result);
+        // }
+
+        // await _context.SaveChangesAsync();
+        // return NoContent();
     }
 }
