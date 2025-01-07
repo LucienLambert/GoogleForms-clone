@@ -4,13 +4,13 @@ import {ActivatedRoute, Router} from '@angular/router';
 
 import {InstanceService} from '../../services/instance.service';
 import {FormService} from '../../services/form.service';
-import {User} from '../../models/user';
+import {Role, User} from '../../models/user';
 import {Form} from '../../models/form';
 import {Question, QuestionType} from '../../models/question';
 import {Instance} from '../../models/instance';
 import {Answer} from "../../models/answer";
 import {ModalDialogComponent} from "../modal-dialog/modal-dialog.component";
-import { MatDialog } from '@angular/material/dialog';
+import {MatDialog} from '@angular/material/dialog';
 
 @Component({
     selector: 'app-view-instance',
@@ -219,9 +219,20 @@ export class ViewInstanceComponent implements OnInit, OnDestroy {
     }
     
     backButtonAction() {
-        if (this.isInProgress() && this.questions.length > 0) {
-            this.saveCurrentAnswers()
+        
+        if (this.authService.currentUser?.role != Role.Guest) {
+            
+            if (this.isInProgress() && this.questions.length > 0) {
+                this.saveCurrentAnswers()
+            }
+        } else {
+            if (this.instance) {
+                this.instanceService.deleteInstance(this.instance.id).subscribe({
+                });
+            }
+            
         }
+        
     }
     
     async deleteButtonAction(){
