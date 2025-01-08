@@ -44,18 +44,27 @@ export class CreateEditQuestionComponent implements OnInit {
     ngOnInit() {
         const state = history.state;
         this.previousUrl = state?.previousUrl ?? '/home';
-        console.log(this.previousUrl)
         // initialise la question en fonction de si c'est edit or creat question
         this.initializeQuestion(state);
-
     }
 
     // permet de créer une question vide ou de récupérer la question via le state
     initializeQuestion(state: any){
         // récup l'objet passer par le navigate "state"
-        if (state && state.question) {
-            this.question = state.question;
-            this.navBarTitle = 'Edit Question';
+        if (state && (state.question || state.redirectObject)) {
+            if(state.redirectObject){
+                this.question = state.redirectObject;
+                console.log(this.question);
+                if(this.question.id == 0){
+                    this.navBarTitle = 'Add a new Question';
+                } else {
+                    this.navBarTitle = 'Edit Question';
+                }
+            } else {
+                this.question = state.question;
+                this.navBarTitle = 'Edit Question';
+            }
+            
             this.isSaveDisabled = false;
             //passe à true visible optionList si type === check or combo
             this.showOptionList = ['Combo', 'Check', 'Radio'].includes(this.question.questionType.toString());
@@ -87,7 +96,6 @@ export class CreateEditQuestionComponent implements OnInit {
         this.userService.optionLists.subscribe((data) => {
             this.optionList = data;
         });
-        console.log(this.optionList);
     }
 
     createForm() {
@@ -169,11 +177,18 @@ export class CreateEditQuestionComponent implements OnInit {
     }
 
     addOptionList() {
-        this.router.navigate(['/manage-option-lists']);
+        this.question.questionType = this.questionForm.get('questionType')?.value;
+        console.log(this.question);
+        this.router.navigate(['/add-edit-option-lists'], {
+            state: { redirectObject : this.question, previousUrl: this.router.url}
+        });
     }
 
     editOptionList(){
-        console.log("editOptionList");
+        this.question.questionType = this.questionForm.get('questionType')?.value;
+        this.router.navigate(['/add-edit-option-lists', this.questionForm.get('optionList')?.value.id],  {
+            state: { redirectObject : this.question, previousUrl: this.router.url}
+        });
     }
 
 

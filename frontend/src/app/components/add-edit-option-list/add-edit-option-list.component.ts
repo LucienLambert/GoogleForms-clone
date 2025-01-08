@@ -198,8 +198,17 @@ export class AddEditOptionListComponent implements OnInit {
 
       // Save to backend
       this.userService.saveOptionList(this.optionList!).subscribe({
-        next: () => {
-          this.router.navigate(['/manage-option-lists']);
+        next: (data) => {
+          // console.log(data);
+          if(history.state?.previousUrl == '/create-edit-question'){
+            history.state.redirectObject.optionList = data;
+            
+            this.router.navigate(['/create-edit-question'], {
+              state: { redirectObject : history.state.redirectObject }
+            });
+          }else {
+            this.router.navigate(['/manage-option-lists']);
+          }
         },
         error: (err) => console.error('Error saving option list:', err)
       });

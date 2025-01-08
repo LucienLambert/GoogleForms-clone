@@ -180,7 +180,7 @@ public class UsersController : ControllerBase {
         var optionLists = await _context.OptionLists
             .Where(op => op.OwnerId == userId || op.OwnerId == null)
             .Include(op => op.ListOptionValues)
-            .OrderBy(ol => ol.Name)
+            .OrderBy(ol => ol.Name.ToLower())
             .Select(op => new OptionList_With_NotReferencedDTO {
                 Id = op.Id,
                 Name = op.Name,
