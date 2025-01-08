@@ -87,7 +87,7 @@ export class CreateEditQuestionComponent implements OnInit {
         this.userService.optionLists.subscribe((data) => {
             this.optionList = data;
         });
-
+        console.log(this.optionList);
     }
 
     createForm() {
@@ -151,18 +151,13 @@ export class CreateEditQuestionComponent implements OnInit {
             if(this.question.id == 0){
                 this.questionService.createQuestion(questionToSend).subscribe({
                     next : (res) => {
-                        this.router.navigate(['/view-form', this.question.formId], {
-                            state: { previousUrl: '/home' }
-                        });
-                        // this.router.navigate(['view-form', this.question.formId]);
+                        this.router.navigate(['/view-form', this.question.formId]);
                     },
                 });
             } else {
                 this.questionService.updateQuestion(questionToSend).subscribe({
                     next : (res) => {
-                        this.router.navigate(['/view-form', this.question.formId], {
-                            state: { previousUrl: '/home' }
-                        });
+                        this.router.navigate(['/view-form', this.question.formId]);
                     }
                 })
             }

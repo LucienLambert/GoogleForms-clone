@@ -29,7 +29,6 @@ export class NavBarComponent {
     @Input() isEditVisible: boolean = false;
     @Input() isOptionListVisible: boolean = false;
     @Input() delFormVisible: boolean = false;
-
     @Input() previousUrl: string | null = null;
 
 
