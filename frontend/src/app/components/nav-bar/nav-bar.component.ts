@@ -11,11 +11,12 @@ import {MatDialog} from "@angular/material/dialog";
     styleUrl: './nav-bar.component.css'
 })
 export class NavBarComponent {
-    @Output() searchEvent = new EventEmitter<string>();
+    @Output() searchEvent = new EventEmitter<string>(); 
     @Output() saveEvent = new EventEmitter<void>();
     @Output() editEvent = new EventEmitter<void>();
     @Output() AnalyseEvent = new EventEmitter<void>();
     @Output() delFormEvent = new EventEmitter<void>();
+    @Output() backButtonEvent = new EventEmitter<void>();
 
     @ViewChild('searchInput') searchInput!: ElementRef<HTMLInputElement>;
 
@@ -30,8 +31,8 @@ export class NavBarComponent {
     @Input() isEditVisible: boolean = false;
     @Input() isOptionListVisible: boolean = false;
     @Input() hasUnsavedChanges: boolean = false;
-
     @Input() delFormVisible: boolean = false;
+    @Input() previousUrl: string | null = null;
 
 
     constructor(private router: Router, private _location: Location, private authService : AuthenticationService, 
@@ -71,6 +72,15 @@ export class NavBarComponent {
         } else {
             this._location.back();
         }
+
+        this.backButtonEvent.emit();
+        if(this.previousUrl){
+            ///ce base sur le chemin précisé
+            this.router.navigate([this.previousUrl]);
+        } else {
+            //ce base sur l'historique de naviagation
+            this._location.back();
+        }
     }
     
     private showModalDialog() {
@@ -99,6 +109,5 @@ export class NavBarComponent {
 
     delForm(){
         this.delFormEvent.emit();
-
     }
 }

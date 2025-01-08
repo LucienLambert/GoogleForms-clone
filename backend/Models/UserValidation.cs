@@ -11,8 +11,7 @@ public class UserValidation : AbstractValidator<User>
 
     public UserValidation(ApplicationDbContext context) {
         _context = context;
-
-        // Les règles ci-après sont conformes aux validations métier à implémenter lors de l'itération 1.
+        
         RuleFor(u => u.Email)
             .NotEmpty()
                 .WithMessage("Email is required.")

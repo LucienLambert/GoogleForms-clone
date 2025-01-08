@@ -15,18 +15,22 @@ export class AuthenticationService {
     constructor(private http: HttpClient, @Inject('BASE_URL') private baseUrl: string) {
         // au départ on récupère un éventuel utilisateur stocké dans le sessionStorage
         let data = sessionStorage.getItem('currentUser');
-        if (data)
+        if (data) {
             data = JSON.parse(data);
-        this.currentUser = plainToClass(User, data);
+            this.currentUser = new User(data);
+        }
     }
 
     login(email: string, password: string): Observable<User> {
         return this.http.post<any>(`${this.baseUrl}api/users/authenticate`, { email, password })
             .pipe(map(user => {
-                user = plainToClass(User, user);
+                user = new User(user);
+                // user = plainToClass(User, user);
+                console.log(user);
                 // login successful if there's a jwt token in the response
                 if (user && user.token) {
                     // store user details and jwt token in local storage to keep user logged in between page refreshes
+                    console.log("token exists, saving user",user.token);
                     sessionStorage.setItem('currentUser', JSON.stringify(user));
                     this.currentUser = user;
                 }

@@ -1,10 +1,12 @@
 import { Injectable, Inject } from '@angular/core';
-import { HttpClient } from '@angular/common/http';
+import {HttpClient, HttpParams} from '@angular/common/http';
 import { User } from '../models/user';
 import { catchError, map } from 'rxjs/operators';
 import {BehaviorSubject, Observable, of, switchMap, tap} from 'rxjs';
 import { plainToInstance } from 'class-transformer';
 import {OptionList} from "../models/optionList";
+import {Form} from "../models/form";
+import {UserFormAccess} from "../models/userFormAccess";
 
 @Injectable({ providedIn: 'root' })
 export class UserService {
@@ -13,6 +15,7 @@ export class UserService {
     public optionLists = this.optionListsSubject.asObservable();
 
     constructor(private http: HttpClient, @Inject('BASE_URL') private baseUrl: string) { }
+
 
     getAll(): Observable<User[]> {
         return this.http.get<any[]>(`${this.baseUrl}api/users`).pipe(
@@ -73,7 +76,7 @@ export class UserService {
     }
 
     updateOptionList(optionList: OptionList): Observable<OptionList> {
-        return this.http.put<{message: string, form: any}>(`${this.baseUrl}api/users/updateOptionList`, optionList)
+        return this.http.put<{message : string, form : any}>(`${this.baseUrl}api/users/updateOptionList`, optionList)
             .pipe(map(res => new OptionList(res.form)));
     }
 
@@ -86,4 +89,22 @@ export class UserService {
             return this.createOptionList(optionList);
         }
     }
+    getAllWithFormAccess(formId: number): Observable<User[]> {
+        return this.http.get<any[]>(`${this.baseUrl}api/users/all/with_form_accesses/${formId}`).pipe(
+            map((res: any[]) => res.map(user => new User(user)))
+        );
+    }
+
+    // UserFormAccess, il y a peu de méthodes
+    updateUserFormAccess(formAccess : UserFormAccess): Observable<boolean> {
+        return this.http.put<boolean>(`${this.baseUrl}api/UserFormAccesses`, formAccess);
+    }
+    deleteUserFormAccess(formAccess: UserFormAccess): Observable<boolean> {
+        return this.http.delete<boolean>(`${this.baseUrl}api/UserFormAccesses/${formAccess.formId}/${formAccess.userId}`);
+    }
+
+    getOptionListUser(userId: number): Observable<Array<OptionList>> {
+        return this.http.get<Array<OptionList>>(`${this.baseUrl}api/users/optionListOwnerForm/${userId}`);
+    }
+
 }

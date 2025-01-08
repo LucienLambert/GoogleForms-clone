@@ -10,16 +10,28 @@
       <button mat-button (click)="clickOnNo()">No</button>
       <button mat-raised-button color="primary" (click)="clickOnYes()">Yes</button>
     </ng-container>
-
+      
+      
+      
     <!-- action si y a au moins une instance -->
     <ng-template #otherActions>
       <ng-container *ngIf="data.context === 'instanceInProgress'; else defaultActions">
         <button mat-button (click)="clickOnNo()">Ok</button>
       </ng-container>
-      
-      <!-- Si besoin pour les modals de vos component -->
+        
+
+            <!-- Si besoin pour les modals de vos component -->
       <ng-template #defaultActions>
-          
+
+          <ng-container *ngIf="data.context === 'openInstance'; else otherActions">
+              <div style="display: flex; justify-content: flex-end;">
+                  <button mat-button (click)="clickOnFirstChoice()">Read</button>
+                  <button mat-button (click)="clickOnSecondChoice()">Respond</button>
+                  <button mat-button (click)="clickOnCancel()">Cancel</button>
+              </div>
+          </ng-container>
+
+
       </ng-template>
     </ng-template>
   </mat-dialog-actions>

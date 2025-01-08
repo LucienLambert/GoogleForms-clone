@@ -36,26 +36,31 @@
     <button mat-icon-button *ngIf="isEditVisible" (click)="editForm()">
         <mat-icon>edit</mat-icon>
     </button>
-
+    
     <!-- Save button -->
     <button mat-icon-button *ngIf="isSaveVisible" (click)="onSave()" [disabled]="saveDisabled">
         <mat-icon>save</mat-icon>
     </button>
+    
+    <!-- share-button -->
+    <ng-content select="[shareButton]"></ng-content>
 
     <!-- Analyse button -->
     <button mat-icon-button *ngIf="isAnalyseVisible" (click)="analyse()">
         <mat-icon>insights</mat-icon>
     </button>
 
-    <!-- delForm button -->
-    <button mat-icon-button *ngIf="delFormVisible" (click)="delForm()">
-        <mat-icon>deleted</mat-icon>
-    </button>
+    <!-- view-instance buttons -->
+    <ng-content select="[prevQuestion]"></ng-content>
+    <ng-content select="[nextQuestion]"></ng-content>
+    <ng-content select="[deleteButton]"></ng-content>
+    <ng-content select="[saveButton]"></ng-content>
+    
+
 </mat-toolbar>
 
 <!--Menu déroulant quand on click dessus-->
 <mat-menu #menu="matMenu">
-    
     <!-- Redirection vers la page Home-->
     <button mat-menu-item routerLink="/home">
         <mat-icon>home</mat-icon>

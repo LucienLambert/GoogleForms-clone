@@ -17,6 +17,18 @@ public class User_With_PasswordDTO {
     public string Password { get; set; } = null!;
 }
 
+public class User_Base_DTO
+{
+    public int Id { get; set; }
+    public string Email { get; set; } = null!;
+    public string FirstName { get; set; } = null!;
+    public string LastName { get; set; } = null!;
+    public Role Role { get; set; }
+}
+public class User_Base_With_FormAccessesDTO : User_Base_DTO {
+    public ICollection<UserFormAccessDTO_Only_Id> FormAccesses { get; set; } = new HashSet<UserFormAccessDTO_Only_Id>();
+}
+
 public class User_With_ListFormDTO : UserDTO {
 
     public ICollection<FormDTO> ListFormsDTO { get; set; } = new HashSet<FormDTO>();

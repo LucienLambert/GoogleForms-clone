@@ -2,6 +2,7 @@ using AutoMapper;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Connections.Features;
 using prid_2425_a01.Helpers;
 using System.IdentityModel.Tokens.Jwt;
 using System.Text;
@@ -33,6 +34,47 @@ public class UsersController : ControllerBase {
         return _mapper.Map<List<UserDTO>>(await _context.Users.ToListAsync());
     }
 
+    [Authorized(Role.User)]
+    [HttpGet("all/with_form_accesses/{formId:int}")]
+    public async Task<ActionResult<IEnumerable<UserDTO>>> GetAllWithFormAccess(int formId) {
+        
+        var userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+        var user = await _context.Users.FirstOrDefaultAsync(u => u.Id == int.Parse(userId));
+        if (user == null)
+            return NotFound();
+        
+        var form = await _context.Forms.FirstOrDefaultAsync(f => f.Id == formId);
+        if (form == null)
+            return NotFound();
+        if (user.Id != form.OwnerId && !user.IsInRole(role: Role.Admin))
+            return Unauthorized();
+
+        var users = _context.Users
+            .Include(u => u.ListUserFormAccesses)
+            .ToList();
+        
+        var listuserFormAccessDTO = users
+            .Select(u => 
+            {
+                // Filtrer les UserFormAccess pour ne garder que ceux avec le FormId spécifié
+                u.ListUserFormAccesses = u.ListUserFormAccesses
+                    .Where(uf => uf.FormId == formId)
+                    .ToList();
+        
+                // Mapper l'utilisateur avec la liste filtrée et inclure le mappage des UserFormAccess
+                var userDTO = _mapper.Map<User_Base_With_FormAccessesDTO>(u);
+        
+                // Mapper explicitement la liste de FormAccesses dans le DTO
+                userDTO.FormAccesses = u.ListUserFormAccesses
+                    .Select(uf => _mapper.Map<UserFormAccessDTO_Only_Id>(uf))
+                    .ToList();
+
+                return userDTO;
+            })
+            .ToList();
+
+        return Ok(listuserFormAccessDTO);
+    }
     
     [HttpGet("logged_user")]
     public async Task<ActionResult<UserDTO>> GetLoggedUser() {
@@ -121,7 +163,7 @@ public class UsersController : ControllerBase {
                     new Claim(ClaimTypes.NameIdentifier, user.Id.ToString())
                 }),
                 IssuedAt = DateTime.UtcNow,
-                Expires = DateTime.UtcNow.AddMinutes(10),
+                Expires = DateTime.UtcNow.AddHours(24),
                 SigningCredentials = new SigningCredentials(new SymmetricSecurityKey(key), SecurityAlgorithms.HmacSha256Signature)
             };
             var token = tokenHandler.CreateToken(tokenDescriptor);
@@ -138,22 +180,15 @@ public class UsersController : ControllerBase {
         var optionLists = await _context.OptionLists
             .Where(op => op.OwnerId == userId || op.OwnerId == null)
             .Include(op => op.ListOptionValues)
+            .OrderBy(ol => ol.Name.ToLower())
+            .Select(op => new OptionList_With_NotReferencedDTO {
+                Id = op.Id,
+                Name = op.Name,
+                OwnerId = op.OwnerId,
+                NotReferenced = !_context.Questions.Any(q => q.OptionListId == op.Id)
+            })
             .ToListAsync();
-
-        // Step 2: Perform the projection in-memory
-        var result = optionLists.Select(op => new OptionList_With_NotReferencedDTO {
-            Id = op.Id,
-            Name = op.Name,
-            OwnerId = op.OwnerId,
-            NotReferenced = !_context.Questions.Any(q => q.OptionListId == op.Id),
-            ListOptionValues = op.ListOptionValues.Select(ov => new OptionValueDTO {
-                Idx = ov.Idx,
-                Value = ov.Value,
-                OptionListId = op.Id
-            }).ToList()
-        }).ToList();
-
-        return result;
+        return optionLists;
     }
 
     [Authorized(Role.Admin, Role.User)]
@@ -169,7 +204,7 @@ public class UsersController : ControllerBase {
         await _context.SaveChangesAsync();
         return true;
     }
-    
+
     [Authorized(Role.Admin, Role.User)]
     [HttpGet("optionList/{optionListId:int}")]
     public async Task<ActionResult<OptionList_With_OptionValuesDTO>> GetOptionList(int optionListId) {

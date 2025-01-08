@@ -14,7 +14,7 @@ public class ApplicationDbContext : DbContext
             .HasKey(o => new { o.Idx, o.OptionListId });
 
         modelBuilder.Entity<Answer>()
-            .HasKey(a => new { a.InstanceId, a.QuestionId, a.Idx });
+            .HasKey(a => new { a.InstanceId, a.QuestionId, Idx = a.Idx });
             
         //liaison des composite Key pour le model UserFormAccess
         modelBuilder.Entity<UserFormAccess>(ufa => {
@@ -83,13 +83,6 @@ public class ApplicationDbContext : DbContext
             .HasMany(q => q.ListAnswers)
             .WithOne(a => a.Question)
             .OnDelete(DeleteBehavior.Cascade);
-        
-        //plus utilie, j'ai fait la relation directement sur Form plus haut
-        // modelBuilder.Entity<Question>()
-        //     .HasOne(q => q.Form)
-        //     .WithMany(f => f.ListQuestions)
-        //     .HasForeignKey(q => q.FormId)
-        //     .OnDelete(DeleteBehavior.NoAction);
 
         //TODO ADD LIAISON ENTRE
         //ANSWER -> QUESTION

@@ -26,12 +26,14 @@ import {MatRadioButton, MatRadioGroup} from "@angular/material/radio";
 import {ViewFormComponent} from "../components/view-form/view-form.component";
 import { FormQuestionCardComponent } from '../components/view-form/form-question-card/form-question-card.component';
 import { ModalDialogComponent } from '../components/modal-dialog/modal-dialog.component';
-import {OptionViewerComponent} from "../components/view-instance/options-viewer/option-viewer.component";
+import {OptionViewerComponent} from "../components/view-instance/instance-question-card/options-viewer/option-viewer.component";
 import {AnalyseComponent} from "../components/analyse/analyse.component";
 import {ManageOptionsListComponent} from "../components/manage-option-lists/manage-option-lists.component";
 import {OptionListItemComponent} from "../components/option-list-item/option-list-item.component";
 import {AddEditOptionListComponent} from "../components/add-edit-option-list/add-edit-option-list.component";
 import {CdkDrag, CdkDropList} from "@angular/cdk/drag-drop";
+import {ManageSharesComponent} from "../components/manage-shares/manage-shares.component";
+import { CreateEditQuestionComponent } from '../components/create-edit-question/create-edit-question.component';
 
 
 @NgModule({
@@ -55,7 +57,9 @@ import {CdkDrag, CdkDropList} from "@angular/cdk/drag-drop";
         OptionViewerComponent,
         ManageOptionsListComponent,
         OptionListItemComponent,
-        AddEditOptionListComponent
+        AddEditOptionListComponent,
+        ManageSharesComponent,
+        CreateEditQuestionComponent
     ],
     imports: [
         BrowserModule.withServerTransition({appId: 'ng-cli-universal'}),

@@ -1,10 +1,11 @@
-import {Component, OnInit} from '@angular/core';
-import {AuthenticationService} from '../../services/authentication.service';
-import {Role, User} from '../../models/user';
+import { Component, OnInit } from '@angular/core';
+import { AuthenticationService } from '../../services/authentication.service';
+import { Role, User } from '../../models/user';
 import {Router} from '@angular/router';
-import {FormService} from '../../services/form.service';
-import {Form} from '../../models/form';
-import {AccessType} from 'src/app/models/userFormAccess';
+import { FormService } from '../../services/form.service';
+import { Form } from '../../models/form';
+import { AccessType } from 'src/app/models/userFormAccess';
+import {InstanceService} from "../../services/instance.service";
 
 @Component({
     selector: 'app-view-forms',
@@ -23,7 +24,7 @@ export class ViewFormsComponent implements OnInit {
     isOptionListVisible: boolean = false;
 
     constructor(private authService: AuthenticationService, private router: Router,
-        private formService: FormService) {
+        private formService: FormService, private instanceService: InstanceService) {
 
     }
 
@@ -44,6 +45,7 @@ export class ViewFormsComponent implements OnInit {
             this.router.navigate(['']);
             return false;
         } else {
+            
             this.user = this.authService.currentUser;
             return true;
         }
@@ -82,19 +84,40 @@ export class ViewFormsComponent implements OnInit {
     }
 
     // Le bouton "Open" ne doit pas être visible si le formulaire ne contient pas de questions.
-    openForm(form: Form) {
-        console.log('Formulaire sélectionné:', form);
-        this.router.navigate(['view-instance', form.id]);
-    }
-
-    editForm(form: Form){
-        if(form != null && (form.owner.id == this.user?.id || this.user?.role == 2)){
-            console.log('Formulaire sélectionné:', form);
-            this.router.navigate(['create-edit-form', form.id]);
+    async openForm(form: Form){
+        let instanceId;
+        if (form.listInstance.length > 0 && this.user?.role != Role.Guest) {
+            instanceId = form.listInstance[0].id;
         } else {
-            console.log("Vous n'avez pas les droits pour ouvrir ce formulaire");
+            instanceId = await this.createNewInstance(form);
         }
+        await this.router.navigate(['view-instance', instanceId]);
     }
+    private async createNewInstance(form: Form): Promise<number> {
+        // Deletes the last instance if not a guest, and creates a new one
+        return new Promise((resolve, reject) => {
+            this.instanceService.RefreshInstance(form.id).subscribe({
+                next: (data) => {
+                    resolve(data.id);
+                },
+                error: (error) => {
+                    reject(error);
+                    console.log(error);
+                }
+            });
+        });
+    }
+        
+    
+
+    // editForm(form: Form){
+    //     if(form != null && (form.owner.id == this.user?.id || this.user?.role == 2)){
+    //         console.log('Formulaire sélectionné:', form);
+    //         this.router.navigate(['create-edit-form', form.id]);
+    //     } else {
+    //         console.log("Vous n'avez pas les droits pour ouvrir ce formulaire");
+    //     }
+    // }
 
     /*Le bouton "Manage" permet d'ouvrir le formulaire en tant qu'éditeur,
     en vue d'en modifier la définition et les questions. Ce bouton n'est 

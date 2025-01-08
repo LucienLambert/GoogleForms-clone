@@ -10,6 +10,7 @@ import {
   Validators
 } from "@angular/forms";
 import {ActivatedRoute, Router} from "@angular/router";
+import {Location} from "@angular/common";
 import {AuthenticationService} from "../../services/authentication.service";
 import {UserService} from "../../services/user.service";
 import {FormService} from "../../services/form.service";
@@ -204,8 +205,16 @@ export class AddEditOptionListComponent implements OnInit {
       // Save to backend
       this.userService.saveOptionList(this.optionList!).subscribe({
         next: (data) => {
-          console.log(data);
-          this.router.navigate(['/manage-option-lists']);
+          // console.log(data);
+          if(history.state?.previousUrl == '/create-edit-question'){
+            history.state.redirectObject.optionList = data;
+            
+            this.router.navigate(['/create-edit-question'], {
+              state: { redirectObject : history.state.redirectObject }
+            });
+          }else {
+            this.router.navigate(['/manage-option-lists']);
+          }
         },
         error: (err) => console.error('Error saving option list:', err)
       });

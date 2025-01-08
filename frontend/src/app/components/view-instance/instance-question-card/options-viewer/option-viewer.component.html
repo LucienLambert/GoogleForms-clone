@@ -1,0 +1,126 @@
+<!--<p *ngFor="let answer of answers">{{ answer.value }}</p>-->
+
+<div  [ngSwitch]="questionType?.valueOf()">
+    <div *ngSwitchCase="QuestionType.Short">
+        <mat-form-field>
+            <input matInput [required]="isRequired" [(ngModel)]="currentValue" #shortInput="ngModel" [disabled]="isCompleted" (input)="onFieldInput(shortInput)">
+        </mat-form-field>
+        <div style="color:red;" *ngIf="isRequired && answers?.length == 0">
+            That field is required.
+        </div>
+    </div>
+
+    <div *ngSwitchCase="QuestionType.Long">
+        <mat-form-field>
+            <textarea matInput [required]="isRequired" [(ngModel)]="currentValue" #longInput="ngModel" [disabled]="isCompleted" (input)="onFieldInput(longInput)"></textarea>
+        </mat-form-field>
+        <div style="color:red;" *ngIf="isRequired && answers?.length == 0">
+            That field is required.
+        </div>
+    </div>
+
+    <div *ngSwitchCase="QuestionType.Date">
+        <mat-form-field>
+            <input matInput [required]="isRequired" [matDatepicker]="picker" [(ngModel)]="currentValue" #dateInput="ngModel"  (dateChange)="onFieldInput(dateInput)" (input)="onFieldInput(dateInput)" [disabled]="isCompleted">
+            <mat-hint>MM/DD/YYYY</mat-hint>
+            <mat-datepicker-toggle matIconSuffix [for]="picker" [disabled]="isCompleted"></mat-datepicker-toggle>
+            <mat-datepicker #picker [disabled]="isCompleted"></mat-datepicker>
+        </mat-form-field>
+        <div style="color:red;" *ngIf="isRequired && answers?.length == 0">
+            That field is required.
+        </div>
+        <div>
+            
+        </div>
+    </div>
+
+    <div *ngSwitchCase="QuestionType.Email">
+        <form>
+            <div>
+                <input
+                        type="email"
+                        id="email"
+                        name="email"
+                        #emailInput = ngModel
+                        (input)="onEmailFieldInput(emailInput)"
+                        email
+                        [(ngModel)]="currentValue"
+                        [disabled]="isCompleted"
+                        [required]="isRequired"
+                        placeholder="Enter an email"
+                />
+                <div *ngIf="emailInput.touched">
+                    <small style="color:red;" *ngIf="emailInput.errors?.email">Please enter a valid email.</small>
+                </div>
+                <div style="color:red;" *ngIf="isRequired && answers?.length == 0">
+                    That field is required.
+                </div>
+            </div>
+        </form>
+    </div>
+
+    <div *ngSwitchCase="QuestionType.Integer">
+        <mat-form-field>
+            <input
+                    matInput
+                    [required]="isRequired"
+                    type="number"
+                    #integerInput = ngModel
+                    [(ngModel)]="currentValue"
+                    [disabled]="isCompleted"
+                    (input)="onIntegerFieldChange(integerInput)"
+                    pattern="^-?\d+([.,]\d+)?$"
+                    placeholder="Enter a number">
+        </mat-form-field>
+        <div style="color:red;" *ngIf="integerInput.errors?.integer && (integerInput.dirty || integerInput.touched)">
+            Only numbers are allowed.
+        </div>
+        <div style="color:red;" *ngIf="isRequired && answers?.length == 0">
+            That field is required.
+        </div>
+    </div>
+    
+
+    <div *ngSwitchCase="QuestionType.Check">
+        <mat-checkbox *ngFor="let option of optionList?.listOptionValues; let i = index" 
+                    [value]="option.value" 
+                    [disabled]="isCompleted"
+                    [checked]="preselectCheckBox(option, i+1)"
+                    [required]="isRequired"
+                    (change)="onCheckboxFieldChange($event, i+1)">
+            {{ option.value }}
+        </mat-checkbox>
+        <div style="color:red;" *ngIf="isRequired && answers?.length == 0">
+            That field is required.
+        </div>
+    </div>
+
+    <div *ngSwitchCase="QuestionType.Combo">
+        <mat-select [placeholder]="'Select an option'" [required]="isRequired" [disabled]="isCompleted" [(ngModel)]="selectedValue" (selectionChange)="onComboFieldChange($event)">
+            <mat-option *ngFor="let option of optionList?.listOptionValues;"
+                        [value]="option.value"
+                        >
+                {{ option.value }}
+            </mat-option>
+        </mat-select>
+        <div style="color:red;" *ngIf="isRequired && answers?.length == 0">
+            That field is required.
+        </div>
+    </div>
+
+
+    <div *ngSwitchCase="QuestionType.Radio">
+        <mat-radio-group [(ngModel)]="selectedValue" [required]="isRequired" [disabled]="isCompleted">
+            <mat-radio-button *ngFor="let option of optionList?.listOptionValues; let i = index"
+                              [value]="option.value"
+                              (change)="onRadioFieldChange($event, i+1)">
+                {{ option.value }}
+            </mat-radio-button>
+        </mat-radio-group>
+        <div style="color:red;" *ngIf="isRequired && answers?.length == 0">
+            That field is required.
+        </div>
+    </div>
+
+    <div *ngSwitchDefault>Unknown QuestionType</div>
+</div>
