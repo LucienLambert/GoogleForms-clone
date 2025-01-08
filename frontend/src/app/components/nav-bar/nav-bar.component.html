@@ -41,6 +41,9 @@
     <button mat-icon-button *ngIf="isSaveVisible" (click)="onSave()" [disabled]="saveDisabled">
         <mat-icon>save</mat-icon>
     </button>
+    
+    <!-- share-button -->
+    <ng-content select="[shareButton]"></ng-content>
 
     <!-- Analyse button -->
     <button mat-icon-button *ngIf="isAnalyseVisible" (click)="analyse()">

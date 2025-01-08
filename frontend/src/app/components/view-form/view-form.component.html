@@ -4,6 +4,9 @@
              [delFormVisible]="delFormButton"
              (delFormEvent)="delForm()"
              class="toolbar-actions">
+    <button mat-icon-button shareButton>
+        <mat-icon shareButton (click)="shareButtonAction()">share</mat-icon>
+    </button>
 </app-nav-bar>
 
 <div class="manage-container">

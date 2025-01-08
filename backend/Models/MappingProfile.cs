@@ -17,8 +17,11 @@ public class MappingProfile : Profile
         CreateMap<User, User_With_PasswordDTO>();
         CreateMap<User_With_PasswordDTO, User>();
 
-        CreateMap<UserFormAccess, UserFormAccessDTO>();
-        CreateMap<UserFormAccessDTO, UserFormAccess>();
+        CreateMap<User, User_Base_DTO>();
+        CreateMap<User_Base_DTO, User>();
+        
+        CreateMap<User, User_Base_With_FormAccessesDTO>();
+        CreateMap<User_Base_With_FormAccessesDTO, User>();
 
         //FORM
         CreateMap<Form, FormDTO>();
@@ -79,6 +82,10 @@ public class MappingProfile : Profile
         //USERFORMACCES
         CreateMap<UserFormAccess, UserFormAccessDTO_Only_Id>();
         CreateMap<UserFormAccessDTO_Only_Id, UserFormAccess>();
+        
+        CreateMap<UserFormAccess, UserFormAccessDTO>();
+        CreateMap<UserFormAccessDTO, UserFormAccess>();
+        
         
 
         CreateMap<Form, FormDetailsDTO>()

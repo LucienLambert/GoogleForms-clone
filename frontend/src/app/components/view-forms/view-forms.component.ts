@@ -45,6 +45,7 @@ export class ViewFormsComponent implements OnInit {
             this.router.navigate(['']);
             return false;
         } else {
+            
             this.user = this.authService.currentUser;
             return true;
         }

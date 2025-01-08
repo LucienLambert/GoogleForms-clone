@@ -221,4 +221,8 @@ export class ViewFormComponent implements OnInit {
             });
         }
     }
+
+    shareButtonAction() {
+        this.router.navigate(['/manage-shares/', this.form!.id]);
+    }
 }
