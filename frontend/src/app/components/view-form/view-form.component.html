@@ -3,6 +3,7 @@
              [isAnalyseVisible]="isAnalyseVisible" (editEvent)="editForm()" (AnalyseEvent)="analyse()"
              [delFormVisible]="delFormButton"
              (delFormEvent)="delForm()"
+             [previousUrl]="previousUrl"
              class="toolbar-actions">
     <button mat-icon-button shareButton>
         <mat-icon shareButton (click)="shareButtonAction()">share</mat-icon>
@@ -55,7 +56,7 @@
     </ng-template>
     <div>
         <mat-card-actions *ngIf="!instanceInProgress">
-            <button mat-raised-button color="primary">Add Question</button>
+            <button mat-raised-button color="primary" (click)="addQuestion()">Add Question</button>
         </mat-card-actions>
     </div>
 </div>

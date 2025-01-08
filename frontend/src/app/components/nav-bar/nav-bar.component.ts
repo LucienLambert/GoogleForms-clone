@@ -28,10 +28,11 @@ export class NavBarComponent {
     @Input() isAnalyseVisible: boolean = false;
     @Input() isEditVisible: boolean = false;
     @Input() isOptionListVisible: boolean = false;
-
     @Input() delFormVisible: boolean = false;
-    
-    
+
+    @Input() previousUrl: string | null = null;
+
+
     constructor(private router: Router, private _location: Location, private authService : AuthenticationService) {
     }
 
@@ -64,7 +65,13 @@ export class NavBarComponent {
     
     backClicked() {
         this.backButtonEvent.emit();
-        this._location.back();
+        if(this.previousUrl){
+            ///ce base sur le chemin précisé
+            this.router.navigate([this.previousUrl]);
+        } else {
+            //ce base sur l'historique de naviagation
+            this._location.back();
+        }
     }
 
 
@@ -79,6 +86,5 @@ export class NavBarComponent {
 
     delForm(){
         this.delFormEvent.emit();
-
     }
 }

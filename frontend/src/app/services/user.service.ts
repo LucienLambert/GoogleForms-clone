@@ -101,4 +101,8 @@ export class UserService {
         return this.http.delete<boolean>(`${this.baseUrl}api/UserFormAccesses/${formAccess.formId}/${formAccess.userId}`);
     }
 
+    getOptionListUser(userId: number): Observable<Array<OptionList>> {
+        return this.http.get<Array<OptionList>>(`${this.baseUrl}api/users/optionListOwnerForm/${userId}`);
+    }
+
 }

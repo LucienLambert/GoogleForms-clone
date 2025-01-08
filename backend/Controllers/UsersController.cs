@@ -163,7 +163,7 @@ public class UsersController : ControllerBase {
                     new Claim(ClaimTypes.NameIdentifier, user.Id.ToString())
                 }),
                 IssuedAt = DateTime.UtcNow,
-                Expires = DateTime.UtcNow.AddMinutes(10),
+                Expires = DateTime.UtcNow.AddHours(24),
                 SigningCredentials = new SigningCredentials(new SymmetricSecurityKey(key), SecurityAlgorithms.HmacSha256Signature)
             };
             var token = tokenHandler.CreateToken(tokenDescriptor);
@@ -180,22 +180,15 @@ public class UsersController : ControllerBase {
         var optionLists = await _context.OptionLists
             .Where(op => op.OwnerId == userId || op.OwnerId == null)
             .Include(op => op.ListOptionValues)
+            .OrderBy(ol => ol.Name)
+            .Select(op => new OptionList_With_NotReferencedDTO {
+                Id = op.Id,
+                Name = op.Name,
+                OwnerId = op.OwnerId,
+                NotReferenced = !_context.Questions.Any(q => q.OptionListId == op.Id)
+            })
             .ToListAsync();
-
-        // Step 2: Perform the projection in-memory
-        var result = optionLists.Select(op => new OptionList_With_NotReferencedDTO {
-            Id = op.Id,
-            Name = op.Name,
-            OwnerId = op.OwnerId,
-            NotReferenced = !_context.Questions.Any(q => q.OptionListId == op.Id),
-            ListOptionValues = op.ListOptionValues.Select(ov => new OptionValueDTO {
-                Idx = ov.Idx,
-                Value = ov.Value,
-                OptionListId = op.Id
-            }).ToList()
-        }).ToList();
-
-        return result;
+        return optionLists;
     }
 
     [Authorized(Role.Admin, Role.User)]
@@ -211,7 +204,7 @@ public class UsersController : ControllerBase {
         await _context.SaveChangesAsync();
         return true;
     }
-    
+
     [Authorized(Role.Admin, Role.User)]
     [HttpGet("optionList/{optionListId:int}")]
     public async Task<ActionResult<OptionList_With_OptionValuesDTO>> GetOptionList(int optionListId) {
