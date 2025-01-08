@@ -73,12 +73,14 @@ export class UserService {
     }
 
     updateOptionList(optionList: OptionList): Observable<OptionList> {
-        return this.http.put<OptionList>(`${this.baseUrl}api/users/updateOptionList`, optionList)
-            .pipe(map(res => new OptionList(res)));
+        return this.http.put<{message: string, form: any}>(`${this.baseUrl}api/users/updateOptionList`, optionList)
+            .pipe(map(res => new OptionList(res.form)));
     }
 
     saveOptionList(optionList: OptionList): Observable<OptionList> {
+        console.log("Service  id : " + optionList.id);
         if (optionList.id != 0) {
+            console.log(this.updateOptionList(optionList));
             return this.updateOptionList(optionList);
         } else {
             return this.createOptionList(optionList);

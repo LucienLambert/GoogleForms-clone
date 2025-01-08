@@ -10,16 +10,14 @@ import {
   Validators
 } from "@angular/forms";
 import {ActivatedRoute, Router} from "@angular/router";
-import {Location} from "@angular/common";
 import {AuthenticationService} from "../../services/authentication.service";
 import {UserService} from "../../services/user.service";
 import {FormService} from "../../services/form.service";
-import {BehaviorSubject, Observable, of, switchMap, take, tap} from "rxjs";
-import {catchError, filter, map} from "rxjs/operators";
-import {Role, User} from "../../models/user";
-import {ModalDialogComponent} from "../modal-dialog/modal-dialog.component";
+import {BehaviorSubject, Observable, tap} from "rxjs";
+import {User} from "../../models/user";
 import {MatDialog} from "@angular/material/dialog";
 import {OptionValue} from "../../models/optionValue";
+import {CdkDragDrop, moveItemInArray} from "@angular/cdk/drag-drop";
 
 @Component({
   selector: 'app-add-edit-option-list',
@@ -34,6 +32,7 @@ export class AddEditOptionListComponent implements OnInit {
   isAnyOptionSelected = false;
   isSaveDisabled: boolean = true;
   isSystemCheckboxVisible: boolean = false;
+  changesNotSaved: boolean = false;
 
   optionList?: OptionList;
   private originalOptionList!: any;
@@ -41,10 +40,10 @@ export class AddEditOptionListComponent implements OnInit {
   ownerLoaded = new BehaviorSubject<User | null>(null);
   userRole?: string;
   owner?: User;
+  optionArray?: FormArray;
 
   constructor(private router: Router, private route: ActivatedRoute, private formBuilder: FormBuilder,
-              private authenticationService: AuthenticationService, private formService: FormService,
-              private userService: UserService, private modalDialog : MatDialog) {}
+              private authenticationService: AuthenticationService, private userService: UserService) {}
 
   ngOnInit(): void {
     this.BindReactiveForm();
@@ -90,51 +89,60 @@ export class AddEditOptionListComponent implements OnInit {
       name: [this.optionList.name, [Validators.required, Validators.minLength(3)]],
       ownerId: [this.optionList.ownerId],
       optionValues: this.formBuilder.array(
-          this.optionList.listOptionValues!.map(() =>
-              this.formBuilder.control(false)
-          ),
-          [this.minLengthArrayValidator(1)]
-      ),
-      newOption: [''],
+          this.optionList.listOptionValues!.map(() => 
+              this.formBuilder.control(false)), [this.minLengthArrayValidator(1)]),
+      newOption: ['', [Validators.minLength(3), this.duplicateOptionValidator()]],
       isSystem: [false],
     });
+    
+    this.optionArray = this.form.get('optionValues') as FormArray;
   }
 
-  private SaveDisablingLogic(){
-    this.form.statusChanges.subscribe((status) => {
-      this.isSaveDisabled = status !== 'VALID';
+  private SaveDisablingLogic() {
+    this.form.statusChanges.subscribe(() => {
+      this.detectChanges();
+    });
+    this.form.valueChanges.subscribe(() => {
+      this.detectChanges();
     });
   }
 
   private LoadOptionList() {
     this.route.paramMap.subscribe(params => {
-      const idParam = params.get('id');
-      if (idParam) {
-        const id = Number(idParam);
-        if (!isNaN(id)) {
-          this.userService.getUserOptionList(id).subscribe(optionList => {
-            this.optionList = optionList;
-            this.originalOptionList = JSON.parse(JSON.stringify(optionList));
-            this.navBarTitle = "Edit Option List";
+      this.route.queryParamMap.subscribe(queryParams => {
+        const isDuplicate = queryParams.get('duplicate') === 'true';
 
-            // Clear existing FormArray if any
-            const optionArray = this.form.get('optionValues') as FormArray;
-            optionArray.clear(); // Clear old values
+        const idParam = params.get('id');
+        if (idParam) {
+          const id = Number(idParam);
+          if (!isNaN(id)) {
+            this.userService.getUserOptionList(id).subscribe(optionList => {
+              this.optionList = optionList;
+              this.originalOptionList = JSON.parse(JSON.stringify(optionList));
+              this.navBarTitle = "Edit Option List";
 
-            // Initialize the FormArray with 'false' (unchecked) for each option
-            this.optionList.listOptionValues?.forEach(() => {
-              optionArray.push(this.formBuilder.control(false));  // Default value to false (unchecked)
+              // Clear existing FormArray if any
+              this.optionArray!.clear(); // Clear old values
+
+              // Initialize the FormArray with 'false' (unchecked) for each option
+              this.optionList.listOptionValues?.forEach(() => {
+                this.optionArray!.push(this.formBuilder.control(false));  // Default value to false (unchecked)
+              });
+
+              // Patch the form values (excluding the optionValues)
+              this.form.patchValue({
+                id: this.optionList.id,
+                name: this.optionList.name,
+                ownerId: this.optionList.ownerId,
+                isSystem: !this.optionList.ownerId
+              });
+              if (isDuplicate) {
+                this.optionList.id = 0;
+              }
             });
-
-            // Patch the form values (excluding the optionValues)
-            this.form.patchValue({
-              id: this.optionList.id,
-              name: this.optionList.name,
-              ownerId: this.optionList.ownerId
-            });
-          });
+          }
         }
-      }
+      });
     });
   }
 
@@ -143,25 +151,24 @@ export class AddEditOptionListComponent implements OnInit {
     return optionArray.at(index) as FormControl;
   }
 
-  uniqueTitleValidator(control: AbstractControl): Observable<ValidationErrors | null> {
-    if (!control.value) {
-      return of(null);
-    }
+  private duplicateOptionValidator(): ValidatorFn {
+    return (control: AbstractControl): ValidationErrors | null => {
+      // If empty, no error
+      if (!control.value) {
+        return null;
+      }
 
-    const formId = Number(this.route.snapshot.paramMap.get('id'));
+      // Compare user input vs. existing items in your array
+      const newValue = control.value.trim().toLowerCase();
+      const isDuplicate = this.optionList?.listOptionValues?.some(
+          ov => ov.value.trim().toLowerCase() === newValue
+      );
 
-    return this.ownerLoaded.pipe(
-        filter((owner) => !!owner),
-        take(1),
-        switchMap((owner) => {
-          const ownerId = owner!.id;
-          return this.formService.isTitleUnique(control.value, ownerId, formId);
-        }),
-        map((isUnique) => (isUnique ? null : { unique: true })),
-        catchError(() => of(null))
-    );
+      // Return { duplicate: true } if found, else null
+      return isDuplicate ? { duplicate: true } : null;
+    };
   }
-  
+
   addOption(){
     // 1. Retrieve entered value in field
     const newOptionValue = this.form.get('newOption')?.value.trim();
@@ -194,11 +201,10 @@ export class AddEditOptionListComponent implements OnInit {
         this.optionList!.ownerId = this.owner?.id;
       }
 
-      console.log('Saving OptionList:', this.optionList);
-
       // Save to backend
       this.userService.saveOptionList(this.optionList!).subscribe({
-        next: () => {
+        next: (data) => {
+          console.log(data);
           this.router.navigate(['/manage-option-lists']);
         },
         error: (err) => console.error('Error saving option list:', err)
@@ -206,6 +212,11 @@ export class AddEditOptionListComponent implements OnInit {
     } else {
       console.error('Form is invalid:', this.form);
     }
+  }
+  
+  onSaveEvent(){
+    this.onSave();
+    this.userService.getUserOptionLists(this.owner?.id!);
   }
 
   onCancel(){
@@ -231,17 +242,10 @@ export class AddEditOptionListComponent implements OnInit {
     this.isAnyOptionSelected = false;
     this.addOptionDisabled = true;
   }
-  
-  onNewOptionChange(){
-    const newOptionValue = this.form.get("newOption")?.value;
-    this.addOptionDisabled = !newOptionValue.trim();
-  }
 
   onDeleteSelectedOptions() {
-    const optionArray = this.form.get('optionValues') as FormArray;
-
     // Identify indices of selected options
-    const selectedIndices = optionArray.controls
+    const selectedIndices = this.optionArray!.controls
         .map((control, index) => (control.value ? index : -1)) // Mark selected controls with their index
         .filter(index => index !== -1); // Filter out unselected controls
 
@@ -251,9 +255,9 @@ export class AddEditOptionListComponent implements OnInit {
     );
 
     // Clear and recreate FormArray controls after removal
-    optionArray.clear();
+    this.optionArray!.clear();
     this.optionList!.listOptionValues!.forEach(() => {
-      optionArray.push(this.formBuilder.control(false)); // Reinitialize checkboxes
+      this.optionArray!.push(this.formBuilder.control(false));
     });
 
     // Reset selection state
@@ -261,8 +265,7 @@ export class AddEditOptionListComponent implements OnInit {
   }
 
   onCancelSelection(){
-    const optionArray = this.form.get('optionValues') as FormArray;
-    optionArray.controls.forEach(control => {
+    this.optionArray!.controls.forEach(control => {
       control.setValue(false);
     })
     
@@ -274,5 +277,87 @@ export class AddEditOptionListComponent implements OnInit {
       const formArray = control as FormArray;
       return formArray.length >= minLength ? null : { minLengthArray: { requiredLength: minLength, actualLength: formArray.length } };
     };
+  }
+
+  onOptionSelectChange() {
+    this.isAnyOptionSelected = this.optionArray!.controls.some(control => control.value === true);
+  }
+
+  onDrop(event: CdkDragDrop<OptionValue[]>) {
+    moveItemInArray(
+        this.optionList!.listOptionValues!,
+        event.previousIndex,
+        event.currentIndex
+    );
+    
+    this.optionList!.listOptionValues!.forEach((option, index) => {
+      option.idx = index + 1;
+    });
+
+    this.detectChanges();
+  }
+
+  private isDataEqual(newData: OptionList, oldData: OptionList): boolean {
+    // 1. Check the name
+    if (newData === undefined || oldData === undefined) {
+      return false;
+    }
+    
+    if (newData.name !== oldData.name) {
+      return false;
+    }
+
+    // 2. Compare length of listOptionValues
+    if ((newData.listOptionValues?.length || 0) !== (oldData.listOptionValues?.length || 0)) { return false; }
+
+    // 3. Compare each item (value + idx)
+    for (let i = 0; i < newData.listOptionValues!.length; i++) {
+      const newItem = newData.listOptionValues![i];
+      const oldItem = oldData.listOptionValues![i];
+
+      if (newItem.value !== oldItem.value) {
+        return false;
+      }
+
+      // If you're using `idx` to track order
+      if (newItem.idx !== oldItem.idx) {
+        return false;
+      }
+    }
+
+    // If all checks passed, they’re the same
+    return true;
+  }
+
+  private detectChanges(): void {
+    // If the form is invalid, we definitely disable “Save”
+    if (this.form.invalid) {
+      this.isSaveDisabled = true;
+      this.changesNotSaved = false;
+      return;
+    }
+
+    // Gather the current data from the form + your updated optionList
+    const newData: OptionList = {
+      ...this.form.getRawValue(),
+      listOptionValues: this.optionList?.listOptionValues || []
+    };
+
+    // Compare it to the original
+    const dataIsSame = this.isDataEqual(newData, this.originalOptionList);
+
+    // If data is the same, changesNotSaved = false, so disable Save
+    this.changesNotSaved = !dataIsSame;
+    this.isSaveDisabled = dataIsSame;
+  }
+
+  updateAddOptionDisabled() {
+    const newOptionCtrl = this.form.get('newOption');
+    
+    if (this.form.get('newOption')?.value !== '') {
+      this.addOptionDisabled = !!newOptionCtrl?.errors;
+    } else {
+      this.addOptionDisabled = true;
+    }
   }
 }

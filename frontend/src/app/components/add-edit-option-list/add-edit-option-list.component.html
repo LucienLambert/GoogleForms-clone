@@ -1,4 +1,5 @@
-<app-nav-bar [title]="navBarTitle" [backButtonVisible]="backButtonVisible"></app-nav-bar>
+<app-nav-bar [title]="navBarTitle" [backButtonVisible]="backButtonVisible" [hasUnsavedChanges]="changesNotSaved"
+             (saveEvent)="onSaveEvent()"></app-nav-bar>
 
 <form [formGroup]="form" class="form-container">
     <!-- Option List Name -->
@@ -16,14 +17,16 @@
     </div>
 
     <!-- List of Existing Options (with checkboxes) -->
-    <div *ngFor="let option of optionList?.listOptionValues; let i = index" class="option-item">
-        <mat-checkbox [formControl]="getControl(i)">
-            {{ option.value }}
-        </mat-checkbox>
+    <div cdkDropList (cdkDropListDropped)="onDrop($event)" class="option-list">
+        <div class="option-item" *ngFor="let option of optionList?.listOptionValues; let i = index" cdkDrag>
+            <mat-checkbox [formControl]="getControl(i)" (change)="onOptionSelectChange()">
+                {{ option.value }}
+            </mat-checkbox>
+        </div>
     </div>
 
     <div class="action-buttons">
-        <!-- Cancel Button Button -->
+        <!-- Cancel Button -->
         <button mat-raised-button color="warn" type="button" (click)="onCancelSelection()" *ngIf="isAnyOptionSelected">
             Cancel selection
         </button>
@@ -37,26 +40,28 @@
     <!-- Add New Option -->
     <div class="add-option-container">
         <input id="newOption" type="text" placeholder="New Value" class="form-control" formControlName="newOption"
-        (input)="onNewOptionChange()"/>
+        (input)="updateAddOptionDisabled()"/>
         <button mat-icon-button color="primary" type="button" (click)="addOption()" aria-label="Add option" 
                 [disabled]="addOptionDisabled">
             <mat-icon>add</mat-icon>
         </button>
     </div>
+    <!-- Validation Errors -->
+    <div *ngIf="form.get('newOption')?.invalid && form.get('newOption')?.dirty" class="error-message">
+        <mat-error *ngIf="form.get('newOption')?.errors?.['minlength']">Value must be at least 3 characters.</mat-error>
+        <mat-error *ngIf="form.get('newOption')?.errors?.['duplicate']">This item name already exists for this list.</mat-error>
+    </div>
 
     <!-- Checkbox Input -->
     <div>
         <label for="checkbox" *ngIf="isSystemCheckboxVisible">
-            <input id="checkbox" type="checkbox" formControlName="isSystem"/>
-            Is System
+            <input id="checkbox" type="checkbox" formControlName="isSystem"/>Is System
         </label>
     </div>
 
     <!-- Buttons at the Bottom: Cancel & Save -->
     <div class="action-buttons">
-        <button mat-raised-button color="warn" type="button" (click)="onCancel()">
-            Cancel
-        </button>
+        <button mat-raised-button color="warn" type="button" (click)="onCancel()">Cancel</button>
         <button mat-raised-button color="primary" type="submit" (click)="onSave()" [disabled]="isSaveDisabled">
             Save List
         </button>

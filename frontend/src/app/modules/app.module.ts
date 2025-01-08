@@ -31,6 +31,7 @@ import {AnalyseComponent} from "../components/analyse/analyse.component";
 import {ManageOptionsListComponent} from "../components/manage-option-lists/manage-option-lists.component";
 import {OptionListItemComponent} from "../components/option-list-item/option-list-item.component";
 import {AddEditOptionListComponent} from "../components/add-edit-option-list/add-edit-option-list.component";
+import {CdkDrag, CdkDropList} from "@angular/cdk/drag-drop";
 
 
 @NgModule({
@@ -65,6 +66,8 @@ import {AddEditOptionListComponent} from "../components/add-edit-option-list/add
         SharedModule,
         MatRadioGroup,
         MatRadioButton,
+        CdkDropList,
+        CdkDrag,
     ],
     providers: [
         {provide: HTTP_INTERCEPTORS, useClass: JwtInterceptor, multi: true},

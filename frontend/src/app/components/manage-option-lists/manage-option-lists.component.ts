@@ -82,7 +82,7 @@ export class ManageOptionsListComponent implements OnInit {
     }
 
     onDuplicate(optionList: OptionList) {
-        this.router.navigate(['add-edit-option-lists', optionList.id]);
+        this.router.navigate(['add-edit-option-lists', optionList.id], { queryParams: { duplicate: true } });
     }
 
     onAdd() {
