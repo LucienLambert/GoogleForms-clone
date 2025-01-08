@@ -3,8 +3,68 @@
 [title]="title">
 </app-nav-bar>
 <h2>Users with Access</h2>
-<div>
+
+
+<div *ngIf="usersWithAccess.length > 0; else nosUsersWithAccess">
+    <div *ngFor="let user of usersWithAccess" style="display: flex;">
+        <p style="margin-top: 8px">{{ user.firstName }} {{ user.lastName }}</p>
+        
+            <mat-checkbox
+                    [checked]="true"
+                    [disabled]="isCheckBox1Disabled(user)"
+                    (change)="onHasAccessCheckboxChange(user, CheckboxType.User, $event)"
+            >
+                User
+            </mat-checkbox>
+            <mat-checkbox
+                    [checked]="isCheckBox2Checked(user)"
+                    (change)="onHasAccessCheckboxChange(user,CheckboxType.Editor,$event)"
+            >
+                Editor
+            </mat-checkbox>
+    </div>
+</div>
+<ng-template #nosUsersWithAccess>
+    <p>No users with access.</p>
+</ng-template>
+
+
+<h2>Add User Access</h2>
+
+
+<div *ngIf="usersWithNoAccess.length > 0; else nosUsersWithNoAccess">
     
+    <div>
+        <mat-form-field appearance="fill">
+            <mat-label>Select a user..</mat-label>
+            <mat-select [(value)]="selectedUserId" placeholder="Select a user..">
+                <mat-option *ngFor="let user of usersWithNoAccess" [value]="user.id" >
+                    {{ user.firstName }} {{ user.lastName }}
+                </mat-option>
+            </mat-select>
+        </mat-form-field>
+
+        <mat-checkbox
+                [checked]="isUserCheckboxChecked()"
+                [disabled]="isUserCheckboxDisabled()"
+                (change)="onHasNoAccessCheckboxChange(CheckboxType.User, $event)"
+        >
+            User
+        </mat-checkbox>
+        <mat-checkbox
+                (change)="onHasNoAccessCheckboxChange(CheckboxType.Editor,$event)"
+        >
+            Editor
+        </mat-checkbox>
+        
+    </div>        
+    
+    <button mat-raised-button color="primary" (click)="AddButtonAction()">
+        Add
+    </button>
     
 </div>
-<h2>Add User Access</h2>
+
+<ng-template #nosUsersWithNoAccess>
+    <p>No users with no access to add..</p>
+</ng-template>

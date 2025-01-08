@@ -6,7 +6,7 @@ import { map } from 'rxjs/operators';
 import { Observable } from 'rxjs';
 import { Question, QuestionType } from '../models/question';
 
-import { AccessType } from '../models/userFormAccess';
+import {AccessType, UserFormAccess} from '../models/userFormAccess';
 
 @Injectable({ providedIn: 'root' })
 export class FormService {
@@ -121,4 +121,5 @@ export class FormService {
             params: { formId }
         });
     }
+    
 }

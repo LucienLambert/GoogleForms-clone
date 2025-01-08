@@ -6,6 +6,7 @@ import {BehaviorSubject, Observable, of, switchMap, tap} from 'rxjs';
 import { plainToInstance } from 'class-transformer';
 import {OptionList} from "../models/optionList";
 import {Form} from "../models/form";
+import {UserFormAccess} from "../models/userFormAccess";
 
 @Injectable({ providedIn: 'root' })
 export class UserService {
@@ -91,4 +92,13 @@ export class UserService {
             map((res: any[]) => res.map(user => new User(user)))
         );
     }
+
+    // UserFormAccess, il y a peu de méthodes
+    updateUserFormAccess(formAccess : UserFormAccess): Observable<boolean> {
+        return this.http.put<boolean>(`${this.baseUrl}api/UserFormAccesses`, formAccess);
+    }
+    deleteUserFormAccess(formAccess: UserFormAccess): Observable<boolean> {
+        return this.http.delete<boolean>(`${this.baseUrl}api/UserFormAccesses/${formAccess.formId}/${formAccess.userId}`);
+    }
+
 }
