@@ -81,11 +81,13 @@ export class CreateEditQuestionComponent implements OnInit {
 
     //récup l'ol du owner et du systeme
     getOptionList(){
-        this.userService.getUserOptionLists(this.question.form.ownerId).subscribe({
-            next : (data) => {
-                this.optionList = data;
-            }
+        //remplit le cache optionList avec l'optionList DB
+        this.userService.getUserOptionLists(this.question.form.ownerId);
+        //récupe l'optionList en cache dans this.userService.optionLists
+        this.userService.optionLists.subscribe((data) => {
+            this.optionList = data;
         });
+
     }
 
     createForm() {
