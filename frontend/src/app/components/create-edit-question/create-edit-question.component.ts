@@ -32,6 +32,7 @@ export class CreateEditQuestionComponent implements OnInit {
     showOptionList?: boolean;
     // isAddVisible : boolean = true;
     previousUrl: string | null = null;
+    isDisableButtonOl?: boolean;
 
     constructor(private router: Router, private route: ActivatedRoute, private formBuilder : FormBuilder,
                 private authenticationService: AuthenticationService, private questionService: QuestionService,
@@ -122,7 +123,9 @@ export class CreateEditQuestionComponent implements OnInit {
             optionListControl?.updateValueAndValidity();
         });
         //permet de passer le bouton save visible si le questionForm est complet
+        //permet également de gèrer le boolean du bouton edit en fonction de si l'optionList est référencé.
         this.questionForm.statusChanges.subscribe((status) => {
+            this.isDisableButtonOl = this.questionForm.get('optionList')?.value?.notReferenced;
             this.isSaveDisabled = status !== 'VALID';
         });           
     }

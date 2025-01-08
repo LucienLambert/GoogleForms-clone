@@ -47,10 +47,12 @@
         </mat-form-field>
         <!-- Affichage des boutons add et edit -->
         <div class="buttons">
-            <button mat-icon-button (click)="addOptionList()" [disabled]="this.form?.ownerId != user?.id">
+            <button mat-icon-button (click)="addOptionList()" 
+                [disabled]="this.form?.ownerId != user?.id ">
                 <mat-icon>add</mat-icon>
             </button>
-            <button mat-icon-button (click)="editOptionList()">
+            <button mat-icon-button (click)="editOptionList()" 
+                [disabled]="this.form?.ownerId != user?.id || !isDisableButtonOl">
                 <mat-icon>edit</mat-icon>
             </button>
         </div>
