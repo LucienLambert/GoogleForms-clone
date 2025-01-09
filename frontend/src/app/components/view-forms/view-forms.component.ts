@@ -124,7 +124,6 @@ export class ViewFormsComponent implements OnInit {
     visible que si l'utilisateur a accès au formulaire en mode d'édition */
 
     manageForm(form: Form){
-        console.log('Formulaire sélectionné:', form);
         this.router.navigate(['view-form', form.id]);
     }
 

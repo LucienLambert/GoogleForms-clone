@@ -178,7 +178,7 @@ export class CreateEditQuestionComponent implements OnInit {
 
     addOptionList() {
         this.question.questionType = this.questionForm.get('questionType')?.value;
-        console.log(this.question);
+        this.question.title = this.questionForm.get('title')?.value;
         this.router.navigate(['/add-edit-option-lists'], {
             state: { redirectObject : this.question, previousUrl: this.router.url}
         });
@@ -186,6 +186,7 @@ export class CreateEditQuestionComponent implements OnInit {
 
     editOptionList(){
         this.question.questionType = this.questionForm.get('questionType')?.value;
+        this.question.title = this.questionForm.get('title')?.value;
         this.router.navigate(['/add-edit-option-lists', this.questionForm.get('optionList')?.value.id],  {
             state: { redirectObject : this.question, previousUrl: this.router.url}
         });

@@ -50,6 +50,11 @@
         <mat-icon>insights</mat-icon>
     </button>
 
+    <!-- delForm button -->
+    <button mat-icon-button *ngIf="delFormVisible" (click)="delForm()">
+        <mat-icon>deleted</mat-icon>
+    </button>
+
     <!-- view-instance buttons -->
     <ng-content select="[prevQuestion]"></ng-content>
     <ng-content select="[nextQuestion]"></ng-content>
