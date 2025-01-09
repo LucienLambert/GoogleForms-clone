@@ -25,7 +25,6 @@ export class ViewFormComponent implements OnInit {
 
     constructor(private authService: AuthenticationService, private router: Router,
         private formService: FormService, private route: ActivatedRoute, private modalDialog : MatDialog) {
-
         this.user = this.authService.currentUser;
         
     }
@@ -34,7 +33,6 @@ export class ViewFormComponent implements OnInit {
         this.getOnFormManager();
         const state = history.state;
         this.previousUrl = state?.previousUrl ?? '/home';
-
     }
 
     getOnFormManager(){
