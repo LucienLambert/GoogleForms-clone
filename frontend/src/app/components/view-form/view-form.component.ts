@@ -6,7 +6,7 @@ import { FormService } from 'src/app/services/form.service';
 import { Question } from 'src/app/models/question';
 import { MatDialog } from '@angular/material/dialog';
 import { ModalDialogComponent } from '../modal-dialog/modal-dialog.component';
-import { User } from 'src/app/models/user';
+import { Role, User } from 'src/app/models/user';
 import { MatSlideToggleChange } from '@angular/material/slide-toggle';
 
 @Component({
@@ -21,7 +21,7 @@ export class ViewFormComponent implements OnInit {
     instanceInProgress : boolean = false;
     backButtonVisible: boolean = true;
     isEditVisible: boolean = true;
-    isAnalyseVisible: boolean = true;
+    isAnalyseVisible : boolean = true;
     delFormButton : boolean = true;
     previousUrl: string | null = null;
 
@@ -36,7 +36,7 @@ export class ViewFormComponent implements OnInit {
         this.getOnFormManager();
         const state = history.state;
         this.previousUrl = state?.previousUrl ?? '/home';
-        console.log(this.previousUrl)
+
     }
 
     getOnFormManager(){
@@ -45,6 +45,7 @@ export class ViewFormComponent implements OnInit {
             next : (data ) => {
                 this.form = data;
                 this.listQuestion = data.listQuestion;
+                this.isAnalyseVisible = (this.user?.id == this.form?.ownerId) || this.user?.role == Role.Admin;
                 if (this.form?.listInstance[0] != null) {
                     this.modalDialogIntanceStatus();
                     this.instanceInProgress = true;
