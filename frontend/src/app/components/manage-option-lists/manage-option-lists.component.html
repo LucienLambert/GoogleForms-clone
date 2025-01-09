@@ -6,6 +6,8 @@
         
     </app-option-list-item>
     <button class="add-button" (click)="onAdd()">Add Option List</button>
+
+    <div *ngIf="isLoading" class="spinner">Loading, please wait...</div>
 </div>
 
 

@@ -185,7 +185,8 @@ public class UsersController : ControllerBase {
                 Id = op.Id,
                 Name = op.Name,
                 OwnerId = op.OwnerId,
-                NotReferenced = !_context.Questions.Any(q => q.OptionListId == op.Id)
+                NotReferenced = !_context.Questions.Any(q => q.OptionListId == op.Id),
+                ListOptionValues = _mapper.Map<ICollection<OptionValueDTO>>(op.ListOptionValues)
             })
             .ToListAsync();
         return optionLists;
@@ -222,7 +223,7 @@ public class UsersController : ControllerBase {
     
     [Authorized(Role.Admin, Role.User)]
     [HttpPost("createOptionList")]
-    public async Task<ActionResult<OptionListDTO>> CreateOptionList(OptionList_With_OptionValuesDTO optionListDto) {
+    public async Task<ActionResult<OptionList_With_OptionValuesDTO>> CreateOptionList(OptionList_With_OptionValuesDTO optionListDto) {
         var optionList = _mapper.Map<OptionList>(optionListDto);
         
         var lastIdx = optionList.ListOptionValues.Any()

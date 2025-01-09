@@ -34,6 +34,7 @@ export class AddEditOptionListComponent implements OnInit {
   isSaveDisabled: boolean = true;
   isSystemCheckboxVisible: boolean = false;
   changesNotSaved: boolean = false;
+  isLoading: boolean = false;
 
   optionList?: OptionList;
   private originalOptionList!: any;
@@ -191,6 +192,7 @@ export class AddEditOptionListComponent implements OnInit {
 
   onSave() {
     if (this.form.valid) {
+      this.isLoading = true;
       // Update optionList with form values
       this.optionList = {
         ...this.form.getRawValue(),
@@ -205,7 +207,7 @@ export class AddEditOptionListComponent implements OnInit {
       // Save to backend
       this.userService.saveOptionList(this.optionList!).subscribe({
         next: (data) => {
-          // console.log(data);
+          this.isLoading = false;
           if(history.state?.previousUrl == '/create-edit-question'){
             history.state.redirectObject.optionList = data;
             
@@ -216,7 +218,10 @@ export class AddEditOptionListComponent implements OnInit {
             this.router.navigate(['/manage-option-lists']);
           }
         },
-        error: (err) => console.error('Error saving option list:', err)
+        error: (err) => {
+          this.isLoading = false;
+          console.error('Error saving:', err);
+        }
       });
     } else {
       console.error('Form is invalid:', this.form);
