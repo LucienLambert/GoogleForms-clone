@@ -40,6 +40,8 @@ export class ViewInstanceComponent implements OnInit, OnDestroy {
     
     //navbar
     backButtonVisible: boolean = true;
+    isPrevQuestionBtnDisabled: boolean = false;
+    isNextQuestionBtnDisabled: boolean = false;
     
     constructor(private authService: AuthenticationService, private router: Router,
                 private instanceService: InstanceService, private formService: FormService, private route: ActivatedRoute, private modalDialog : MatDialog) {
@@ -78,6 +80,7 @@ export class ViewInstanceComponent implements OnInit, OnDestroy {
             this.questionTracker = nb;
             this.updateAnswers();
             this.updateCurrentAnswers();
+            this.updateNavButtonDisabled()
         }
 
     }
@@ -181,6 +184,7 @@ export class ViewInstanceComponent implements OnInit, OnDestroy {
                 }
                 this.answers=data.listAnswers;
                 this.updateCurrentAnswers();
+                this.updateNavButtonDisabled();
             },
             error: (err) => {
                 // ...
@@ -264,6 +268,10 @@ export class ViewInstanceComponent implements OnInit, OnDestroy {
             });
         });
     }
-    
-    
+
+
+    private updateNavButtonDisabled() {
+        this.isPrevQuestionBtnDisabled = this.questionTracker == 1;
+        this.isNextQuestionBtnDisabled = this.questionTracker >= this.questions.length;
+    }
 }

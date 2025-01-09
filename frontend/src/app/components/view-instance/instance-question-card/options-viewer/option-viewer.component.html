@@ -2,7 +2,7 @@
 
 <div  [ngSwitch]="questionType?.valueOf()">
     <div *ngSwitchCase="QuestionType.Short">
-        <mat-form-field>
+        <mat-form-field appearance="outline">
             <input matInput [required]="isRequired" [(ngModel)]="currentValue" #shortInput="ngModel" [disabled]="isCompleted" (input)="onFieldInput(shortInput)">
         </mat-form-field>
         <div style="color:red;" *ngIf="isRequired && answers?.length == 0">
@@ -11,7 +11,7 @@
     </div>
 
     <div *ngSwitchCase="QuestionType.Long">
-        <mat-form-field>
+        <mat-form-field appearance="outline">
             <textarea matInput [required]="isRequired" [(ngModel)]="currentValue" #longInput="ngModel" [disabled]="isCompleted" (input)="onFieldInput(longInput)"></textarea>
         </mat-form-field>
         <div style="color:red;" *ngIf="isRequired && answers?.length == 0">
@@ -20,7 +20,7 @@
     </div>
 
     <div *ngSwitchCase="QuestionType.Date">
-        <mat-form-field>
+        <mat-form-field appearance="outline">
             <input matInput [required]="isRequired" [matDatepicker]="picker" [(ngModel)]="currentValue" #dateInput="ngModel"  (dateChange)="onFieldInput(dateInput)" (input)="onFieldInput(dateInput)" [disabled]="isCompleted">
             <mat-hint>MM/DD/YYYY</mat-hint>
             <mat-datepicker-toggle matIconSuffix [for]="picker" [disabled]="isCompleted"></mat-datepicker-toggle>
@@ -48,6 +48,7 @@
                         [disabled]="isCompleted"
                         [required]="isRequired"
                         placeholder="Enter an email"
+                        [ngStyle]="{'background-color': 'transparent', 'border-radius':'5px'}"
                 />
                 <div *ngIf="emailInput.touched">
                     <small style="color:red;" *ngIf="emailInput.errors?.email">Please enter a valid email.</small>
@@ -60,7 +61,7 @@
     </div>
 
     <div *ngSwitchCase="QuestionType.Integer">
-        <mat-form-field>
+        <mat-form-field appearance="outline">
             <input
                     matInput
                     [required]="isRequired"

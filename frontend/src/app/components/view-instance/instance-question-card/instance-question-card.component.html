@@ -1,9 +1,9 @@
 
-<div class="container">
+<div class="container" [ngStyle]="{'background-color': question?.required ? '#ffd7f0' : '#d7ecff'}">
     <div *ngIf="question;">
-        <span *ngIf="question.required">(*)</span>
-        <span class="title">{{question.title}}</span><br>
-        <span class="description">{{question.description}}</span>
+        <span style="font-size: large;font-weight: bold;" *ngIf="question.required">(*) </span>
+        <span style="font-size: large;font-weight: bold;" class="title">{{question.title}}</span><br>
+        <span style="font-size: large; font-style: italic" class="description">{{question.description}}</span>
 
     <app-option-viewer [optionList]="question.optionList" [isRequired]="question.required" [isCompleted]="isCompleted"  [answers]="answers" [questionType]="question.questionType" (updatedValuesEvent)="receiveValue($event)"></app-option-viewer>
 

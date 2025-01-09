@@ -5,19 +5,26 @@
             (backButtonEvent)="backButtonAction()">
     
     
-    <button mat-icon-button prevQuestion class="navbarbtn" (click)="switchQuestion(questionTracker - 1)" [disabled]="questionTracker == 1">
-        <span>&lt;</span>
+    <button mat-icon-button prevQuestion 
+            class="navbarbtn" 
+            (click)="switchQuestion(questionTracker - 1)" 
+            [disabled]="isPrevQuestionBtnDisabled">
+        <mat-icon>chevron_left</mat-icon>
     </button>
 
-    <button mat-icon-button nextQuestion class="navbarbtn" (click)="switchQuestion(questionTracker + 1)" [disabled]="questionTracker >= questions.length ">
-        <span>&gt;</span>
+    <button mat-icon-button 
+            nextQuestion 
+            class="navbarbtn" 
+            (click)="switchQuestion(questionTracker + 1)" 
+            [disabled]="isNextQuestionBtnDisabled">
+        <mat-icon>chevron_right</mat-icon>
     </button>
 
-    <button mat-icon-button deleteButton class="navbarbtn" [disabled]="!isInProgress()" (click)="deleteButtonAction()">
+    <button mat-icon-button deleteButton [disabled]="!isInProgress()" (click)="deleteButtonAction()">
         <mat-icon>delete</mat-icon>
     </button>
 
-    <button mat-icon-button saveButton class="navbarbtn" [disabled]="!isSaveable" (click)="saveButtonAction()">
+    <button mat-icon-button saveButton [disabled]="!isSaveable" (click)="saveButtonAction()">
         <mat-icon>save</mat-icon>
     </button>
 
@@ -43,7 +50,7 @@
                 {{ instance?.completed | date:'dd/MM/yyyy HH:mm:ss' }} 
             </div>
                 <ng-template #inProgress>
-                    In Progress
+                    <p style="font-weight: bold">In Progress...</p>
                 </ng-template>
         </div>
         
