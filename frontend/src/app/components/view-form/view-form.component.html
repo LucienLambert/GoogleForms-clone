@@ -1,11 +1,12 @@
 
-<app-nav-bar [title]="form?.title" [backButtonVisible]="backButtonVisible" [isEditVisible]="isEditVisible" 
-             [isAnalyseVisible]="isAnalyseVisible" (editEvent)="editForm()" (AnalyseEvent)="analyse()"
+<app-nav-bar [title]="form?.title" [backButtonVisible]="backButtonVisible" [isEditVisible]="!instanceInProgress" 
+             [isAnalyseVisible]="instanceInProgress" (editEvent)="editForm()" (AnalyseEvent)="analyse()"
              [delFormVisible]="delFormButton"
              (delFormEvent)="delForm()"
              [previousUrl]="previousUrl"
              class="toolbar-actions">
-    <button mat-icon-button shareButton>
+    <button *ngIf="user?.role === 2 || user?.id === form?.ownerId"
+        mat-icon-button shareButton>
         <mat-icon shareButton (click)="shareButtonAction()">share</mat-icon>
     </button>
 </app-nav-bar>

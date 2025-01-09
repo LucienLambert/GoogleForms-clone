@@ -20,14 +20,11 @@ export class ViewFormComponent implements OnInit {
     user?: User;
     instanceInProgress : boolean = false;
     backButtonVisible: boolean = true;
-    isEditVisible: boolean = true;
-    isAnalyseVisible : boolean = true;
     delFormButton : boolean = true;
     previousUrl: string | null = null;
 
     constructor(private authService: AuthenticationService, private router: Router,
         private formService: FormService, private route: ActivatedRoute, private modalDialog : MatDialog) {
-
         this.user = this.authService.currentUser;
         
     }
@@ -36,7 +33,6 @@ export class ViewFormComponent implements OnInit {
         this.getOnFormManager();
         const state = history.state;
         this.previousUrl = state?.previousUrl ?? '/home';
-
     }
 
     getOnFormManager(){
@@ -45,7 +41,6 @@ export class ViewFormComponent implements OnInit {
             next : (data ) => {
                 this.form = data;
                 this.listQuestion = data.listQuestion;
-                this.isAnalyseVisible = (this.user?.id == this.form?.ownerId) || this.user?.role == Role.Admin;
                 if (this.form?.listInstance[0] != null) {
                     this.modalDialogIntanceStatus();
                     this.instanceInProgress = true;
@@ -66,6 +61,10 @@ export class ViewFormComponent implements OnInit {
                 next : () => {
                     console.log("Form status updated successfully");
                     this.form!.isPublic =  !previousState;
+                    if(this.form!.isPublic == true){
+                        console.log("suppresion des droit acces User");
+                        //ajouter ici la méthode async du controller pour supprimer les access User si il y en avait.
+                    }
                 },
                 error : (err) => {
                     console.log("Erreur lors du changement de statut : ", err);
