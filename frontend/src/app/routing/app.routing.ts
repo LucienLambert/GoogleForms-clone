@@ -16,6 +16,7 @@ import {AnalyseComponent} from "../components/analyse/analyse.component";
 import {ManageOptionsListComponent} from "../components/manage-option-lists/manage-option-lists.component";
 import {AddEditOptionListComponent} from "../components/add-edit-option-list/add-edit-option-list.component";
 import {ManageSharesComponent} from "../components/manage-shares/manage-shares.component";
+import {SignUpComponent} from "../components/signup/signup.component";
 
 const appRoutes: Routes = [
     //{ path: '', component: HomeComponent, pathMatch: 'full' },
@@ -39,6 +40,7 @@ const appRoutes: Routes = [
     { path: 'add-edit-option-lists', component: AddEditOptionListComponent, canActivate: [AuthGuard] },
     { path: 'add-edit-option-lists/:id', component: AddEditOptionListComponent, canActivate: [AuthGuard] },
     { path : 'manage-shares/:id', component: ManageSharesComponent, canActivate: [AuthGuard] },
+    { path : 'signup', component: SignUpComponent },
     { path: '**', component: UnknownComponent }
 ];
 

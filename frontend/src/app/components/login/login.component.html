@@ -28,7 +28,6 @@
                 Password is required
             </div>
         </div>
-        
         <div class="form-group mb-3">
             <button [disabled]="loading" type="submit" class="btn btn-primary w-100">Login</button>
             <div *ngIf="loading">
@@ -43,6 +42,7 @@
             <div class="alert alert-danger">{{ error }}</div>
         </div>
     </form>
+    <p>New to MyForms? <span style="color:blue;cursor:pointer;" (click)="signupClicked()">Join now</span></p>
 
     <!-- Debug Links (for easy testing with hardcoded user credentials) -->
     <h2><strong>For Debug Purpose</strong></h2>

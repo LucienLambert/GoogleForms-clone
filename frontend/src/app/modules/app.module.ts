@@ -32,6 +32,7 @@ import {ManageOptionsListComponent} from "../components/manage-option-lists/mana
 import {OptionListItemComponent} from "../components/option-list-item/option-list-item.component";
 import {AddEditOptionListComponent} from "../components/add-edit-option-list/add-edit-option-list.component";
 import {ManageSharesComponent} from "../components/manage-shares/manage-shares.component";
+import {SignUpComponent} from "../components/signup/signup.component";
 
 
 @NgModule({
@@ -56,7 +57,8 @@ import {ManageSharesComponent} from "../components/manage-shares/manage-shares.c
         ManageOptionsListComponent,
         OptionListItemComponent,
         AddEditOptionListComponent,
-        ManageSharesComponent
+        ManageSharesComponent,
+        SignUpComponent,
     ],
     imports: [
         BrowserModule.withServerTransition({appId: 'ng-cli-universal'}),

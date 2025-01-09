@@ -11,6 +11,7 @@ using System.Security.Claims;
 
 
 using prid_2425_a01.Models;
+using System.ComponentModel.DataAnnotations;
 using System.Text.Json;
 
 namespace prid_2425_a01.Controllers;
@@ -266,5 +267,60 @@ public class UsersController : ControllerBase {
         await _context.SaveChangesAsync();
 
         return Ok(new { message = "OptionList updated successfully.", form = _mapper.Map<OptionList_With_OptionValuesDTO>(existingOptionList) });
+    }
+    
+    [AllowAnonymous]
+    [HttpGet("unicity/email")]
+    public async Task<IActionResult> IsEmailUnique(string email) {
+        if (string.IsNullOrEmpty(email))
+        {
+            return BadRequest("Email is required.");
+        }
+        
+        var emailAddressAttribute = new EmailAddressAttribute();
+        if (!emailAddressAttribute.IsValid(email))
+        {
+            return BadRequest("Invalid email format.");
+        }
+        
+        var existingEmail = _context.Users.FirstOrDefault(u => u.Email == email);
+
+        if (existingEmail != null)
+        {
+            return Conflict("Email already in use.");  // Utilisation de "Conflict" (409) pour indiquer un conflit
+        }
+        return Ok(true);
+    }
+    
+    
+    [AllowAnonymous]
+    [HttpGet("unicity/names")]
+    public async Task<IActionResult> AreNamesUnique(string names) {
+        if (string.IsNullOrEmpty(names))
+        {
+            return BadRequest("Names are required.");
+        }
+        
+        string[] nameParts = names.Split(' ');
+
+        if (nameParts.Length == 2) // Assurez-vous qu'il y a un prénom et un nom
+        {
+            string firstName = nameParts[0];
+            string lastName = nameParts[1];
+
+            bool exists = _context.Users.Any(user => user.FirstName == firstName && user.LastName == lastName);
+            
+            if (exists) {
+                return Conflict("Names are not unique.");
+            }
+            else
+            {
+                return Ok(true);
+            }
+        }
+        else
+        {
+            return BadRequest("Names are required.");
+        }
     }
 }

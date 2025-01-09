@@ -1,0 +1,109 @@
+.signup-container {
+    display: flex;
+    flex-direction: column;
+    justify-content: center; /* Center vertically */
+    align-items: center; /* Center horizontally */
+    background-color: #f5f5f5; /* Light gray background */
+    border: 2px solid #ccc;
+    border-radius: 12px;
+    padding: 20px;
+    margin: 10% auto; /* Center horizontally and add spacing vertically */
+    max-width: 400px; /* Prevent the form from stretching too wide */
+    width: 90%; /* Allow responsiveness for smaller screens */
+    position: relative;
+}
+
+.back-button {
+    position: absolute;
+    top: 15px;
+    left: 10px;
+    padding: 10px 15px;
+    cursor: pointer;
+    font-size: 16px;
+}
+
+.back-button:hover {
+    background-color: #e0e0e0;
+}
+
+h1 {
+    font-size: 30px;
+    text-align: center; /* Center the title */
+    margin-bottom: 20px; /* Add spacing below the title */
+}
+
+form div {
+    margin-bottom: 15px;
+    width: 100%;
+}
+
+.input-container {
+    display: flex;
+    align-items: center;
+    margin-bottom: 15px;
+    max-width: 300px;
+    width: 100%;
+    margin-left: auto;
+    margin-right: auto;
+    position: relative;
+    background-color: #f5f5f5; /* Same background as the signup container */
+    border: 1px solid #ccc;
+    border-radius: 8px;
+    padding: 5px 10px;
+}
+
+.input-icon {
+    margin-right: 10px;
+    color: #666;
+}
+
+input {
+    flex: 1;
+    padding: 10px;
+    background-color: transparent; /* Inherit the container's background */
+    border: none;
+    outline: none;
+    font-size: 14px;
+    border-radius: 8px;
+    box-sizing: border-box;
+}
+
+input::placeholder {
+    color: #aaa;
+}
+
+input:focus {
+    outline: none;
+    box-shadow: 0 0 3px #1976d2;
+}
+
+.error-message {
+    color: red;
+    font-size: 12px;
+    margin-top: 5px;
+    text-align: left;
+}
+
+.signup-form-button {
+    margin-top: 10px;
+    width: 200px;
+    padding: 10px;
+    border-radius: 20px;
+    background-color: #1976d2;
+    color: white;
+    font-size: 16px;
+    cursor: pointer;
+    box-sizing: border-box;
+    margin-left: auto; /* Center horizontally */
+    margin-right: auto; /* Center horizontally */
+    display: block; /* Ensure the button is a block element */
+}
+
+.signup-form-button:hover {
+    background-color: royalblue;
+}
+
+h2 {
+    color: red;
+    font-size: 20px;
+}
