@@ -183,7 +183,7 @@ public class FormsController : ControllerBase {
             .Include(f => f.Owner)
             .Include(f => f.ListUserFormAccesses.Where(ufa => ufa.UserId == userIdInt))
             .Include(f => f.ListQuestions)
-            .OrderBy(f => f.Title)
+            .OrderBy(f => f.Title.ToLower())
             .ToListAsync();
             
         if (!allForms.Any()) {
@@ -487,6 +487,4 @@ public class FormsController : ControllerBase {
 
         return Ok(form.IsPublic);
     }
-
-
 }

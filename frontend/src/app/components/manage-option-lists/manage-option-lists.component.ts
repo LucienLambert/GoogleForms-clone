@@ -1,6 +1,5 @@
 import {Component, OnInit} from "@angular/core";
-import {Router} from "@angular/router";
-import {Location} from "@angular/common";
+import {Router} from "@angular/router";;
 import {AuthenticationService} from "../../services/authentication.service";
 import {UserService} from "../../services/user.service";
 import {User} from "../../models/user";
@@ -19,8 +18,9 @@ export class ManageOptionsListComponent implements OnInit {
     optionLists: OptionList[] = [];
 
     backButtonVisible: boolean = true;
+    isLoading: boolean = false;
     
-    constructor(private router: Router, private _location: Location, private authenticationService: AuthenticationService,
+    constructor(private router: Router, private authenticationService: AuthenticationService,
                 private userService: UserService, private modalDialog: MatDialog ) {
     }
     
@@ -28,11 +28,13 @@ export class ManageOptionsListComponent implements OnInit {
         this.retrieveOptionLists();
 
         this.userService.optionLists.subscribe((data) => {
+            this.isLoading = false;
             this.optionLists = data;
         });
     }
 
     async retrieveOptionLists() {
+        this.isLoading = true;
         try {
             const owner = await this.fetchOwnerData();
             this.owner = owner;
@@ -82,7 +84,7 @@ export class ManageOptionsListComponent implements OnInit {
     }
 
     onDuplicate(optionList: OptionList) {
-        this.router.navigate(['add-edit-option-lists', optionList.id]);
+        this.router.navigate(['add-edit-option-lists', optionList.id], { queryParams: { duplicate: true } });
     }
 
     onAdd() {

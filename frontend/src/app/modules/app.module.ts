@@ -31,8 +31,10 @@ import {AnalyseComponent} from "../components/analyse/analyse.component";
 import {ManageOptionsListComponent} from "../components/manage-option-lists/manage-option-lists.component";
 import {OptionListItemComponent} from "../components/option-list-item/option-list-item.component";
 import {AddEditOptionListComponent} from "../components/add-edit-option-list/add-edit-option-list.component";
+import {CdkDrag, CdkDropList} from "@angular/cdk/drag-drop";
 import {ManageSharesComponent} from "../components/manage-shares/manage-shares.component";
 import {SignUpComponent} from "../components/signup/signup.component";
+import { CreateEditQuestionComponent } from '../components/create-edit-question/create-edit-question.component';
 
 
 @NgModule({
@@ -59,6 +61,7 @@ import {SignUpComponent} from "../components/signup/signup.component";
         AddEditOptionListComponent,
         ManageSharesComponent,
         SignUpComponent,
+        CreateEditQuestionComponent
     ],
     imports: [
         BrowserModule.withServerTransition({appId: 'ng-cli-universal'}),
@@ -69,6 +72,8 @@ import {SignUpComponent} from "../components/signup/signup.component";
         SharedModule,
         MatRadioGroup,
         MatRadioButton,
+        CdkDropList,
+        CdkDrag,
     ],
     providers: [
         {provide: HTTP_INTERCEPTORS, useClass: JwtInterceptor, multi: true},

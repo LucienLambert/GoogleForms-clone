@@ -76,8 +76,8 @@ export class UserService {
     }
 
     updateOptionList(optionList: OptionList): Observable<OptionList> {
-        return this.http.put<OptionList>(`${this.baseUrl}api/users/updateOptionList`, optionList)
-            .pipe(map(res => new OptionList(res)));
+        return this.http.put<{message : string, form : any}>(`${this.baseUrl}api/users/updateOptionList`, optionList)
+            .pipe(map(res => new OptionList(res.form)));
     }
 
     saveOptionList(optionList: OptionList): Observable<OptionList> {
@@ -111,4 +111,8 @@ export class UserService {
     saveUser(user: User): Observable<boolean> {
         return this.http.put<boolean>(`${this.baseUrl}api/Users/save`, user)
     }
+    getOptionListUser(userId: number): Observable<Array<OptionList>> {
+        return this.http.get<Array<OptionList>>(`${this.baseUrl}api/users/optionListOwnerForm/${userId}`);
+    }
+
 }

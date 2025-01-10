@@ -6,7 +6,7 @@ import { FormService } from 'src/app/services/form.service';
 import { Question } from 'src/app/models/question';
 import { MatDialog } from '@angular/material/dialog';
 import { ModalDialogComponent } from '../modal-dialog/modal-dialog.component';
-import { User } from 'src/app/models/user';
+import { Role, User } from 'src/app/models/user';
 import { MatSlideToggleChange } from '@angular/material/slide-toggle';
 
 @Component({
@@ -20,20 +20,19 @@ export class ViewFormComponent implements OnInit {
     user?: User;
     instanceInProgress : boolean = false;
     backButtonVisible: boolean = true;
-    isEditVisible: boolean = true;
-    isAnalyseVisible: boolean = true;
     delFormButton : boolean = true;
-
+    previousUrl: string | null = null;
 
     constructor(private authService: AuthenticationService, private router: Router,
         private formService: FormService, private route: ActivatedRoute, private modalDialog : MatDialog) {
-
         this.user = this.authService.currentUser;
         
     }
     
     ngOnInit() {
         this.getOnFormManager();
+        const state = history.state;
+        this.previousUrl = state?.previousUrl ?? '/home';
     }
 
     getOnFormManager(){
@@ -62,6 +61,10 @@ export class ViewFormComponent implements OnInit {
                 next : () => {
                     console.log("Form status updated successfully");
                     this.form!.isPublic =  !previousState;
+                    if(this.form!.isPublic == true){
+                        console.log("suppresion des droit acces User");
+                        //ajouter ici la méthode async du controller pour supprimer les access User si il y en avait.
+                    }
                 },
                 error : (err) => {
                     console.log("Erreur lors du changement de statut : ", err);
@@ -79,6 +82,7 @@ export class ViewFormComponent implements OnInit {
     moveDown(question: Question) {
         this.formService.moveDownQuestion(this.form!.id, question.id).subscribe({
             next : (reponse) => {
+                // faire également la modification coté frontend pour éviter de recharger la page. 
                 this.getOnFormManager();
             },
             error : (err) => {
@@ -99,13 +103,17 @@ export class ViewFormComponent implements OnInit {
     }
     
     //faire un redirect vers le component Edit_question
-    editQuestion(question: Question) {
-        console.log("edit : " + question);
+    editQuestion(editQuestion: Question) {
+        this.router.navigate(['/create-edit-question'], {
+            state: { question: editQuestion, previousUrl: this.router.url}
+        });
     }
 
-    //faire un redirect vers le component Add_question
+    //faire un redirect vers le component create-edite-question
     addQuestion(){
-        console.log("add question")
+        this.router.navigate(['create-edit-question'], {
+            state: { form: this.form, previousUrl: this.router.url }
+        });
     }
     
     editForm() {
@@ -113,7 +121,6 @@ export class ViewFormComponent implements OnInit {
     }
 
     analyse() {
-        console.log(this.form!.id)
         this.router.navigate(['analyse/', this.form!.id]);
     }
 

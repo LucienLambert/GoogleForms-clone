@@ -2,6 +2,8 @@ import {Component, Input, Output, EventEmitter, ElementRef, ViewChild} from '@an
 import {Router} from "@angular/router";
 import {Location} from '@angular/common';
 import { AuthenticationService } from 'src/app/services/authentication.service';
+import {ModalDialogComponent} from "../modal-dialog/modal-dialog.component";
+import {MatDialog} from "@angular/material/dialog";
 
 @Component({
     selector: 'app-nav-bar',
@@ -28,11 +30,13 @@ export class NavBarComponent {
     @Input() isAnalyseVisible: boolean = false;
     @Input() isEditVisible: boolean = false;
     @Input() isOptionListVisible: boolean = false;
-
+    @Input() hasUnsavedChanges: boolean = false;
     @Input() delFormVisible: boolean = false;
-    
-    
-    constructor(private router: Router, private _location: Location, private authService : AuthenticationService) {
+    @Input() previousUrl: string | null = null;
+
+
+    constructor(private router: Router, private _location: Location, private authService : AuthenticationService, 
+                private modalDialog : MatDialog) {
     }
 
     toggleSearch() {
@@ -61,12 +65,38 @@ export class NavBarComponent {
     onSave() {
         this.saveEvent.emit();
     }
-    
-    backClicked() {
-        this.backButtonEvent.emit();
-        this._location.back();
-    }
 
+    backClicked() {
+        if (this.hasUnsavedChanges) {
+            this.showModalDialog();
+        } else {
+            this._location.back();
+        }
+
+        this.backButtonEvent.emit();
+        if(this.previousUrl){
+            ///ce base sur le chemin précisé
+            this.router.navigate([this.previousUrl]);
+        } else {
+            //ce base sur l'historique de naviagation
+            this._location.back();
+        }
+    }
+    
+    private showModalDialog() {
+        const dialogRef = this.modalDialog.open(ModalDialogComponent, {
+            disableClose: true,
+            data: {
+                title: 'Unsaved Changes',
+                message: 'You have unsaved changes. Are you sure you want to leave?',
+                context : 'editForm'
+            }
+        });
+        dialogRef.afterClosed().subscribe((result: boolean) => {
+            if (result) { this.saveEvent.emit(); }
+            this._location.back();
+        });
+    }
 
     logout(){
         this.authService.logout();
@@ -79,6 +109,5 @@ export class NavBarComponent {
 
     delForm(){
         this.delFormEvent.emit();
-
     }
 }

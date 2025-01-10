@@ -19,7 +19,7 @@ export class Instance {
     listAnswers: Answer[];
     
     constructor(data: any) {
-        console.log("voici les datas:",data);
+        // console.log("voici les datas:",data);
         this.id = data.id;
         this.started = data.started;
         this.completed = data.completed;

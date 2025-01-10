@@ -17,22 +17,26 @@ export class Question {
     
     id: number;
     idx: number;
+    formId: number;
     form: Form; 
     title: string;
     description?: string;
     questionType: QuestionType;
     required: boolean;
+    optionListId?: number;
     optionList?: OptionList;
     answersList?: Answer[];
 
     constructor(data: any) {
         this.id = data.id;
         this.idx = data.idx;
+        this.formId = data.formId;
         this.form = data.form;
         this.title = data.title;
         this.description = data.description;
         this.questionType = data.questionType;
         this.required = data.required;
+        this.optionListId = data.optionListId;
         this.optionList = data.optionList ? new OptionList(data.optionList) : undefined;
         this.answersList = data.answersList ? data.answersList.map((a: any) => new Answer(a)) : undefined;
     }
