@@ -1,4 +1,4 @@
-<app-nav-bar title="My Option Lists" [backButtonVisible]="backButtonVisible"></app-nav-bar>
+<app-nav-bar title="My Option Lists" [backButtonVisible]="backButtonVisible" [previousUrl]="previousUrl"></app-nav-bar>
 
 <div class="option-list">
     <app-option-list-item *ngFor="let optionList of sortedOptionLists" [optionList]="optionList" [owner]="owner" 

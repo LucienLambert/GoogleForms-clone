@@ -19,6 +19,7 @@ export class ManageOptionsListComponent implements OnInit {
 
     backButtonVisible: boolean = true;
     isLoading: boolean = false;
+    previousUrl: string | null = null;
     
     constructor(private router: Router, private authenticationService: AuthenticationService,
                 private userService: UserService, private modalDialog: MatDialog ) {
@@ -31,6 +32,7 @@ export class ManageOptionsListComponent implements OnInit {
             this.isLoading = false;
             this.optionLists = data;
         });
+        this.previousUrl = history.state.previousUrl;
     }
 
     async retrieveOptionLists() {

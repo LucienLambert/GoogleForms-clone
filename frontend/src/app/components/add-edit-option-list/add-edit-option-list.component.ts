@@ -219,7 +219,9 @@ export class AddEditOptionListComponent implements OnInit {
               state: { redirectObject : history.state.redirectObject }
             });
           }else {
-            this.router.navigate(['/manage-option-lists']);
+            this.router.navigate(['/manage-option-lists'], {
+              state: { previousUrl : '/home' }
+            });
           }
         },
         error: (err) => {
