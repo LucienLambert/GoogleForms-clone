@@ -356,4 +356,54 @@ public class InstancesController : ControllerBase
         return Ok(_mapper.Map<InstanceDTO>(savedInstance.Entity));
     }
     
+    [Authorized(Role.Admin, Role.User)]
+    [HttpDelete("delMultiInstanceById")]
+    public async Task<ActionResult<bool>> DelMultiInstanceById([FromQuery] List<int> instanceIds){
+        if(instanceIds == null || !instanceIds.Any()){
+            return NotFound("first not found");
+        }
+
+        var instancesToRemove = await _context.Instances
+            .Where(i => instanceIds.Contains(i.Id)).ToListAsync();
+
+        if(!instancesToRemove.Any()){
+            return NotFound("second not found");
+        }
+
+        _context.Instances.RemoveRange(instancesToRemove);
+        await _context.SaveChangesAsync();
+
+        return Ok(true);
+    }
+
+    [Authorized(Role.Admin, Role.User)]
+    [HttpDelete("delInstancesCompletedByFormId/{formId:int}")]
+    public async Task<ActionResult<bool>> DelInstancesCompletedByFormId(int formId){
+        var userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+
+        if (string.IsNullOrEmpty(userId) || !int.TryParse(userId, out int userIdInt)){
+            return Unauthorized("User not found");
+        }
+
+        var currentUser = await _context.Users.Where(u => u.Id == userIdInt).FirstOrDefaultAsync();
+
+        var form = await _context.Forms.Where(f => f.Id == formId).FirstOrDefaultAsync();
+
+        if(!(currentUser?.Role == Role.Admin || form.OwnerId == userIdInt || _context.UserFormAccesses
+        .Any(ufa => ufa.UserId == userIdInt && ufa.FormId == form.Id && ufa.AccessType == AccessType.Editor))){
+            return Unauthorized();
+        }
+
+        var instancesToRemove = await _context.Instances
+            .Where(i => i.FormId == formId && i.Completed != null).ToListAsync();
+
+        if(instancesToRemove == null){
+            return NotFound(false);
+        }
+
+        _context.Instances.RemoveRange(instancesToRemove);
+        await _context.SaveChangesAsync();
+
+        return Ok(true);
+    }
 }

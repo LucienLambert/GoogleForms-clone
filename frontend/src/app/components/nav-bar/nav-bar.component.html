@@ -55,6 +55,10 @@
         <mat-icon>deleted</mat-icon>
     </button>
 
+    <button mat-icon-button *ngIf="viewInstancesVisible" (click)="viewInstances()">
+        <mat-icon>menu</mat-icon>
+    </button>
+
     <!-- view-instance buttons -->
     <ng-content select="[prevQuestion]"></ng-content>
     <ng-content select="[nextQuestion]"></ng-content>

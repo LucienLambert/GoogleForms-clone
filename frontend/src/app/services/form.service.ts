@@ -121,5 +121,10 @@ export class FormService {
             params: { formId }
         });
     }
+
+    getAllInstancesCompletedByFormId(formId : number) : Observable<Form> {
+        return this.http.get<Form>(`${this.baseUrl}api/forms/getAllInstancesByFormId/${formId}`)
+        .pipe((map(ress => new Form(ress))));
+    }
     
 }

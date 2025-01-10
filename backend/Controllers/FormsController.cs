@@ -8,6 +8,8 @@ using prid_2425_a01.Helpers;
 using prid_2425_a01.Models;
 using prid_2425_a01.Models.form;
 using System.Security.Claims;
+using System.Text.Json.Serialization;
+using System.Text.Json;
 namespace prid_2425_a01.Controllers;
 
 
@@ -451,9 +453,6 @@ public class FormsController : ControllerBase {
     [Authorize]
     [HttpPost("{formId:int}/isPublicFormChange")]
     public async Task<ActionResult<bool>> IsPublicFormChange(int formId){
-        //form exits
-        //access to Form
-        //check IsPublic or Not
 
         var userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
 
@@ -486,5 +485,36 @@ public class FormsController : ControllerBase {
         await _context.SaveChangesAsync();
 
         return Ok(form.IsPublic);
+    }
+
+    [Authorized(Role.Admin, Role.User)]
+    [HttpGet("getAllInstancesByFormId/{formId:int}")]
+    public async Task<ActionResult<FormDTO_With_All_InstanceDTO>> GetAllInstancesCompletedByFormId(int formId) {
+
+        var userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+
+        if (string.IsNullOrEmpty(userId) || !int.TryParse(userId, out int userIdInt)){
+            return Unauthorized("User not found");
+        }
+
+        var currentUser = await _context.Users.Where(u => u.Id == userIdInt).FirstOrDefaultAsync();
+
+
+        var form = await _context.Forms
+            .Where(f => f.Id == formId)
+            .Include(f => f.ListInstances.Where(li => li.Completed != null))
+            .ThenInclude(li => li.Owner)
+            .FirstOrDefaultAsync();
+
+        if(!(currentUser?.Role == Role.Admin || form.OwnerId == userIdInt || _context.UserFormAccesses
+        .Any(ufa => ufa.UserId == userIdInt && ufa.FormId == form.Id && ufa.AccessType == AccessType.Editor))){
+            return NotFound("form not Found");
+        }
+
+        if(form == null) {
+            return NotFound("form not Found");
+        }
+
+        return Ok(_mapper.Map<FormDTO_With_All_InstanceDTO>(form));
     }
 }

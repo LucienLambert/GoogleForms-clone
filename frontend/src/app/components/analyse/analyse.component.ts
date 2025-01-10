@@ -1,7 +1,8 @@
 import { Component, OnInit } from '@angular/core';
 import { FormService } from '../../services/form.service';
 import { Question } from '../../models/question';
-import { ActivatedRoute } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
+import { Form } from '@angular/forms';
 
 @Component({
     selector: 'app-analyse',
@@ -12,9 +13,10 @@ export class AnalyseComponent implements OnInit {
     questions: Question[] = [];
     selectedQuestion: number | null = null;
     statistics: { answer: string; count: number; ratio: number }[] = [];
+    viewInstancesVisible : boolean = true; 
     formId?: number;
 
-    constructor(private formService: FormService, private route: ActivatedRoute) {}
+    constructor(private formService: FormService, private route: ActivatedRoute, private router : Router) {}
 
     ngOnInit(): void {
         this.formId = Number(this.route.snapshot.paramMap.get('id'));
@@ -75,5 +77,9 @@ export class AnalyseComponent implements OnInit {
             console.warn('No answers found for the selected question.');
             this.statistics = [];
         }
+    }
+
+    viewInstances() {
+        this.router.navigate(['/view-instances', this.formId]);
     }
 }
