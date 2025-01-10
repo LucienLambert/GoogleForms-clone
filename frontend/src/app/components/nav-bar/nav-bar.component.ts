@@ -17,6 +17,7 @@ export class NavBarComponent {
     @Output() AnalyseEvent = new EventEmitter<void>();
     @Output() delFormEvent = new EventEmitter<void>();
     @Output() backButtonEvent = new EventEmitter<void>();
+    @Output() viewInstancesEvent = new EventEmitter<void>();
 
     @ViewChild('searchInput') searchInput!: ElementRef<HTMLInputElement>;
 
@@ -33,6 +34,7 @@ export class NavBarComponent {
     @Input() hasUnsavedChanges: boolean = false;
     @Input() delFormVisible: boolean = false;
     @Input() previousUrl: string | null = null;
+    @Input() viewInstancesVisible : boolean = false;
 
 
     constructor(private router: Router, private _location: Location, private authService : AuthenticationService, 
@@ -106,5 +108,9 @@ export class NavBarComponent {
 
     delForm(){
         this.delFormEvent.emit();
+    }
+
+    viewInstances() {
+        this.viewInstancesEvent.emit();
     }
 }

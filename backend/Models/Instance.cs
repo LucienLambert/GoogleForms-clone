@@ -22,7 +22,7 @@ public class Instance {
     public Form Form { get; set; } = null!;
 
     [ForeignKey(nameof(UserId))]
-    public User User { get; set; } = null!;
+    public User Owner { get; set; } = null!;
 
     public ICollection<Answer> ListAnswers { get; set; } = new HashSet<Answer>();
 

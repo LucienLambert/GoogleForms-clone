@@ -1,5 +1,8 @@
 <app-nav-bar [title]="'Statistics'" [isSaveVisible]="false" [isSearchVisible]="false"
-             [isAddVisible]="false" [backButtonVisible]="true" class="toolbar-actions">
+             [isAddVisible]="false" [backButtonVisible]="true" 
+             [viewInstancesVisible]="viewInstancesVisible"  
+             (viewInstancesEvent)="viewInstances()"
+             class="toolbar-actions">
 </app-nav-bar>
 
 <div class="statistics-container">

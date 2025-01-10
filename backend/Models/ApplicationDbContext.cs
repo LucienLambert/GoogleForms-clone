@@ -59,7 +59,7 @@ public class ApplicationDbContext : DbContext
                 .HasForeignKey(i => i.FormId)
                 .OnDelete(DeleteBehavior.Cascade); // Si le Form est supprimé, supprime les instances en cascade
 
-            i.HasOne(i => i.User)
+            i.HasOne(i => i.Owner)
                 .WithMany(u => u.ListInstances)
                 .HasForeignKey(i => i.UserId)
                 .OnDelete(DeleteBehavior.Cascade); // Si le User est supprimé, supprime les instances en cascade

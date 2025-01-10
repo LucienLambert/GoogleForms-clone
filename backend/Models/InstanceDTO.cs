@@ -25,3 +25,7 @@ public class Instance_only_DateDTO {
     public DateTime Started { get; set; }
     public DateTime? Completed {get; set;}
 }
+
+public class Instance_With_OwnerDTO : InstanceDTO {
+    public UserDTO Owner { get; set; }
+}

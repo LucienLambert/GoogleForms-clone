@@ -42,6 +42,10 @@ public class MappingProfile : Profile
 
         CreateMap<Form, FormDTO_With_All_ListDTO>();
         CreateMap<FormDTO_With_All_ListDTO, Form>();
+
+        CreateMap<Form, FormDTO_With_All_InstanceDTO>();
+        CreateMap<FormDTO_With_All_InstanceDTO, Form>();
+
         
         //INSTANCE
         CreateMap<Instance, InstanceDTO>();
@@ -55,6 +59,9 @@ public class MappingProfile : Profile
 
         CreateMap<Instance, Instance_With_Answers_And_Form_With_Questions_CompleteDTO>();
         CreateMap<Instance_With_Answers_And_Form_With_Questions_CompleteDTO, Instance>();
+
+        CreateMap<Instance, Instance_With_OwnerDTO>();
+        CreateMap<Instance_With_OwnerDTO, Instance>();
         
         //ANSWER
         CreateMap<Answer, AnswerDTO>();

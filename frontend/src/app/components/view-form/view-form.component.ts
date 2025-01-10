@@ -176,7 +176,7 @@ export class ViewFormComponent implements OnInit {
     modalDialogIsPublicForm(newValue : boolean) : Promise<boolean> {
         return new Promise<boolean>((resolve) => {
 
-            const title = newValue ? 'Make Form Public' : 'Make Form Private';
+            const title = newValue ? 'Make Form Private' : 'Make Form Public';
 
             const message = newValue 
             ? "Are you sure you want to make this form private? You will need to shared this form again to allow 'User' access to other users."
