@@ -6,17 +6,15 @@ import {
   FormBuilder,
   FormControl,
   FormGroup,
-  ValidationErrors, ValidatorFn,
+  ValidationErrors,
+  ValidatorFn,
   Validators
 } from "@angular/forms";
 import {ActivatedRoute, Router} from "@angular/router";
-import {Location} from "@angular/common";
 import {AuthenticationService} from "../../services/authentication.service";
 import {UserService} from "../../services/user.service";
-import {FormService} from "../../services/form.service";
 import {BehaviorSubject, Observable, tap} from "rxjs";
-import {User} from "../../models/user";
-import {MatDialog} from "@angular/material/dialog";
+import {Role, User} from "../../models/user";
 import {OptionValue} from "../../models/optionValue";
 import {CdkDragDrop, moveItemInArray} from "@angular/cdk/drag-drop";
 
@@ -118,17 +116,18 @@ export class AddEditOptionListComponent implements OnInit {
         if (idParam) {
           const id = Number(idParam);
           if (!isNaN(id)) {
-            this.userService.getUserOptionList(id).subscribe(optionList => {
+            // Force a fresh fetch to avoid using stale data
+            this.userService.getUserOptionList(id, true).subscribe(optionList => {
               this.optionList = optionList;
               this.originalOptionList = JSON.parse(JSON.stringify(optionList));
               this.navBarTitle = "Edit Option List";
 
               // Clear existing FormArray if any
-              this.optionArray!.clear(); // Clear old values
+              this.optionArray!.clear();
 
               // Initialize the FormArray with 'false' (unchecked) for each option
               this.optionList.listOptionValues?.forEach(() => {
-                this.optionArray!.push(this.formBuilder.control(false));  // Default value to false (unchecked)
+                this.optionArray!.push(this.formBuilder.control(false));
               });
 
               // Patch the form values (excluding the optionValues)
@@ -138,8 +137,13 @@ export class AddEditOptionListComponent implements OnInit {
                 ownerId: this.optionList.ownerId,
                 isSystem: !this.optionList.ownerId
               });
+
               if (isDuplicate) {
                 this.optionList.id = 0;
+                this.form.patchValue({ id: 0 })
+                if (this.owner?.role !== Role.Admin) {
+                  this.optionList.ownerId = undefined;
+                }
               }
             });
           }

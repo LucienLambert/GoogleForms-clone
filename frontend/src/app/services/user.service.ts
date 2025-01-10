@@ -40,16 +40,14 @@ export class UserService {
         ).subscribe();
     }
 
-    getUserOptionList(optionListId: number): Observable<OptionList> {
-        if (this.optionLists) {
+    getUserOptionList(optionListId: number, forceRefresh: boolean = false): Observable<OptionList> {
+        if (!forceRefresh && this.optionLists) {
             return this.optionLists.pipe(
                 map((data) => data.find(optionList => optionList.id === optionListId)),
                 switchMap((cachedOptionList) => {
                     if (cachedOptionList) {
-                        // Cache hit: return the cached data
-                        return of(cachedOptionList);
+                        return of(cachedOptionList); // Return from cache
                     } else {
-                        // Cache miss: fetch data from the server
                         console.log("Cache miss, fetching from server");
                         return this.http.get<OptionList>(`${this.baseUrl}api/users/optionList/${optionListId}`);
                     }
@@ -57,8 +55,7 @@ export class UserService {
             );
         }
 
-        // Cache not initialized, fetch directly from the server
-        console.log("Cache not initialized, fetching from server");
+        // Force a fresh fetch from the server
         return this.http.get<OptionList>(`${this.baseUrl}api/users/optionList/${optionListId}`);
     }
 
