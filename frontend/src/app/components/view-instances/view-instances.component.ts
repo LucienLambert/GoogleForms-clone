@@ -70,8 +70,8 @@ export class ViewInstancesComponent implements OnInit {
             this.instanceService.delInstancesCompletedByFormId(this.form!.id).subscribe({
                 next : (data) => {
                     if(data){
-                        console.log("deleteAll" + this.form?.listInstance);
-                        this.ngOnInit();
+                        this.selectedInstances = [];
+                        this.router.navigate(['/view-form/', this.form?.id])
                     }
                 }
             })
