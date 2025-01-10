@@ -1,0 +1,14 @@
+.container {
+    padding: 20px;
+}
+
+.noAccess-Combo-Checkboxes-Container {
+    display: flex;
+    align-items: center;
+}
+.noAccessCheckboxes {
+    margin-bottom: 18px;
+}
+.mat-btn {
+    margin-left: 10%;
+}

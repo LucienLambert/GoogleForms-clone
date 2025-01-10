@@ -12,58 +12,57 @@ public class UserValidation : AbstractValidator<User>
     public UserValidation(ApplicationDbContext context) {
         _context = context;
         
-        RuleFor(u => u.Email)
-            .NotEmpty()
+        RuleSet("create", () =>
+        {
+            RuleFor(u => u.Email)
+                .NotEmpty()
                 .WithMessage("Email is required.")
-            .EmailAddress()
+                .EmailAddress()
                 .WithMessage("Invalid Email format.")
-            .MustAsync(BeUniqueEmail)
+                .MustAsync(BeUniqueEmail)
                 .WithMessage("Email must be unique.");
 
-
-        RuleFor(u => u.Password)
-            .NotEmpty()
+            RuleFor(u => u.Password)
+                .NotEmpty()
                 .WithMessage("Password is required")
-            .Length(3, 10)
+                .Length(3, 10)
                 .WithMessage("The password must be between 3 and 10 characters.");
 
+            RuleFor(u => u.FirstName)
+                .NotEmpty()
+                .When(u => !string.IsNullOrEmpty(u.LastName))
 
-        RuleFor(u => u.FirstName)
-            .NotEmpty()
-            .When(u => !string.IsNullOrEmpty(u.LastName))
-
-            .Length(3, 50)
+                .Length(3, 50)
                 .WithMessage("The first name length must be between 3 and 50 characters.")
-            .Matches(@"^\S.*\S$|^\S$")
+                .Matches(@"^\S.*\S$|^\S$")
                 .WithMessage("First name cannot start or end with a space or tabulation.");
-        
 
-        RuleFor(u => u.LastName)
-            .NotEmpty()
-            .When(u => !string.IsNullOrEmpty(u.FirstName))
+            RuleFor(u => u.LastName)
+                .NotEmpty()
+                .When(u => !string.IsNullOrEmpty(u.FirstName))
 
-            .Length(3, 50)
+                .Length(3, 50)
                 .WithMessage("The last name length must be between 3 and 50 characters.")
-            .Matches(@"^\S.*\S$|^\S$")
+                .Matches(@"^\S.*\S$|^\S$")
                 .WithMessage("Last name cannot start or end with a space or tabulation.");
 
+            RuleFor(u => new { u.FirstName, u.LastName })
+                .MustAsync((u, token) => BeUniqueNames(u.FirstName, u.LastName, token))
+                .WithMessage("First name and last name combinaison must be unique.");
 
-        RuleFor(u => new { u.FirstName, u.LastName })
-            .MustAsync((u, token) => BeUniqueNames(u.FirstName, u.LastName, token))
-            .WithMessage("First name and last name combinaison must be unique.");
-
-
-        RuleFor(u => u.BirthDate)
-            .LessThan(DateTime.Today)
+            RuleFor(u => u.BirthDate)
+                .LessThan(DateTime.Today)
                 .WithMessage("The birth date must be anterior to today.")
-            .DependentRules(() => {
-                RuleFor(u => u.Age)
-                    .InclusiveBetween(18, 125);
-            })
+                .DependentRules(() =>
+                {
+                    RuleFor(u => u.Age)
+                        .InclusiveBetween(18, 125);
+                })
                 .WithMessage("The age must be included between 18 and 125.");
 
-        RuleFor(u => u.Role)
-            .IsInEnum();
+            RuleFor(u => u.Role)
+                .IsInEnum();
+        });
         
         //Validation uniquement pour la connexion d'un utilisateur
         RuleSet("authenticate", () => {
@@ -86,5 +85,10 @@ public class UserValidation : AbstractValidator<User>
         if (user == null)
             return ValidatorHelper.CustomError("User not found", "Email");
         return await this.ValidateAsync(user, o => o.IncludeRuleSets("authenticate"));
+    }
+    public async Task<FluentValidation.Results.ValidationResult> ValidateOnCreate(User? user) {
+        if (user == null)
+            return ValidatorHelper.CustomError("User not found", "Email");
+        return await this.ValidateAsync(user, o => o.IncludeRuleSets("create"));
     }
 }

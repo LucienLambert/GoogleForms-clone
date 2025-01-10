@@ -33,6 +33,7 @@ import {OptionListItemComponent} from "../components/option-list-item/option-lis
 import {AddEditOptionListComponent} from "../components/add-edit-option-list/add-edit-option-list.component";
 import {CdkDrag, CdkDropList} from "@angular/cdk/drag-drop";
 import {ManageSharesComponent} from "../components/manage-shares/manage-shares.component";
+import {SignUpComponent} from "../components/signup/signup.component";
 import { CreateEditQuestionComponent } from '../components/create-edit-question/create-edit-question.component';
 
 
@@ -59,6 +60,7 @@ import { CreateEditQuestionComponent } from '../components/create-edit-question/
         OptionListItemComponent,
         AddEditOptionListComponent,
         ManageSharesComponent,
+        SignUpComponent,
         CreateEditQuestionComponent
     ],
     imports: [

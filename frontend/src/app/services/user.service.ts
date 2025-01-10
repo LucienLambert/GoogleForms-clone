@@ -98,6 +98,16 @@ export class UserService {
         return this.http.delete<boolean>(`${this.baseUrl}api/UserFormAccesses/${formAccess.formId}/${formAccess.userId}`);
     }
 
+    isEmailUnique(email: string): Observable<any> {
+        return this.http.get<any>(`${this.baseUrl}api/Users/unicity/email/?email=${email}`);
+    }
+    areNamesUnique(names: string): Observable<any> {
+        return this.http.get<any>(`${this.baseUrl}api/Users/unicity/names/?names=${names}`);
+    }
+    
+    saveUser(user: User): Observable<boolean> {
+        return this.http.put<boolean>(`${this.baseUrl}api/Users/save`, user)
+    }
     getOptionListUser(userId: number): Observable<Array<OptionList>> {
         return this.http.get<Array<OptionList>>(`${this.baseUrl}api/users/optionListOwnerForm/${userId}`);
     }

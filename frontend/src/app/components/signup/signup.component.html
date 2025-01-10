@@ -1,0 +1,102 @@
+<div class="signup-container">
+    <button mat-icon-button class="back-button" (click)="goBack()">
+        <mat-icon>arrow_back</mat-icon>
+    </button>
+    <h1>Sign up</h1>
+    <div>
+        <form [formGroup]="signupForm" (ngSubmit)="onSubmit()">
+
+            <!-- First Name -->
+            <div class="input-container">
+                <mat-icon class="input-icon">person</mat-icon>
+                <input type="text" id="firstName" formControlName="firstName" placeholder="First Name">
+            </div>
+            <!-- Required error for firstName -->
+            <div *ngIf="signupForm.get('firstName')?.touched && signupForm.get('firstName')?.hasError('required')" class="error-message">
+                First name is required if last name is entered
+            </div>
+            <!-- Invalid length error for firstName -->
+            <div *ngIf="signupForm.get('firstName')?.touched && 
+            (signupForm.get('firstName')?.hasError('minlength') || signupForm.get('firstName')?.hasError('maxlength'))"
+                 class="error-message">
+                First name must be between 3 and 50 characters
+            </div>
+            <div *ngIf="signupForm.get('firstName')?.hasError('fullNameNotUnique') && signupForm.get('firstName')?.touched" class="error-message">
+                Fullname already taken
+            </div>
+
+            <!-- Last Name -->
+            <div class="input-container">
+                <mat-icon class="input-icon">person</mat-icon>
+                <input type="text" id="lastName" formControlName="lastName" placeholder="Last Name">
+            </div>
+            <!-- Required error for lastName -->
+            <div *ngIf="signupForm.get('lastName')?.touched && signupForm.get('lastName')?.hasError('required')" class="error-message">
+                Last name is required if first name is entered
+            </div>
+            <!-- Invalid length error for lastName -->
+            <div *ngIf="signupForm.get('lastName')?.touched && 
+            (signupForm.get('lastName')?.hasError('minlength') || signupForm.get('lastName')?.hasError('maxlength'))"
+                 class="error-message">
+                Last name must be between 3 and 50 characters
+            </div>
+            <div *ngIf="signupForm.get('lastName')?.hasError('fullNameNotUnique') && signupForm.get('lastName')?.touched" class="error-message">
+                Fullname already taken
+            </div>
+            
+            <!-- Birth Date -->
+            <div class="input-container">
+                <mat-icon class="input-icon">calendar_today</mat-icon>
+                <input type="date" id="birthDate" formControlName="birthDate">
+            </div>
+            <div *ngIf="signupForm.get('birthDate')?.hasError('required') && signupForm.get('birthDate')?.touched" class="error-message">
+                Birthdate is required.
+            </div>
+            <div *ngIf="signupForm.get('birthDate')?.hasError('invalidAge') && signupForm.get('birthDate')?.touched" class="error-message">
+                You must be between 18 and 125 years old.
+            </div>
+
+            <!-- Email -->
+            <div class="input-container">
+                <mat-icon class="input-icon">email</mat-icon>
+                <input type="email" id="email" formControlName="email" placeholder="Email">
+            </div>
+            <div *ngIf="signupForm.get('email')?.hasError('required') && signupForm.get('email')?.touched" class="error-message">
+                Email is required.
+            </div>
+            <div *ngIf="signupForm.get('email')?.hasError('pattern') && signupForm.get('email')?.touched" class="error-message">
+                Invalid email format.
+            </div>
+            <div *ngIf="signupForm.get('email')?.hasError('emailNotUnique') && signupForm.get('email')?.touched" class="error-message">
+                Email is already taken.
+            </div>
+            <div *ngIf="signupForm.get('email')?.hasError('serverError') && signupForm.get('email')?.touched" class="error-message">
+                Server error, please try again later.
+            </div>
+            <div *ngIf="signupForm.get('email')?.hasError('unknownError') && signupForm.get('email')?.touched" class="error-message">
+                An unknown error occurred. Please try again.
+            </div>
+
+            <!-- Password -->
+            <div class="input-container">
+                <mat-icon class="input-icon">lock</mat-icon>
+                <input type="password" id="password" formControlName="password" placeholder="Password">
+            </div>
+            <div *ngIf="signupForm.get('password')?.invalid && signupForm.get('password')?.touched" class="error-message">
+                Password must be between 3 and 10 characters.
+            </div>
+
+            <!-- Confirm Password -->
+            <div class="input-container">
+                <mat-icon class="input-icon">lock</mat-icon>
+                <input type="password" id="confirmPassword" formControlName="confirmPassword" placeholder="Confirm Password">
+            </div>
+            <div *ngIf="signupForm.hasError('mismatch') && signupForm.get('confirmPassword')?.touched" class="error-message">
+                Passwords do not match.
+            </div>
+
+            <!-- Submit Button -->
+            <button class="signup-form-button" type="submit" [disabled]="!signupForm.valid">Register</button>
+        </form>
+    </div>
+</div>

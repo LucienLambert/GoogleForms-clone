@@ -116,4 +116,8 @@ export class LoginComponent implements OnInit, AfterViewInit {
 
         this.onSubmit();
     }
+
+    signupClicked() {
+        this.router.navigate(['signup']);
+    }
 }
