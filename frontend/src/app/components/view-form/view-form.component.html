@@ -23,7 +23,10 @@
         </div>
         <div class="form-item">
             <div class="form-label">Owner :</div>
-            <div class="form-value">{{ form?.owner?.firstName }} {{ form?.owner?.lastName }}</div>
+            <div class="form-value">{{ (form?.owner?.firstName && form?.owner?.lastName) ? (user?.firstName + ' ' + user?.lastName) 
+                : user?.email }}
+            </div>
+
         </div>
         <div class="form-item">
             <div class="form-label">Public : </div>

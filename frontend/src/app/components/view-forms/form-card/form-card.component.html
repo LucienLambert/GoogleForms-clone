@@ -18,9 +18,11 @@
     </mat-card-header>
     <mat-card-content>
       <mat-card-subtitle *ngIf="user?.role != 0">{{ form.description || 'No description' }}</mat-card-subtitle>
-      <p>by <strong>{{ form.owner.firstName }} {{ form.owner.lastName }}</strong></p>
+        <p>by <strong>{{ form.owner?.firstName && form.owner?.lastName ? (form.owner.firstName + ' ' + form.owner.lastName)
+            : form.owner.email }}</strong></p>
 
-      <div *ngIf="user?.role != 0 && form.listInstance.length > 0">
+
+        <div *ngIf="user?.role != 0 && form.listInstance.length > 0">
         <div>
           <p>Started: <strong>{{ form.listInstance[0].started | date:'dd/MM/yyyy HH:mm:ss' }}</strong></p>
           <p *ngIf="!form.listInstance[0].completed; else completedContent">

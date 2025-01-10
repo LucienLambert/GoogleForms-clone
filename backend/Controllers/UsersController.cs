@@ -208,6 +208,17 @@ public class UsersController : ControllerBase {
     [Authorized(Role.Admin, Role.User)]
     [HttpGet("optionListsWithNotReferenced/{userId:int}")]
     public async Task<ActionResult<List<OptionList_With_NotReferencedDTO>>> GetOptionListsWithNotReferenced(int userId) {
+        var userIdCheck = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+
+        if (string.IsNullOrEmpty(userIdCheck) || !int.TryParse(userIdCheck, out int userIdInt)){
+            return Unauthorized("User not found");
+        }
+        
+        var currentUser = await _context.Users.Where(u => u.Id == userIdInt).FirstOrDefaultAsync();
+        if (currentUser == null){
+            return Unauthorized("User not found");
+        }
+        
         // Step 1: Fetch data into memory
         var optionLists = await _context.OptionLists
             .Where(op => op.OwnerId == userId || op.OwnerId == null)
@@ -221,16 +232,37 @@ public class UsersController : ControllerBase {
                 ListOptionValues = _mapper.Map<ICollection<OptionValueDTO>>(op.ListOptionValues)
             })
             .ToListAsync();
+        
+        // Check if it's empty rather than null
+        if (!optionLists.Any()) {
+            return NotFound("No OptionLists found.");
+        }
+        
         return optionLists;
     }
 
     [Authorized(Role.Admin, Role.User)]
     [HttpDelete("deleteOptionList/{optionListId:int}")]
     public async Task<ActionResult<bool>> DeleteOptionList(int optionListId) {
+        var userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+
+        if (string.IsNullOrEmpty(userId) || !int.TryParse(userId, out int userIdInt)){
+            return Unauthorized("User not found");
+        }
+        
+        var currentUser = await _context.Users.Where(u => u.Id == userIdInt).FirstOrDefaultAsync();
+        if (currentUser == null){
+            return Unauthorized("User not found");
+        }
+        
         var optionList = await _context.OptionLists.FindAsync(optionListId);
         
         if (optionList == null) {
             return NotFound("OptionList not found.");
+        }
+
+        if (currentUser.Role != Role.Admin && optionList.OwnerId != currentUser.Id) {
+            return Unauthorized("User is not owner of this option list.");
         }
         
         _context.OptionLists.Remove(optionList);
@@ -241,12 +273,27 @@ public class UsersController : ControllerBase {
     [Authorized(Role.Admin, Role.User)]
     [HttpGet("optionList/{optionListId:int}")]
     public async Task<ActionResult<OptionList_With_OptionValuesDTO>> GetOptionList(int optionListId) {
+        var userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+
+        if (string.IsNullOrEmpty(userId) || !int.TryParse(userId, out int userIdInt)){
+            return Unauthorized("User not found");
+        }
+        
+        var currentUser = await _context.Users.Where(u => u.Id == userIdInt).FirstOrDefaultAsync();
+        if (currentUser == null){
+            return Unauthorized("User not found");
+        }
+        
         var optionList = await _context.OptionLists
             .Include(ol => ol.ListOptionValues)
             .FirstOrDefaultAsync(ol => ol.Id == optionListId);
     
         if (optionList == null) {
             return NotFound("OptionList not found.");
+        }
+        
+        if (currentUser.Role != Role.Admin && optionList.OwnerId != currentUser.Id) {
+            return Unauthorized("User is not owner of this option list.");
         }
         
         var optionListDto = _mapper.Map<OptionList_With_OptionValuesDTO>(optionList);
@@ -256,7 +303,32 @@ public class UsersController : ControllerBase {
     [Authorized(Role.Admin, Role.User)]
     [HttpPost("createOptionList")]
     public async Task<ActionResult<OptionList_With_OptionValuesDTO>> CreateOptionList(OptionList_With_OptionValuesDTO optionListDto) {
+        var userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+
+        if (string.IsNullOrEmpty(userId) || !int.TryParse(userId, out int userIdInt)){
+            return Unauthorized("User not found");
+        }
+        
+        var currentUser = await _context.Users.Where(u => u.Id == userIdInt).FirstOrDefaultAsync();
+        if (currentUser == null){
+            return Unauthorized("User not found");
+        }
+        
         var optionList = _mapper.Map<OptionList>(optionListDto);
+        
+        var optionListValidationService = new OptionListValidation(_context);
+        var result = await optionListValidationService.ValidateOnCreate(optionList);
+        
+        if (!result.IsValid)
+            return BadRequest(result);
+        
+        
+        var optionValueValidation = new OptionValueValidation(_context);
+        var optionValueValidationResult = await optionValueValidation.ValidateOnCreate(optionList.ListOptionValues);
+
+        if (!optionValueValidationResult.IsValid) {
+            return BadRequest(optionValueValidationResult.Errors);
+        }
         
         var lastIdx = optionList.ListOptionValues.Any()
             ? optionList.ListOptionValues.Max(v => v.Idx) + 1 : 1; 
@@ -272,23 +344,48 @@ public class UsersController : ControllerBase {
     [Authorized(Role.Admin, Role.User)]
     [HttpPut("updateOptionList")]
     public async Task<IActionResult> UpdateOptionList(OptionList_With_OptionValuesDTO optionListDto) {
-        // Load existing OptionList, including its OptionValues
+        var userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+
+        if (string.IsNullOrEmpty(userId) || !int.TryParse(userId, out int userIdInt)){
+            return Unauthorized("User not found");
+        }
+        
+        var currentUser = await _context.Users.Where(u => u.Id == userIdInt).FirstOrDefaultAsync();
+        if (currentUser == null){
+            return Unauthorized("User not found");
+        }
+        
         var existingOptionList = await _context.OptionLists
-            .Include(o => o.ListOptionValues) // Include nested collection
+            .Include(o => o.ListOptionValues)
             .FirstOrDefaultAsync(f => f.Id == optionListDto.Id);
 
         if (existingOptionList == null)
             return NotFound();
 
-        // Use AutoMapper to map the DTO to the existing entity
+        if (currentUser.Role != Role.Admin && existingOptionList.OwnerId != currentUser.Id) {
+            return Unauthorized("User is not owner of this option list.");
+        }
+        
         _mapper.Map(optionListDto, existingOptionList);
+        
+        var optionListValidationService = new OptionListValidation(_context);
+        var result = await optionListValidationService.ValidateOnCreate(existingOptionList);
+        
+        if (!result.IsValid)
+            return BadRequest(result);
+        
+        var optionValueValidation = new OptionValueValidation(_context);
+        var optionValueValidationResult = await optionValueValidation.ValidateOnCreate(existingOptionList.ListOptionValues);
+
+        if (!optionValueValidationResult.IsValid) {
+            return BadRequest(optionValueValidationResult.Errors);
+        }
 
         var lastIdx = existingOptionList.ListOptionValues.Any()
             ? existingOptionList.ListOptionValues.Max(v => v.Idx) + 1 : 1; 
         
         existingOptionList.ListOptionValues.Where(ov => ov.Idx == 0).ToList().ForEach(ov => ov.Idx = lastIdx++);
-
-        // Save changes to the database
+        
         await _context.SaveChangesAsync();
 
         return Ok(new { message = "OptionList updated successfully.", form = _mapper.Map<OptionList_With_OptionValuesDTO>(existingOptionList) });

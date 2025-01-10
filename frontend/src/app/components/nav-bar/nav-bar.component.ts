@@ -72,16 +72,13 @@ export class NavBarComponent {
         if (this.hasUnsavedChanges) {
             this.showModalDialog();
         } else {
-            this._location.back();
-        }
-
-        this.backButtonEvent.emit();
-        if(this.previousUrl){
-            ///ce base sur le chemin précisé
-            this.router.navigate([this.previousUrl]);
-        } else {
-            //ce base sur l'historique de naviagation
-            this._location.back();
+            if(this.previousUrl){
+                ///ce base sur le chemin précisé
+                this.router.navigate([this.previousUrl]);
+            } else {
+                //ce base sur l'historique de naviagation
+                this._location.back();
+            }
         }
     }
     
