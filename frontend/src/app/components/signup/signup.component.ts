@@ -1,9 +1,10 @@
-import { Component, OnInit } from '@angular/core';
-import { AuthenticationService } from 'src/app/services/authentication.service';
-import { UserService } from 'src/app/services/user.service';
-import { Router } from '@angular/router';
-import { FormBuilder, FormGroup, Validators, AbstractControl, AsyncValidatorFn } from '@angular/forms';
-import { Observable, of } from 'rxjs';
+import {Component, OnInit} from '@angular/core';
+import {AuthenticationService} from 'src/app/services/authentication.service';
+import {UserService} from 'src/app/services/user.service';
+import {Router} from '@angular/router';
+import {AbstractControl, AsyncValidatorFn, FormBuilder, FormGroup, Validators} from '@angular/forms';
+import {Observable, of} from 'rxjs';
+import {Role, User} from "../../models/user";
 
 
 @Component({
@@ -25,19 +26,23 @@ export class SignUpComponent implements OnInit {
         }
 
         this.signupForm = this.fb.group({
-            firstName: ['', [Validators.minLength(3), Validators.maxLength(50)]],
-            lastName: ['', [Validators.minLength(3), Validators.maxLength(50)]],
+            firstName: this.fb.control('', {
+                validators: [Validators.minLength(3), Validators.maxLength(50), Validators.pattern(/^\S(.*\S)?$/)],
+                asyncValidators: [this.fullNameAsyncValidator()],
+            }),
+            lastName: this.fb.control('', {
+                validators: [Validators.minLength(3), Validators.maxLength(50), Validators.pattern(/^\S(.*\S)?$/)],
+                asyncValidators: [this.fullNameAsyncValidator()],
+            }),
             birthDate: ['', [Validators.required, this.ageValidator(18, 125)]],
-            email: ['',
-                [Validators.required, Validators.pattern(/^[a-zA-Z0-9._%+-]+@[a-zAZ0-9.-]+\.[a-zA-Z]{2,}$/)],
-                [this.emailAsyncValidator()]
-            ],
-            password: ['', [Validators.required, Validators.minLength(3), Validators.maxLength(10)]],
+            email: this.fb.control('', {
+                validators: [Validators.required, Validators.pattern(/^[a-zA-Z0-9._%+-]+@[a-zAZ0-9.-]+\.[a-zA-Z]{2,}$/)],
+                asyncValidators: [this.emailAsyncValidator()],
+            }),
+            password: ['', [Validators.required, Validators.minLength(3), Validators.maxLength(10), Validators.pattern(/^\S(.*\S)?$/)]],
             confirmPassword: ['', Validators.required]
         }, {
-            validator: [this.namesConditionalValidator, this.passwordMatchValidator],
-            // Devrait être sur le champ "lastname, mais crash TODO: debug"
-            asyncValidator: [this.fullNameAsyncValidator()]  
+            validator: [this.namesConditionalValidator, this.passwordMatchValidator]
         });
 
     }
@@ -59,7 +64,7 @@ export class SignUpComponent implements OnInit {
             lastNameControl.valueChanges.subscribe(() => {
                 const firstNameControl = this.signupForm.get('firstName');
                 if (firstNameControl) {
-                    firstNameControl.markAsTouched(); // Marquer firstName comme touché
+                    firstNameControl.markAsTouched();// Marquer firstName comme touché
                 }
             });
         }
@@ -104,29 +109,50 @@ export class SignUpComponent implements OnInit {
 
 
 
-    // Cross-field validator to enforce the conditional requirement for firstName and lastName
+    // If lastname or firstname is entered, the other is required too
     namesConditionalValidator(g: FormGroup) {
         const firstName = g.get('firstName');
         const lastName = g.get('lastName');
-
-        if (firstName?.value && !lastName?.value) {
-            lastName?.setValidators([Validators.required, Validators.minLength(3), Validators.maxLength(50)]);
-        } else if (!firstName?.value && lastName?.value) {
-            firstName?.setValidators([Validators.required, Validators.minLength(3), Validators.maxLength(50)]);
-        } else {
-            firstName?.setValidators([Validators.minLength(3), Validators.maxLength(50)]);
-            lastName?.setValidators([Validators.minLength(3), Validators.maxLength(50)]);
+        
+        if (firstName?.value?.length == 0 && firstName?.value?.length == 0 ) {
+            firstName?.setErrors(null)
+            lastName?.setErrors(null)
         }
 
-        firstName?.updateValueAndValidity({ onlySelf: true });
-        lastName?.updateValueAndValidity({ onlySelf: true });
+        if (firstName?.value && !lastName?.value) {
+            lastName?.setValidators([Validators.required, Validators.minLength(3), Validators.maxLength(50), Validators.pattern(/^\S(.*\S)?$/)]);
+            lastName?.setErrors({required:true});
+        } else if (!firstName?.value && lastName?.value) {
+            firstName?.setValidators([Validators.required, Validators.minLength(3), Validators.maxLength(50), Validators.pattern(/^\S(.*\S)?$/)]);
+            firstName?.setErrors({required:true});
+        } else {
+            firstName?.setValidators([Validators.minLength(3), Validators.maxLength(50), Validators.pattern(/^\S(.*\S)?$/)]);
+            lastName?.setValidators([Validators.minLength(3), Validators.maxLength(50), Validators.pattern(/^\S(.*\S)?$/)]);
+        }
+        //
+        // firstName?.updateValueAndValidity({ onlySelf: true });
+        // lastName?.updateValueAndValidity({ onlySelf: true });
+        // firstName?.markAsTouched();
+        // lastName?.markAsTouched();
 
         return null;
     }
 
     fullNameAsyncValidator(): AsyncValidatorFn {
+        
         return (control: AbstractControl): Observable<any> => {
-            const fullName = `${this.signupForm.get('firstName')?.value} ${this.signupForm.get('lastName')?.value}`;
+            if (!control.value) {
+                return of(null);
+            }
+            const firstNameControl = this.signupForm.get('firstName');
+            const lastNameControl = this.signupForm.get('lastName');
+
+            // Check if either firstName or lastName has a value
+            if (!firstNameControl?.value && !lastNameControl?.value) {
+                return of(null); // No need to validate if both are empty
+            }
+
+            const fullName = `${firstNameControl?.value || ''} ${lastNameControl?.value || ''}`;
 
             if (!fullName.trim()) {
                 return of(null);
@@ -136,14 +162,24 @@ export class SignUpComponent implements OnInit {
                 this.userService.areNamesUnique(fullName).subscribe(
                     (response: any) => {
                         if (response === true) {
-                            observer.next(null);  // Name is unique, no error
-                        } else {
-                            observer.next({ fullNameNotUnique: true });  // Name is not unique
+                            // Not a good practise but shouldn't be a problems, in the worst case, the backend has a validation
+                            lastNameControl?.setErrors(null);
+                            firstNameControl?.setErrors(null);
+                            observer.next(null);
                         }
                         observer.complete();
                     },
                     (error) => {
-                        observer.next({ unknownError: true });  // Handle error from server
+                        switch (error.status) {
+                            case 409:
+                                observer.next({ fullNameNotUnique: true });
+                                break;
+                            case 400:
+                                observer.next({ invalidFullname: true });
+                                break;
+                            default:
+                                observer.next({ unknownError: true });
+                        }
                         observer.complete();
                     }
                 );
@@ -174,15 +210,36 @@ export class SignUpComponent implements OnInit {
 
         return { mismatch: true };
     }
-
-
+    
     onSubmit() {
+        
         if (this.signupForm.valid) {
-            console.log('Form Submitted:', this.signupForm.value);
+                console.log('Form Submitted:', this.signupForm.value);
+                let formUser = new User(this.signupForm.value);
+                if (formUser.firstName =="")
+                    formUser.firstName = undefined;
+                if (formUser.lastName =="")
+                    formUser.lastName = undefined;
+                formUser.role= Role.User;
+                this.userService.saveUser(formUser).subscribe(
+                    (response: any) => {
+                        if (response === true) {
+                            this.authenticationService.login(formUser.email!, formUser.password!)
+                                .subscribe({
+                                    // si login est ok, on navigue vers la page demandée
+                                    next: data => {
+                                        this.router.navigate(['/home']);
+                                    },
+                                    error: error => {
+                                        console.log(error);
+                                        this.router.navigate(['unknown']);
+                                    }
+                                });
+                        }
+                    }
+                )
         } else {
             console.log('Form is invalid');
-            this.signupForm.markAllAsTouched();  
-
             // Log all form control errors
             Object.keys(this.signupForm.controls).forEach(controlName => {
                 const control = this.signupForm.get(controlName);

@@ -133,7 +133,38 @@ public class UsersController : ControllerBase {
         await _context.SaveChangesAsync();
         return NoContent();
     }
-    
+
+    // Pas le choix pour le signup
+    [AllowAnonymous]
+    [HttpPut("save")]
+    public async Task<IActionResult> AddNewUser(User_Base_With_PasswordDTO userDto) {
+        
+        // juste au cas où
+        userDto.Role = Role.User;
+        
+        var newUser = _mapper.Map<User_Base_With_PasswordDTO,User>(userDto);
+        
+        if (newUser != null) {
+            
+            
+            var validator = new UserValidation(_context);
+            var result = validator.ValidateOnCreate(newUser).Result;
+
+            if (!result.IsValid) {
+                return BadRequest(result);
+            }
+            
+            newUser.Password = TokenHelper.GetPasswordHash(newUser.Password);
+            
+            await _context.Users.AddAsync(newUser);
+            await _context.SaveChangesAsync();
+            return Ok(true);
+        }
+        
+        
+        return Unauthorized(HttpContext);
+    }
+
     [AllowAnonymous]
     [HttpPost("authenticate")]
     public async Task<ActionResult<UserDTO>> Authenticate(User_With_PasswordDTO dto) {

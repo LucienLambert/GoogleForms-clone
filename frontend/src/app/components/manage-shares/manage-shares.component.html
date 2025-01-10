@@ -10,8 +10,18 @@
     
     <div *ngIf="usersWithAccess.length > 0; else nosUsersWithAccess">
         <div *ngFor="let user of usersWithAccess" style="display: flex;">
-            <p style="margin-top: 8px">{{ user.firstName }} {{ user.lastName }}</p>
-                <mat-checkbox
+            
+            
+
+            <ng-container *ngIf="user.firstName || user.lastName; else emailOnly">
+                <p style="margin-top: 8px">{{ user.firstName }} {{ user.lastName }}</p>
+            </ng-container>
+
+            <ng-template #emailOnly>
+                <p style="margin-top: 8px">{{ user.email || "Email not available" }}</p>
+            </ng-template>
+
+            <mat-checkbox
                         [checked]="true"
                         [disabled]="isCheckBox1Disabled(user)"
                         (change)="onHasAccessCheckboxChange(user, CheckboxType.User, $event)"
@@ -41,7 +51,12 @@
                 <mat-label>Select a user..</mat-label>
                 <mat-select [(value)]="selectedUserId" placeholder="Select a user..">
                     <mat-option *ngFor="let user of usersWithNoAccess" [value]="user.id" >
-                        {{ user.firstName }} {{ user.lastName }}
+                         <ng-container *ngIf="user.firstName || user.lastName; else emailOnly">
+                             {{ user.firstName }} {{ user.lastName }}
+                         </ng-container>
+                        <ng-template #emailOnly>
+                            {{ user.email || 'Email not available' }}
+                        </ng-template>
                     </mat-option>
                 </mat-select>
             </mat-form-field>

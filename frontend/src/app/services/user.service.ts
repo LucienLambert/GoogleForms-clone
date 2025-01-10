@@ -107,4 +107,8 @@ export class UserService {
     areNamesUnique(names: string): Observable<any> {
         return this.http.get<any>(`${this.baseUrl}api/Users/unicity/names/?names=${names}`);
     }
+    
+    saveUser(user: User): Observable<boolean> {
+        return this.http.put<boolean>(`${this.baseUrl}api/Users/save`, user)
+    }
 }

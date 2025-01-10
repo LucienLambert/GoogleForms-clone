@@ -107,3 +107,13 @@ h2 {
     color: red;
     font-size: 20px;
 }
+
+.signup-form-button:disabled {
+    background-color: #cccccc; /* Greyed out background */
+    color: #666666; /* Greyed out text */
+    cursor: not-allowed; /* Change cursor to "not-allowed" */
+    opacity: 0.6; /* Optional: Further visual cue */
+}
+
+
+
