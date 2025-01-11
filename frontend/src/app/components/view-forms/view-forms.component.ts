@@ -93,7 +93,6 @@ export class ViewFormsComponent implements OnInit {
         await this.router.navigate(['view-instance', instanceId]);
     }
     private async createNewInstance(form: Form): Promise<number> {
-        // Deletes the last instance if not a guest, and creates a new one
         return new Promise((resolve, reject) => {
             this.instanceService.RefreshInstance(form.id).subscribe({
                 next: (data) => {

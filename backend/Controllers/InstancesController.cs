@@ -164,7 +164,6 @@ public class InstancesController : ControllerBase
     [HttpPut("instance/completed")]
     public async Task<IActionResult> CompleteInstance(Instance_With_AnswersDTO instanceDto) {
         
-        //TODO: Better security
         var userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
         var currentUser = await _context.Users.FirstOrDefaultAsync(u => u.Id == int.Parse(userId!));
         if (currentUser == null) {
@@ -333,7 +332,7 @@ public class InstancesController : ControllerBase
         return Ok(true);
     }
 
-    // deletes if not guest and returns a new instance 
+    // deletes if not guest and the last isn't completed and returns a new instance 
     [Authorized(Role.Admin, Role.User)]
     [HttpPost("refresh/by_form_id/{formId:int}")]
     public async Task<ActionResult> CreateByFormId(int formId) {
@@ -360,7 +359,7 @@ public class InstancesController : ControllerBase
         
         if (!currentUser.IsInRole(Role.Guest)) {
             var instanceToDelete = await _context.Instances.FirstOrDefaultAsync(i => i.FormId == formId && i.UserId == currentUser.Id);
-            if (instanceToDelete != null){
+            if (instanceToDelete != null && instanceToDelete.Completed == null){
                 _context.Instances.Remove(instanceToDelete);
                 await _context.SaveChangesAsync();
             }
