@@ -42,7 +42,7 @@ public class InstancesController : ControllerBase
     }
     
     // Including Answers, Form, Form-Questions, Question-optionlist etc.
-    [Authorized(Role.Admin, Role.User)]
+    [Authorized(Role.Admin, Role.User, Role.Guest)]
     [HttpGet("{instanceId}/full")]
     public async Task<ActionResult<InstanceDTO>> GetOneByIdFull(int instanceId) {
         
@@ -70,7 +70,7 @@ public class InstancesController : ControllerBase
         return Ok(_mapper.Map<Instance_With_Answers_And_Form_With_Questions_CompleteDTO>(instance));
     }
     
-    [Authorized(Role.Admin, Role.User)]
+    [Authorized(Role.Admin, Role.User, Role.Guest)]
     [HttpGet("by_form_or_fresh/{id}")]
     public async Task<ActionResult<IEnumerable<InstanceDTO>>> GetExistingOrFreshInstanceByFormId(int id) {
         // Returns an instance for the formid - logged user combinaison. /!\ If not found, returns a fresh instance
@@ -116,7 +116,7 @@ public class InstancesController : ControllerBase
 
     
     // Updates the instance, its answers and doesn't mark it as completed
-    [Authorized(Role.Admin, Role.User)]
+    [Authorized(Role.Admin, Role.User, Role.Guest)]
     [HttpPut("instance/updateAll")]
     public async Task<IActionResult> UpdateAllInstance(Instance_With_AnswersDTO instanceDto) {
             
@@ -160,11 +160,10 @@ public class InstancesController : ControllerBase
     
 
     // Updates the instance, its answers and marks it as completed
-    [Authorized(Role.Admin, Role.User)]
+    [Authorized(Role.Admin, Role.User, Role.Guest)]
     [HttpPut("instance/completed")]
     public async Task<IActionResult> CompleteInstance(Instance_With_AnswersDTO instanceDto) {
         
-        //TODO: Better security
         var userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
         var currentUser = await _context.Users.FirstOrDefaultAsync(u => u.Id == int.Parse(userId!));
         if (currentUser == null) {
@@ -206,7 +205,7 @@ public class InstancesController : ControllerBase
 
 
     // update the instance - answers for a single question
-    [Authorized(Role.Admin, Role.User)]
+    [Authorized(Role.Admin, Role.User, Role.Guest)]
     [HttpPut("update/answers")]
     public async Task<IActionResult> UpdateAnswers(Instance_With_AnswersDTO instanceDto) {
         
@@ -284,7 +283,7 @@ public class InstancesController : ControllerBase
     }
     
     //delete answers for one question
-    [Authorized(Role.Admin, Role.User)]
+    [Authorized(Role.Admin, Role.User, Role.Guest)]
     [HttpDelete("{instanceId:int}/question/{questionId:int}")]
     public async Task<ActionResult<bool>> DelQuestionFormById(int instanceId, int questionId) {
         
@@ -311,7 +310,7 @@ public class InstancesController : ControllerBase
     }
 
     [HttpDelete("{instanceId:int}")]
-    [Authorized(Role.Admin, Role.User)]
+    [Authorized(Role.Admin, Role.User, Role.Guest)]
     public async Task<ActionResult<bool>> DeleteInstanceById(int instanceId) {
         
         //TODO: Better security
@@ -333,8 +332,8 @@ public class InstancesController : ControllerBase
         return Ok(true);
     }
 
-    // deletes if not guest and returns a new instance 
-    [Authorized(Role.Admin, Role.User)]
+    // deletes if not guest and the last isn't completed and returns a new instance 
+    [Authorized(Role.Admin, Role.User, Role.Guest)]
     [HttpPost("refresh/by_form_id/{formId:int}")]
     public async Task<ActionResult> CreateByFormId(int formId) {
         var userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
@@ -360,7 +359,7 @@ public class InstancesController : ControllerBase
         
         if (!currentUser.IsInRole(Role.Guest)) {
             var instanceToDelete = await _context.Instances.FirstOrDefaultAsync(i => i.FormId == formId && i.UserId == currentUser.Id);
-            if (instanceToDelete != null){
+            if (instanceToDelete != null && instanceToDelete.Completed == null){
                 _context.Instances.Remove(instanceToDelete);
                 await _context.SaveChangesAsync();
             }
@@ -373,7 +372,7 @@ public class InstancesController : ControllerBase
         return Ok(_mapper.Map<InstanceDTO>(savedInstance.Entity));
     }
     
-    [Authorized(Role.Admin, Role.User)]
+    [Authorized(Role.Admin, Role.User, Role.Guest)]
     [HttpDelete("delMultiInstanceById")]
     public async Task<ActionResult<bool>> DelMultiInstanceById([FromQuery] List<int> instanceIds){
         
@@ -410,7 +409,7 @@ public class InstancesController : ControllerBase
         return Ok(true);
     }
 
-    [Authorized(Role.Admin, Role.User)]
+    [Authorized(Role.Admin, Role.User, Role.Guest)]
     [HttpDelete("delInstancesCompletedByFormId/{formId:int}")]
     public async Task<ActionResult<bool>> DelInstancesCompletedByFormId(int formId){
         var userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;

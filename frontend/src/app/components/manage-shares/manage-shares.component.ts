@@ -67,9 +67,17 @@ export class ManageSharesComponent implements OnInit {
     private updateUsersAccessList() {
         if (this.users) {
             if (!this.isPublic) {
+                // to solve async bug
+                if (this.users.some(user => user.id == this.form?.ownerId)) {
+                    this.users.filter(user => user.id != this.form?.ownerId);
+                }
                 this.usersWithAccess = this.users?.filter(user => user.listUserAccesses.length > 0);
                 this.usersWithNoAccess = this.users?.filter(user => user.listUserAccesses.length == 0);
             } else {
+                // to solve async bug
+                if (this.users.some(user => user.id == this.form?.ownerId)) {
+                    this.users.filter(user => user.id != this.form?.ownerId);
+                }
                 this.usersWithAccess = this.users?.filter(user => user.listUserAccesses.length > 0 && user.listUserAccesses.some(lu=>lu.accessType == AccessType.Editor));
                 this.usersWithNoAccess = this.users?.filter(user => user.listUserAccesses.length == 0 || user.listUserAccesses.some(lu=>lu.accessType == AccessType.User));
             }
