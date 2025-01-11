@@ -26,11 +26,9 @@ export class AuthenticationService {
             .pipe(map(user => {
                 user = new User(user);
                 // user = plainToClass(User, user);
-                console.log(user);
                 // login successful if there's a jwt token in the response
                 if (user && user.token) {
                     // store user details and jwt token in local storage to keep user logged in between page refreshes
-                    console.log("token exists, saving user",user.token);
                     sessionStorage.setItem('currentUser', JSON.stringify(user));
                     this.currentUser = user;
                 }
@@ -94,8 +92,7 @@ export class AuthenticationService {
 
             // Decode the token
             const decodedToken: any = jwtDecode(token);
-
-            console.log("hello : " + decodedToken.nameid);
+            
             // Extract the role
             return Number(decodedToken.nameid) || undefined; // Adjust based on the actual key name in your token
         } catch (error) {

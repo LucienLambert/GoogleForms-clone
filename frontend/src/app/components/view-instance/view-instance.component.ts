@@ -65,7 +65,6 @@ export class ViewInstanceComponent implements OnInit, OnDestroy {
             let instanceIdAndCurrentAnswers : [number, Answer[]] = [this.instance!.id, this.currentAnswers!];
             this.instanceService.updateAnswers(instanceIdAndCurrentAnswers)
                      .subscribe(updatedAnswers => {
-                         console.log("Updated answers!",updatedAnswers);
                      });
         }
     }

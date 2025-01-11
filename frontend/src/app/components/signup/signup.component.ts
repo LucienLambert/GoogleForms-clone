@@ -214,7 +214,6 @@ export class SignUpComponent implements OnInit {
     onSubmit() {
         
         if (this.signupForm.valid) {
-                console.log('Form Submitted:', this.signupForm.value);
                 let formUser = new User(this.signupForm.value);
                 if (formUser.firstName =="")
                     formUser.firstName = undefined;
@@ -239,7 +238,6 @@ export class SignUpComponent implements OnInit {
                     }
                 )
         } else {
-            console.log('Form is invalid');
             // Log all form control errors
             Object.keys(this.signupForm.controls).forEach(controlName => {
                 const control = this.signupForm.get(controlName);

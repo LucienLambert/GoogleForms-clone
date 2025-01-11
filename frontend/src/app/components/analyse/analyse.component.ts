@@ -71,10 +71,8 @@ export class AnalyseComponent implements OnInit {
                 count,
                 ratio: count / totalAnswers
             }));
-
-            console.log('Updated Statistics:', this.statistics);
+            
         } else {
-            console.warn('No answers found for the selected question.');
             this.statistics = [];
         }
     }

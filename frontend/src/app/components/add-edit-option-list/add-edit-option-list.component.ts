@@ -203,7 +203,6 @@ export class AddEditOptionListComponent implements OnInit {
         listOptionValues: this.optionList!.listOptionValues // Preserve existing options
       };
       
-      console.log("onSave : " + this.owner?.id);
       if (this.form.get('isSystem')?.value == false) {
         this.optionList!.ownerId = this.owner?.id;
       }

@@ -37,7 +37,6 @@ export class ViewInstancesComponent implements OnInit {
             next : (data) => {
                 this.form = data;
                 this.navBarTitle = this.form?.title;
-                console.log(this.form);
             }
         });
     }
@@ -48,11 +47,9 @@ export class ViewInstancesComponent implements OnInit {
         } else {
             this.selectedInstances = this.selectedInstances.filter(i => i != instance);
         }
-        console.log(this.selectedInstances);
     }
 
     deleteSelected() {
-        console.log("deleleSelected");
         const selectedInstancesId = this.selectedInstances.map(i => i.id);
         this.instanceService.delMultiInstanceById(selectedInstancesId).subscribe({
             next : (data) => {
@@ -75,8 +72,7 @@ export class ViewInstancesComponent implements OnInit {
                     }
                 }
             })
-        } else {
-            console.log("canDel == false : deleteAll");
+        } else {;
         }
     }
 

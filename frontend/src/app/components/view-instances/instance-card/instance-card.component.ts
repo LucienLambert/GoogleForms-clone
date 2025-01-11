@@ -15,7 +15,6 @@ export class InstanceCardComponent implements OnInit {
     @Output() viewInstanceEvent = new EventEmitter<Instance>();
     
     ngOnInit() {
-        console.log(this.instance);
     }
 
     checkBoxChanged() {

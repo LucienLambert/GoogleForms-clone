@@ -72,16 +72,13 @@ export class ManageOptionsListComponent implements OnInit {
             this.userService.deleteOptionList(optionList.id).subscribe({
                 next: (success) => {
                     if (success) {
-                        console.log('OptionList deleted successfully.');
                         this.retrieveOptionLists();
                     }
                 },
                 error: (err) => {
-                    console.error('Failed to delete OptionList:', err);
                 }
             });
         } else {
-            console.log('User canceled the deletion.');
         }
     }
 

@@ -30,7 +30,6 @@ export class ViewFormsComponent implements OnInit {
 
     ngOnInit() {
         if(this.authentification()) {
-            console.log(this.user);
             this.getOwnerPublicAccessForm();
         }
         
