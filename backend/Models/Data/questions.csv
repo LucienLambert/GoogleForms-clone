@@ -31,7 +31,6 @@
 32;14;14;Question 14;;combo;0;6
 33;14;15;Question 15;;date;0;
 35;14;17;Question 17;;email;0;
-36;14;18;Question 18;;integer;0;
 37;15;1;Gender;required for statistical purposes;radio;1;1
 38;15;2;Age group;required for statistical purposes;combo;1;7
 39;15;3;Favorite animal;in lowercase, please;short;0;
