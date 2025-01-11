@@ -32,12 +32,14 @@ public class UserFormAccessesController : ControllerBase {
         
         if (form == null)
             return NotFound();
-        if (currentUser.Id != form.OwnerId) 
-            return Unauthorized();
         
-        if (currentUser.Id != form.OwnerId || !_context.UserFormAccesses.Any(uf=>uf.UserId == currentUser.Id && uf.AccessType == AccessType.Editor))
+        if (currentUser.Id != form.OwnerId && !currentUser.IsInRole(Role.Admin))
+        {
             return Unauthorized();
+        }
         
+        if (!_context.UserFormAccesses.Any(uf=>uf.UserId == currentUser.Id && uf.AccessType == AccessType.Editor)&& !currentUser.IsInRole(Role.Admin))
+            return NotFound();
         
         var formAccessToChange = _context.UserFormAccesses.FirstOrDefault(f => f.FormId == userFormAccessDTO.FormId && f.UserId == userFormAccessDTO.UserId);
 
@@ -71,7 +73,7 @@ public class UserFormAccessesController : ControllerBase {
         var form = _context.Forms.FirstOrDefault(f => f.Id == formId);
         if (form == null)
             return NotFound();
-        if (currentUser.Id != form.OwnerId) 
+        if (currentUser.Id != form.OwnerId && !currentUser.IsInRole(Role.Admin)) 
             return Unauthorized();
         
         var formAccessToRemove = _context.UserFormAccesses.FirstOrDefault(f => f.FormId == formId && f.UserId == userId);
