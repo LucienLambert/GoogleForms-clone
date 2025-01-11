@@ -58,5 +58,12 @@ export class InstanceService {
         return this.http.post<Instance>(`${this.baseUrl}api/instances/refresh/by_form_id/${formId}`, formId);
     }
 
+    delMultiInstanceById(instanceIds: number[]): Observable<boolean> {
+        const params = instanceIds.map(id => `instanceIds=${id}`).join('&');
+        return this.http.delete<boolean>(`${this.baseUrl}api/instances/delMultiInstanceById?${params}`);
+    }
 
+    delInstancesCompletedByFormId(formId : number) : Observable<boolean> {
+        return this.http.delete<boolean>(`${this.baseUrl}api/instances/delInstancesCompletedByFormId/${formId}`);
+    }
 }

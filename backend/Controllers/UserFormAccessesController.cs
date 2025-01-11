@@ -35,6 +35,10 @@ public class UserFormAccessesController : ControllerBase {
         if (currentUser.Id != form.OwnerId) 
             return Unauthorized();
         
+        if (currentUser.Id != form.OwnerId || !_context.UserFormAccesses.Any(uf=>uf.UserId == currentUser.Id && uf.AccessType == AccessType.Editor))
+            return Unauthorized();
+        
+        
         var formAccessToChange = _context.UserFormAccesses.FirstOrDefault(f => f.FormId == userFormAccessDTO.FormId && f.UserId == userFormAccessDTO.UserId);
 
         if (formAccessToChange == null) {

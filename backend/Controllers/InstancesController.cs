@@ -42,6 +42,7 @@ public class InstancesController : ControllerBase
     }
     
     // Including Answers, Form, Form-Questions, Question-optionlist etc.
+    [Authorized(Role.Admin, Role.User)]
     [HttpGet("{instanceId}/full")]
     public async Task<ActionResult<InstanceDTO>> GetOneByIdFull(int instanceId) {
         
@@ -51,7 +52,7 @@ public class InstancesController : ControllerBase
         if (user == null) {
             return Unauthorized();
         }
-
+        
         var instance = await _context.Instances
             .Where(i => i.Id == instanceId)
             .Include(i => i.ListAnswers)
@@ -69,7 +70,7 @@ public class InstancesController : ControllerBase
         return Ok(_mapper.Map<Instance_With_Answers_And_Form_With_Questions_CompleteDTO>(instance));
     }
     
-
+    [Authorized(Role.Admin, Role.User)]
     [HttpGet("by_form_or_fresh/{id}")]
     public async Task<ActionResult<IEnumerable<InstanceDTO>>> GetExistingOrFreshInstanceByFormId(int id) {
         // Returns an instance for the formid - logged user combinaison. /!\ If not found, returns a fresh instance
@@ -115,6 +116,7 @@ public class InstancesController : ControllerBase
 
     
     // Updates the instance, its answers and doesn't mark it as completed
+    [Authorized(Role.Admin, Role.User)]
     [HttpPut("instance/updateAll")]
     public async Task<IActionResult> UpdateAllInstance(Instance_With_AnswersDTO instanceDto) {
             
@@ -132,6 +134,9 @@ public class InstancesController : ControllerBase
             
         if (instance == null)
             return NotFound();
+        
+        if (currentUser.Id != instance.UserId)
+            return Unauthorized();
             
         var validator = new InstanceValidation(_context);
         var result = await validator.ValidateOnUpdate(instance);
@@ -155,6 +160,7 @@ public class InstancesController : ControllerBase
     
 
     // Updates the instance, its answers and marks it as completed
+    [Authorized(Role.Admin, Role.User)]
     [HttpPut("instance/completed")]
     public async Task<IActionResult> CompleteInstance(Instance_With_AnswersDTO instanceDto) {
         
@@ -172,6 +178,9 @@ public class InstancesController : ControllerBase
         
         if (instance == null)
             return NotFound();
+        
+        if (currentUser.Id != instance.UserId)
+            return Unauthorized();
         
         instance.Completed = DateTime.Now;
         
@@ -197,10 +206,10 @@ public class InstancesController : ControllerBase
 
 
     // update the instance - answers for a single question
+    [Authorized(Role.Admin, Role.User)]
     [HttpPut("update/answers")]
     public async Task<IActionResult> UpdateAnswers(Instance_With_AnswersDTO instanceDto) {
         
-        //TODO: Better security
         var userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
         var currentUser = await _context.Users.FirstOrDefaultAsync(u => u.Id == int.Parse(userId!));
         if (currentUser == null) {
@@ -210,6 +219,7 @@ public class InstancesController : ControllerBase
         var newAnswersDto = instanceDto.ListAnswers;
         QuestionType questionType;
         int questionId;
+        
         if (newAnswersDto.Count > 0) {
             questionId = newAnswersDto.First().QuestionId;
             if (newAnswersDto.Any(a => a.QuestionId != questionId)) {
@@ -228,7 +238,10 @@ public class InstancesController : ControllerBase
 
         if (instance != null) {
             instance.ListAnswers = instance.ListAnswers.Where(a=>a.QuestionId != questionId).ToList();
-            ICollection<Answer> questionAnswers = new List<Answer>();
+            ICollection<Answer> questionAnswers = new List<Answer>(); 
+        
+            if (currentUser.Id != instance.UserId)
+                return Unauthorized();
             
             if (questionType == QuestionType.Check) {
                 foreach (AnswerDTO answerDto in newAnswersDto) {
@@ -271,10 +284,10 @@ public class InstancesController : ControllerBase
     }
     
     //delete answers for one question
+    [Authorized(Role.Admin, Role.User)]
     [HttpDelete("{instanceId:int}/question/{questionId:int}")]
     public async Task<ActionResult<bool>> DelQuestionFormById(int instanceId, int questionId) {
-
-        //TODO: Better security
+        
         var userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
         var currentUser = await _context.Users.FirstOrDefaultAsync(u => u.Id == int.Parse(userId!));
         if (currentUser == null) {
@@ -287,6 +300,8 @@ public class InstancesController : ControllerBase
         if (instance == null) {
             return NotFound();
         }
+        if (currentUser.Id != instance.UserId)
+            return Unauthorized();
         
         instance.ListAnswers = instance.ListAnswers.Where(a => a.QuestionId != questionId).ToList();
         _context.Instances.Update(instance);
@@ -296,6 +311,7 @@ public class InstancesController : ControllerBase
     }
 
     [HttpDelete("{instanceId:int}")]
+    [Authorized(Role.Admin, Role.User)]
     public async Task<ActionResult<bool>> DeleteInstanceById(int instanceId) {
         
         //TODO: Better security
@@ -318,6 +334,7 @@ public class InstancesController : ControllerBase
     }
 
     // deletes if not guest and returns a new instance 
+    [Authorized(Role.Admin, Role.User)]
     [HttpPost("refresh/by_form_id/{formId:int}")]
     public async Task<ActionResult> CreateByFormId(int formId) {
         var userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
@@ -356,4 +373,71 @@ public class InstancesController : ControllerBase
         return Ok(_mapper.Map<InstanceDTO>(savedInstance.Entity));
     }
     
+    [Authorized(Role.Admin, Role.User)]
+    [HttpDelete("delMultiInstanceById")]
+    public async Task<ActionResult<bool>> DelMultiInstanceById([FromQuery] List<int> instanceIds){
+        
+        var userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+        var currentUser = await _context.Users.FirstOrDefaultAsync(u => u.Id == int.Parse(userId!));
+        
+        if (currentUser == null)
+            return Unauthorized();
+        
+        if(instanceIds == null || !instanceIds.Any()){
+            return NotFound("first not found");
+        }
+
+        var instancesToRemove = await _context.Instances
+            .Include(i=>i.Form)
+            .Where(i => instanceIds.Contains(i.Id)).ToListAsync();
+        
+        // If editors are allowed
+        var editorIds = _context.UserFormAccesses.Where(uf => uf.FormId == instancesToRemove[0].FormId && uf.AccessType == AccessType.Editor)
+                                                        .Select(ufa=>ufa.UserId)
+                                                        .ToList();
+        
+        if (currentUser.Id != instancesToRemove[0].Form.OwnerId || editorIds.Contains(currentUser.Id))
+            return Unauthorized();
+
+        
+        if(!instancesToRemove.Any()){
+            return NotFound("second not found");
+        }
+
+        _context.Instances.RemoveRange(instancesToRemove);
+        await _context.SaveChangesAsync();
+
+        return Ok(true);
+    }
+
+    [Authorized(Role.Admin, Role.User)]
+    [HttpDelete("delInstancesCompletedByFormId/{formId:int}")]
+    public async Task<ActionResult<bool>> DelInstancesCompletedByFormId(int formId){
+        var userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+
+        if (string.IsNullOrEmpty(userId) || !int.TryParse(userId, out int userIdInt)){
+            return Unauthorized("User not found");
+        }
+
+        var currentUser = await _context.Users.Where(u => u.Id == userIdInt).FirstOrDefaultAsync();
+
+        var form = await _context.Forms.Where(f => f.Id == formId).FirstOrDefaultAsync();
+
+        if(!(currentUser?.Role == Role.Admin || form.OwnerId == userIdInt || _context.UserFormAccesses
+        .Any(ufa => ufa.UserId == userIdInt && ufa.FormId == form.Id && ufa.AccessType == AccessType.Editor))){
+            return Unauthorized();
+        }
+
+        var instancesToRemove = await _context.Instances
+            .Where(i => i.FormId == formId && i.Completed != null).ToListAsync();
+
+        if(instancesToRemove == null){
+            return NotFound(false);
+        }
+
+        _context.Instances.RemoveRange(instancesToRemove);
+        await _context.SaveChangesAsync();
+
+        return Ok(true);
+    }
 }

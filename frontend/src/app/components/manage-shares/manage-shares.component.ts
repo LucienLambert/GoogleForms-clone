@@ -58,8 +58,7 @@ export class ManageSharesComponent implements OnInit {
     private fetchUsers(formId:number) {
         this.userService.getAllWithFormAccess(formId).subscribe({
             next: data => {
-                this.users = data.filter(user => this.form?.ownerId !== user.id && user.role !== Role.Admin);
-                console.log(this.users);
+                this.users = data.filter(user => this.form?.ownerId !== user.id && user.role == Role.User);
                 this.updateUsersAccessList();
             }
         })
@@ -88,7 +87,6 @@ export class ManageSharesComponent implements OnInit {
                     this.usersWithAccess = this.usersWithAccess.filter(u=>u.id != user.id);
                     this.userService.deleteUserFormAccess(userAccessToDelete).subscribe({
                         next: data => {
-                            console.log("deleted:",data)
                             this.updateUsersAccessList();
                         }
                     })
@@ -98,7 +96,6 @@ export class ManageSharesComponent implements OnInit {
                 if ($event.checked){
                     user.listUserAccesses[0].accessType = AccessType.Editor;
                     this.userService.updateUserFormAccess(user.listUserAccesses[0]).subscribe({next: data => {
-                        console.log("modified:",data);
                             this.updateUsersAccessList();
                         }});
                 } else {
@@ -108,14 +105,12 @@ export class ManageSharesComponent implements OnInit {
                         this.usersWithAccess = this.usersWithAccess.filter(u=>u.id != user.id);
                         this.userService.deleteUserFormAccess(userAccessToDelete).subscribe({
                             next: data => {
-                                console.log("deleted:",data)
                                 this.updateUsersAccessList();
                             }
                         })
                     } else {
                         user.listUserAccesses[0].accessType = AccessType.User;
                         this.userService.updateUserFormAccess(user.listUserAccesses[0]).subscribe({next: data => {
-                                console.log("modified:",data);
                                 this.updateUsersAccessList();
                             }});
                     }
@@ -128,11 +123,9 @@ export class ManageSharesComponent implements OnInit {
         switch (checkboxType) {
             case CheckboxType.User:
                 this.userChecked = $event.checked;
-                console.log(this.userChecked);
                 break;
             case CheckboxType.Editor:
                 this.editorChecked = $event.checked;
-                console.log(this.editorChecked);
                 break;
         }
     }
@@ -175,7 +168,6 @@ export class ManageSharesComponent implements OnInit {
             }
             this.userService.updateUserFormAccess(newUserFormAccess).subscribe({
                 next: data => {
-                    console.log("modified:",data);
                     this.updateUsersAccessList()
                 }
             })

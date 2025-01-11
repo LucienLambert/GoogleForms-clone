@@ -54,7 +54,6 @@ export class CreateEditQuestionComponent implements OnInit {
         if (state && (state.question || state.redirectObject)) {
             if(state.redirectObject){
                 this.question = state.redirectObject;
-                console.log(this.question);
                 if(this.question.id == 0){
                     this.navBarTitle = 'Add a new Question';
                 } else {
@@ -172,7 +171,6 @@ export class CreateEditQuestionComponent implements OnInit {
 
             
         } else {
-            console.log("questionForm non valide");
         }
     }
 

@@ -41,3 +41,7 @@ public class Form_With_OwnerDTO : FormDTO {
     public UserDTO Owner { get; set; } = null!;
 }
 
+public class FormDTO_With_All_InstanceDTO : FormDTO {
+    public ICollection<Instance_With_OwnerDTO>? ListInstances {get; set; } = new List<Instance_With_OwnerDTO>();
+}
+

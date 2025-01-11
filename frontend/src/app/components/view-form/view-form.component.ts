@@ -41,7 +41,7 @@ export class ViewFormComponent implements OnInit {
             next : (data ) => {
                 this.form = data;
                 this.listQuestion = data.listQuestion;
-                if (this.form?.listInstance[0] != null) {
+                if (this.form?.listInstance.some(li=>li.completed != null)) {
                     this.modalDialogIntanceStatus();
                     this.instanceInProgress = true;
                 } else {
@@ -59,10 +59,9 @@ export class ViewFormComponent implements OnInit {
         if(canChange){
             this.formService.isPublicFormChange(this.form!.id).subscribe({
                 next : () => {
-                    console.log("Form status updated successfully");
+                    // console.log("Form status updated successfully");
                     this.form!.isPublic =  !previousState;
                     if(this.form!.isPublic == true){
-                        console.log("suppresion des droit acces User");
                         //ajouter ici la méthode async du controller pour supprimer les access User si il y en avait.
                     }
                 },
@@ -75,7 +74,6 @@ export class ViewFormComponent implements OnInit {
         } else {
             // Si annulé, réinitialiser visuellement le toggle
             event.source.checked = previousState; // Rétablit l'état visuel
-            console.log("L'utilisateur a annulé le changement");
         } 
     }
 
@@ -132,7 +130,6 @@ export class ViewFormComponent implements OnInit {
         if(canDel){
             this.formService.DelQuestionFormById(this.form!.id, question.id).subscribe({
                 next : (reponse) => {
-                    console.log("suppresion réussie : " + reponse);
                     this.getOnFormManager();
                 },
                 error : (err) => {
@@ -140,7 +137,6 @@ export class ViewFormComponent implements OnInit {
                 }
             });
         }else {
-            console.log("No Question To del");
         }
     }
 
@@ -176,7 +172,7 @@ export class ViewFormComponent implements OnInit {
     modalDialogIsPublicForm(newValue : boolean) : Promise<boolean> {
         return new Promise<boolean>((resolve) => {
 
-            const title = newValue ? 'Make Form Public' : 'Make Form Private';
+            const title = newValue ? 'Make Form Private' : 'Make Form Public';
 
             const message = newValue 
             ? "Are you sure you want to make this form private? You will need to shared this form again to allow 'User' access to other users."
@@ -219,7 +215,7 @@ export class ViewFormComponent implements OnInit {
         if(canDelForm){
             this.formService.delFormById(idform).subscribe({
                 next : (data) => {
-                    console.log("del form : " +data);
+                    // console.log("del form : " +data);
                     this.router.navigate(['/home']);
                 },
                 error : (err) => {

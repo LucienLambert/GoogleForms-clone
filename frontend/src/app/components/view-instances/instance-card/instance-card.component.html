@@ -1,0 +1,12 @@
+<mat-selection-list>
+    <div class="instance-header">
+        <span>{{ instance.completed | date:'dd/MM/yyyy HH:mm:ss' }}</span>
+        <mat-checkbox
+            (change)="checkBoxChanged()">
+        </mat-checkbox>
+    </div>
+    <p>Answered by <strong>{{ instance.owner.firstName }} {{ instance.owner.lastName }}</strong>
+        <p><span style="color:blue;cursor:pointer;" (click)="viewInstance()"> Review</span></p>
+        <mat-divider></mat-divider>
+</mat-selection-list>
+

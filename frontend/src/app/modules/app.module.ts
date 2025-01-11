@@ -35,6 +35,8 @@ import {CdkDrag, CdkDropList} from "@angular/cdk/drag-drop";
 import {ManageSharesComponent} from "../components/manage-shares/manage-shares.component";
 import {SignUpComponent} from "../components/signup/signup.component";
 import { CreateEditQuestionComponent } from '../components/create-edit-question/create-edit-question.component';
+import { ViewInstancesComponent } from '../components/view-instances/view-instances.component';
+import { InstanceCardComponent } from '../components/view-instances/instance-card/instance-card.component';
 
 
 @NgModule({
@@ -61,7 +63,9 @@ import { CreateEditQuestionComponent } from '../components/create-edit-question/
         AddEditOptionListComponent,
         ManageSharesComponent,
         SignUpComponent,
-        CreateEditQuestionComponent
+        CreateEditQuestionComponent,
+        ViewInstancesComponent,
+        InstanceCardComponent
     ],
     imports: [
         BrowserModule.withServerTransition({appId: 'ng-cli-universal'}),
