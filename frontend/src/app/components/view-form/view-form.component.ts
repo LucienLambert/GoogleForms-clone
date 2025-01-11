@@ -41,7 +41,7 @@ export class ViewFormComponent implements OnInit {
             next : (data ) => {
                 this.form = data;
                 this.listQuestion = data.listQuestion;
-                if (this.form?.listInstance[0] != null) {
+                if (this.form?.listInstance.some(li=>li.completed != null)) {
                     this.modalDialogIntanceStatus();
                     this.instanceInProgress = true;
                 } else {
