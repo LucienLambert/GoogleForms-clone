@@ -77,6 +77,50 @@ public class UsersController : ControllerBase {
         return Ok(listuserFormAccessDTO);
     }
     
+    
+    [Authorized(Role.User)]
+    [HttpGet("all/with_form_accesses/{formId:int}/no_owner")]
+    public async Task<ActionResult<IEnumerable<UserDTO>>> GetAllWithFormAccessNoOwner(int formId) {
+        
+        var userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+        var user = await _context.Users.FirstOrDefaultAsync(u => u.Id == int.Parse(userId));
+        if (user == null)
+            return NotFound();
+        
+        var form = await _context.Forms.FirstOrDefaultAsync(f => f.Id == formId);
+        if (form == null)
+            return NotFound();
+        if (user.Id != form.OwnerId && !user.IsInRole(role: Role.Admin))
+            return Unauthorized();
+
+        var users = _context.Users
+            .Include(u => u.ListUserFormAccesses)
+            .ToList();
+        
+        var listuserFormAccessDTO = users
+            .Select(u => 
+            {
+                // Filtrer les UserFormAccess pour ne garder que ceux avec le FormId spécifié
+                u.ListUserFormAccesses = u.ListUserFormAccesses
+                    .Where(uf => uf.FormId == formId && uf.UserId != form.OwnerId)
+                    .ToList();
+        
+                // Mapper l'utilisateur avec la liste filtrée et inclure le mappage des UserFormAccess
+                var userDTO = _mapper.Map<User_Base_With_FormAccessesDTO>(u);
+        
+                // Mapper explicitement la liste de FormAccesses dans le DTO
+                userDTO.FormAccesses = u.ListUserFormAccesses
+                    .Select(uf => _mapper.Map<UserFormAccessDTO_Only_Id>(uf))
+                    .ToList();
+
+                return userDTO;
+            })
+            .ToList();
+
+        return Ok(listuserFormAccessDTO);
+    }
+    
+    
     [HttpGet("logged_user")]
     public async Task<ActionResult<UserDTO>> GetLoggedUser() {
         var userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
