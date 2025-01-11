@@ -1,6 +1,6 @@
 import {Component, EventEmitter, Input, Output, SimpleChanges} from '@angular/core';
-import {OptionList} from '../../models/optionList';
-import {Role, User} from "../../models/user";
+import {OptionList} from "../../../models/optionList";
+import {Role, User} from "../../../models/user";
 
 @Component({
   selector: 'app-option-list-item',
@@ -29,7 +29,8 @@ export class OptionListItemComponent {
   }
 
   private updateDisabledState() {
-    if (this.owner?.role === Role.Admin && this.optionList.ownerId === null || this.optionList.notReferenced) {
+    if (this.owner?.role === Role.Admin && this.optionList.ownerId === null && this.optionList.notReferenced ||
+        this.owner?.role === Role.User && this.optionList.ownerId === this.owner.id && this.optionList.notReferenced) {
       this.activateEditAndDelete();
     }
   }

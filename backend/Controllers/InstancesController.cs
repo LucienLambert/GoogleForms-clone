@@ -430,7 +430,7 @@ public class InstancesController : ControllerBase
         var instancesToRemove = await _context.Instances
             .Where(i => i.FormId == formId && i.Completed != null).ToListAsync();
 
-        if(instancesToRemove == null){
+        if(instancesToRemove.Any()){
             return NotFound(false);
         }
 
