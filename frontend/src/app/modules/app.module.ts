@@ -3,6 +3,7 @@ import {APP_INITIALIZER, NgModule} from '@angular/core';
 import {FormsModule, ReactiveFormsModule} from '@angular/forms';
 import {HTTP_INTERCEPTORS, provideHttpClient, withInterceptorsFromDi} from '@angular/common/http';
 import {AppRoutes} from '../routing/app.routing';
+import {DatePipe} from "@angular/common";
 
 import {AppComponent} from '../components/app/app.component';
 import {SetFocusDirective} from '../directives/setfocus.directive';
@@ -29,7 +30,7 @@ import { ModalDialogComponent } from '../components/modal-dialog/modal-dialog.co
 import {OptionViewerComponent} from "../components/view-instance/instance-question-card/options-viewer/option-viewer.component";
 import {AnalyseComponent} from "../components/analyse/analyse.component";
 import {ManageOptionsListComponent} from "../components/manage-option-lists/manage-option-lists.component";
-import {OptionListItemComponent} from "../components/option-list-item/option-list-item.component";
+import {OptionListItemComponent} from "../components/manage-option-lists/option-list-item/option-list-item.component";
 import {AddEditOptionListComponent} from "../components/add-edit-option-list/add-edit-option-list.component";
 import {CdkDrag, CdkDropList} from "@angular/cdk/drag-drop";
 import {ManageSharesComponent} from "../components/manage-shares/manage-shares.component";
@@ -98,6 +99,7 @@ import { InstanceCardComponent } from '../components/view-instances/instance-car
         },
         provideHttpClient(withInterceptorsFromDi()),
         provideAnimationsAsync(),
+        DatePipe,
     ],
     exports: [
         NavBarComponent

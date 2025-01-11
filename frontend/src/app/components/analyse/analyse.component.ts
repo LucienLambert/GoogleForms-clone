@@ -3,6 +3,8 @@ import { FormService } from '../../services/form.service';
 import { Question } from '../../models/question';
 import { ActivatedRoute, Router } from '@angular/router';
 import { Form } from '@angular/forms';
+import { DatePipe } from '@angular/common';
+
 
 @Component({
     selector: 'app-analyse',
@@ -16,7 +18,7 @@ export class AnalyseComponent implements OnInit {
     viewInstancesVisible : boolean = true; 
     formId?: number;
 
-    constructor(private formService: FormService, private route: ActivatedRoute, private router : Router) {}
+    constructor(private formService: FormService, private route: ActivatedRoute, private router : Router, private datePipe: DatePipe) {}
 
     ngOnInit(): void {
         this.formId = Number(this.route.snapshot.paramMap.get('id'));
@@ -60,6 +62,11 @@ export class AnalyseComponent implements OnInit {
                     // Update answerValue to the corresponding string value if found
                     answerValue = optionValue ? optionValue.value : `Unknown (${answerValue})`;
                 }
+                
+                if (this.isDateTime(answerValue)) {
+                    answerValue = this.formatDateTime(answerValue);
+                }
+                
                 answerCounts.set(answerValue, (answerCounts.get(answerValue) || 0) + 1);
             });
 
@@ -79,5 +86,14 @@ export class AnalyseComponent implements OnInit {
 
     viewInstances() {
         this.router.navigate(['/view-instances', this.formId]);
+    }
+
+    isDateTime(value: string): boolean {
+        return !isNaN(Date.parse(value));
+    }
+
+    formatDateTime(value: string): string {
+        const date = new Date(value); // Convert the string to a Date object
+        return this.datePipe.transform(date, 'dd/MM/yyyy') || value;
     }
 }

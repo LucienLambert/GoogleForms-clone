@@ -35,7 +35,7 @@ public class UsersController : ControllerBase {
         return _mapper.Map<List<UserDTO>>(await _context.Users.ToListAsync());
     }
 
-    [Authorized(Role.User)]
+    [Authorized(Role.User, Role.Admin)]
     [HttpGet("all/with_form_accesses/{formId:int}")]
     public async Task<ActionResult<IEnumerable<UserDTO>>> GetAllWithFormAccess(int formId) {
         

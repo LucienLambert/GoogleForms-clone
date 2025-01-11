@@ -21,6 +21,7 @@ export class CreateEditFormComponent implements OnInit {
     owner?: User;
     navBarTitle = 'New Form';
     ownerLoaded = new BehaviorSubject<User | null>(null);
+    formSave?: Form;
 
     backButtonVisible: boolean = true;
     isSearchVisible: boolean = false;
@@ -77,6 +78,7 @@ export class CreateEditFormComponent implements OnInit {
                     isPublic: formData.isPublic
                 });
                 this.owner = formData.owner;
+                this.formSave = formData;
             },
             error: (err) => {
                 console.error('Error loading form:', err);
@@ -110,7 +112,10 @@ export class CreateEditFormComponent implements OnInit {
                             this.navBarTitle = response.title || 'New Form';
                             this.showSuccessMessage = true;
                             setTimeout(() => (this.showSuccessMessage = false), 3000);
-                            this.router.navigate(['/home']);
+                            if (this.formSave?.id == null)
+                                this.router.navigate(['/home']);
+                            else
+                                this.router.navigate(['/view-form', this.formSave?.id]);
                         },
                         error: (err) => {
                             this.showErrorMessage = true;
