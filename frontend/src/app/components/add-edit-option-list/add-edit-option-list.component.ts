@@ -141,8 +141,12 @@ export class AddEditOptionListComponent implements OnInit {
               if (isDuplicate) {
                 this.optionList.id = 0;
                 this.form.patchValue({ id: 0 })
-                if (this.owner?.role !== Role.Admin) {
+                if (this.owner?.role == Role.Admin) {
                   this.optionList.ownerId = undefined;
+                  this.form.patchValue({ ownerId: undefined })
+                } else {
+                  this.form.patchValue({ ownerId: this.owner!.id })
+                  this.optionList.ownerId = this.owner!.id;
                 }
               }
             });
@@ -203,7 +207,6 @@ export class AddEditOptionListComponent implements OnInit {
         listOptionValues: this.optionList!.listOptionValues // Preserve existing options
       };
       
-      console.log("onSave : " + this.owner?.id);
       if (this.form.get('isSystem')?.value == false) {
         this.optionList!.ownerId = this.owner?.id;
       }

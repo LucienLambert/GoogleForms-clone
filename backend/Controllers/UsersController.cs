@@ -292,10 +292,6 @@ public class UsersController : ControllerBase {
             return NotFound("OptionList not found.");
         }
         
-        if (currentUser.Role != Role.Admin && optionList.OwnerId != currentUser.Id) {
-            return Unauthorized("User is not owner of this option list.");
-        }
-        
         var optionListDto = _mapper.Map<OptionList_With_OptionValuesDTO>(optionList);
         return optionListDto;
     }
