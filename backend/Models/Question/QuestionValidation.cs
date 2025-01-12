@@ -1,9 +1,7 @@
 using FluentValidation;
 using Microsoft.EntityFrameworkCore;
 
-using prid_2425_a01.Models;
-
-namespace prid_2425_a01.Models;
+namespace prid_2425_a01.Models.Question;
 
 public class QuestionValidation : AbstractValidator<Question> {
 
@@ -51,17 +49,17 @@ public class QuestionValidation : AbstractValidator<Question> {
     }
 
     //need pour la requête POST (A VERIFIER)
-    public async Task<FluentValidation.Results.ValidationResult> ValidateOnCreate(Question question) {
+    public async Task<FluentValidation.Results.ValidationResult> ValidateOnCreate(Models.Question.Question question) {
         return await this.ValidateAsync(question, q => q.IncludeRuleSets("default", "create"));
     }
 
     
-    public async Task<bool> BeUniqueIdxForForm(Question question, int idx, CancellationToken cancellationToken) {
+    public async Task<bool> BeUniqueIdxForForm(Models.Question.Question question, int idx, CancellationToken cancellationToken) {
         return !await _context.Questions
                 .AnyAsync(q => q.FormId == question.FormId && q.Idx == idx && q.Id != question.Id, cancellationToken);
     }
 
-    public async Task<bool> BeUniqueTitleForForm(Question question, string title, CancellationToken cancellationToken) {
+    public async Task<bool> BeUniqueTitleForForm(Models.Question.Question question, string title, CancellationToken cancellationToken) {
         return !await _context.Questions
             .AnyAsync(q => q.Title == title && q.FormId == question.FormId && q.Id != question.Id, cancellationToken);
     }

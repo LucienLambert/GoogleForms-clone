@@ -1,7 +1,7 @@
 using FluentValidation;
 using Microsoft.EntityFrameworkCore;
 
-namespace prid_2425_a01.Models
+namespace prid_2425_a01.Models.OptionList
 {
     public class OptionListValidation : AbstractValidator<OptionList> {
         private readonly ApplicationDbContext _context;
@@ -15,11 +15,11 @@ namespace prid_2425_a01.Models
                 .MustAsync(BeUniqueNameForOwner).WithMessage("Name must be unique for this user");
         }
         
-        public async Task<FluentValidation.Results.ValidationResult> ValidateOnCreate(OptionList optionList) {
+        public async Task<FluentValidation.Results.ValidationResult> ValidateOnCreate(Models.OptionList.OptionList optionList) {
             return await this.ValidateAsync(optionList, o => o.IncludeRuleSets("default", "create"));
         }
 
-        private async Task<bool> BeUniqueNameForOwner(OptionList optionList, string name, CancellationToken cancellationToken) {
+        private async Task<bool> BeUniqueNameForOwner(Models.OptionList.OptionList optionList, string name, CancellationToken cancellationToken) {
             return !await _context.OptionLists
                 .AnyAsync(op => op.Name == name && op.OwnerId == optionList.OwnerId && op.Id != optionList.Id, cancellationToken);
         }

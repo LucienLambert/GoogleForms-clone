@@ -1,9 +1,7 @@
-using CsvHelper.Configuration;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
-
-namespace prid_2425_a01.Models;
+namespace prid_2425_a01.Models.OptionList;
 
 
 public class OptionList {
@@ -13,8 +11,8 @@ public class OptionList {
     public int? OwnerId { get; set; } 
 
     [ForeignKey(nameof(OwnerId))]
-    public User Owner { get; set; }= null!;
+    public User.User Owner { get; set; }= null!;
     
 
-    public ICollection<OptionValue> ListOptionValues { get; set; } = new HashSet<OptionValue>();
+    public ICollection<OptionValue.OptionValue> ListOptionValues { get; set; } = new HashSet<OptionValue.OptionValue>();
 }

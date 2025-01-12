@@ -1,7 +1,7 @@
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
-namespace prid_2425_a01.Models;
+namespace prid_2425_a01.Models.Answer;
 
 public class Answer {
 
@@ -18,10 +18,10 @@ public class Answer {
 
 
     [ForeignKey(nameof(InstanceId))]
-    public Instance Instance { get; set; }= null!;
+    public Instance.Instance Instance { get; set; }= null!;
 
     [ForeignKey(nameof(QuestionId))]
-    public Question Question { get; set; }= null!;
+    public Question.Question Question { get; set; }= null!;
 
 
 }

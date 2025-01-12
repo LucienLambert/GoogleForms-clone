@@ -1,7 +1,7 @@
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
-namespace prid_2425_a01.Models;
+namespace prid_2425_a01.Models.Instance;
 
 public class Instance {
 
@@ -19,11 +19,11 @@ public class Instance {
 
 
     [ForeignKey(nameof(FormId))]
-    public Form Form { get; set; } = null!;
+    public Form.Form Form { get; set; } = null!;
 
     [ForeignKey(nameof(UserId))]
-    public User Owner { get; set; } = null!;
+    public User.User Owner { get; set; } = null!;
 
-    public ICollection<Answer> ListAnswers { get; set; } = new HashSet<Answer>();
+    public ICollection<Answer.Answer> ListAnswers { get; set; } = new HashSet<Answer.Answer>();
 
 }

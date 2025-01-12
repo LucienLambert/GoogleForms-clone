@@ -1,8 +1,7 @@
 using FluentValidation;
 using Microsoft.EntityFrameworkCore;
 
-using prid_2425_a01.Models;
-namespace prid_2425_a01.Models;
+namespace prid_2425_a01.Models.Form;
 
 public class FormValidation : AbstractValidator<Form> {
 
@@ -23,12 +22,12 @@ public class FormValidation : AbstractValidator<Form> {
     }
 
     //need pour la requête POST (TODO POST)
-    public async Task<FluentValidation.Results.ValidationResult> ValidateOnCreate(Form form) {
+    public async Task<FluentValidation.Results.ValidationResult> ValidateOnCreate(Models.Form.Form form) {
         return await this.ValidateAsync(form, f => f.IncludeRuleSets("default", "create"));
     }
 
     // Méthode pour vérifier l'unicité du titre pour un même propriétaire
-    public async Task<bool> BeUniqueTitleForOwner(Form form, string title, CancellationToken cancellationToken) {
+    public async Task<bool> BeUniqueTitleForOwner(Models.Form.Form form, string title, CancellationToken cancellationToken) {
         return !await _context.Forms
             //on vérifie si un form portant le titre appartenant au user dont l'id du form est différent.
             //en gros si un form déjà existant pour le même titre que le form qu'on crée.

@@ -1,6 +1,6 @@
 using System.ComponentModel.DataAnnotations.Schema;
 
-namespace prid_2425_a01.Models;
+namespace prid_2425_a01.Models.User;
 
 public enum AccessType {
     User = 0,
@@ -15,9 +15,9 @@ public class UserFormAccess {
 
     
     [ForeignKey(nameof(UserId))]
-    public User User{ get; set; } = null!;
+    public Models.User.User User{ get; set; } = null!;
     [ForeignKey(nameof(FormId))]
-    public Form Form{ get; set; } = null!;
+    public Form.Form Form{ get; set; } = null!;
 
     
 }

@@ -1,9 +1,6 @@
-using CsvHelper.Configuration;
-using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
-
-namespace prid_2425_a01.Models;
+namespace prid_2425_a01.Models.OptionValue;
 
 
 public class OptionValue {
@@ -14,5 +11,5 @@ public class OptionValue {
     
     [ForeignKey(nameof(OptionListId))]
     //[NotMapped]
-    public OptionList OptionList { get; set; } = null!;
+    public OptionList.OptionList OptionList { get; set; } = null!;
 }

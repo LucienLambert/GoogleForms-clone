@@ -4,6 +4,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.AspNetCore.Authorization;
 using prid_2425_a01.Helpers;
 using prid_2425_a01.Models;
+using prid_2425_a01.Models.User;
 using System.Security.Claims;
 
 namespace prid_2425_a01.Controllers;

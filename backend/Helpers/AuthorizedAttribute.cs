@@ -1,5 +1,5 @@
 using Microsoft.AspNetCore.Authorization;
-using prid_2425_a01.Models;
+using prid_2425_a01.Models.User;
 
 namespace prid_2425_a01.Helpers;
 

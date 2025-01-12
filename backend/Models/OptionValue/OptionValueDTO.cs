@@ -1,4 +1,4 @@
-namespace prid_2425_a01.Models
+namespace prid_2425_a01.Models.OptionValue
 {
     public class OptionValueDTO
     {

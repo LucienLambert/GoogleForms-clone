@@ -1,9 +1,8 @@
 using FluentValidation;
 using Microsoft.EntityFrameworkCore;
-using prid_2425_a01.Models;
-using System.Linq;
+using prid_2425_a01.Models.Question;
 
-namespace prid_2425_a01.Models;
+namespace prid_2425_a01.Models.Answer;
 
 public class AnswerValidation : AbstractValidator<Answer>
 {
@@ -140,11 +139,11 @@ public class AnswerValidation : AbstractValidator<Answer>
                 .WithMessage("The value must correspond to an index within the option list.");
         }); 
     }
-    public async Task<FluentValidation.Results.ValidationResult> ValidateOnCreate(Answer answer) {
+    public async Task<FluentValidation.Results.ValidationResult> ValidateOnCreate(Models.Answer.Answer answer) {
         return await this.ValidateAsync(answer, vs => vs.IncludeRuleSets("default", "Create"));
     }
     
-    public async Task<FluentValidation.Results.ValidationResult> ValidateOnUpdate(Answer answer, int count) {
+    public async Task<FluentValidation.Results.ValidationResult> ValidateOnUpdate(Models.Answer.Answer answer, int count) {
         dynamicCount = count;
         return await this.ValidateAsync(answer, vs => vs.IncludeRuleSets("default", "Update"));
     }

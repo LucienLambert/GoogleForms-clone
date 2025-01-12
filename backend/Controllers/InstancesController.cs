@@ -8,6 +8,10 @@ using Microsoft.IdentityModel.Tokens;
 using prid_2425_a01.Helpers;
 using System.Security.Claims;
 using prid_2425_a01.Models;
+using prid_2425_a01.Models.Answer;
+using prid_2425_a01.Models.Instance;
+using prid_2425_a01.Models.Question;
+using prid_2425_a01.Models.User;
 using System.ComponentModel.DataAnnotations;
 
 namespace prid_2425_a01.Controllers;

@@ -1,8 +1,6 @@
 using FluentValidation;
-using Microsoft.EntityFrameworkCore;
 
-using prid_2425_a01.Models;
-namespace prid_2425_a01.Models;
+namespace prid_2425_a01.Models.Instance;
 
 public class InstanceValidation : AbstractValidator<Instance> {
 
@@ -21,11 +19,11 @@ public class InstanceValidation : AbstractValidator<Instance> {
         });
     }
     
-    public async Task<FluentValidation.Results.ValidationResult> ValidateOnCreate(Instance instance) {
+    public async Task<FluentValidation.Results.ValidationResult> ValidateOnCreate(Models.Instance.Instance instance) {
         return await this.ValidateAsync(instance, vs => vs.IncludeRuleSets("default", "Create"));
     }
 
-    public async Task<FluentValidation.Results.ValidationResult> ValidateOnUpdate(Instance instance) {
+    public async Task<FluentValidation.Results.ValidationResult> ValidateOnUpdate(Models.Instance.Instance instance) {
         return await this.ValidateAsync(instance, vs => vs.IncludeRuleSets("default", "Create"));
     }
 }

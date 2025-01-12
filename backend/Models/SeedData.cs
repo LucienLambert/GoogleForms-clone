@@ -1,6 +1,8 @@
 using CsvHelper;
 using CsvHelper.Configuration;
 using prid_2425_a01.Helpers;
+using prid_2425_a01.Models.Question;
+using prid_2425_a01.Models.User;
 using System.Globalization;
 
 namespace prid_2425_a01.Models
@@ -8,14 +10,14 @@ namespace prid_2425_a01.Models
     public class SeedData(ApplicationDbContext context)
     {
         public void Seed() {
-            context.Users.AddRange(ImportCsvData<User, UserMap>(@"Models\Data\users.csv"));
-            context.Forms.AddRange(ImportCsvData<Form, FormMap>(@"Models\Data\forms.csv"));
-            context.Answers.AddRange(ImportCsvData<Answer, AnswerMap>(@"Models\Data\answers.csv"));
-            context.Instances.AddRange(ImportCsvData<Instance, InstanceMap>(@"Models\Data\instances.csv"));
-            context.Questions.AddRange(ImportCsvData<Question, QuestionMap>(@"Models\Data\questions.csv"));
+            context.Users.AddRange(ImportCsvData<User.User, UserMap>(@"Models\Data\users.csv"));
+            context.Forms.AddRange(ImportCsvData<Form.Form, FormMap>(@"Models\Data\forms.csv"));
+            context.Answers.AddRange(ImportCsvData<Answer.Answer, AnswerMap>(@"Models\Data\answers.csv"));
+            context.Instances.AddRange(ImportCsvData<Instance.Instance, InstanceMap>(@"Models\Data\instances.csv"));
+            context.Questions.AddRange(ImportCsvData<Question.Question, QuestionMap>(@"Models\Data\questions.csv"));
             context.UserFormAccesses.AddRange(ImportCsvData<UserFormAccess, UserFormAccessMap>(@"Models\Data\user_form_accesses.csv"));
-            context.OptionLists.AddRange(ImportCsvData<OptionList, OptionListMap>(@"Models\Data\option_lists.csv"));
-            context.OptionValues.AddRange(ImportCsvData<OptionValue, OptionValueMap>(@"Models\Data\option_values.csv"));
+            context.OptionLists.AddRange(ImportCsvData<OptionList.OptionList, OptionListMap>(@"Models\Data\option_lists.csv"));
+            context.OptionValues.AddRange(ImportCsvData<OptionValue.OptionValue, OptionValueMap>(@"Models\Data\option_values.csv"));
 
 
             context.SaveChanges();
@@ -37,7 +39,7 @@ namespace prid_2425_a01.Models
         }
     }
 
-    internal sealed class UserMap : ClassMap<User>
+    internal sealed class UserMap : ClassMap<User.User>
     {
         public UserMap() {
             Map(u => u.Id).Name("id");
@@ -52,7 +54,7 @@ namespace prid_2425_a01.Models
         }
     }
 
-    internal sealed class FormMap : ClassMap<Form>
+    internal sealed class FormMap : ClassMap<Form.Form>
     {
         public FormMap() {
             Map(f => f.Id).Name("id");
@@ -64,7 +66,7 @@ namespace prid_2425_a01.Models
     }
 
 
-    internal sealed class AnswerMap : ClassMap<Answer>
+    internal sealed class AnswerMap : ClassMap<Answer.Answer>
     {
         public AnswerMap() {
             Map(a => a.InstanceId).Name("instance");
@@ -75,7 +77,7 @@ namespace prid_2425_a01.Models
     }
 
 
-    internal sealed class InstanceMap : ClassMap<Instance>
+    internal sealed class InstanceMap : ClassMap<Instance.Instance>
     {
         public InstanceMap() {
             Map(i => i.Id).Name("id");
@@ -92,7 +94,7 @@ namespace prid_2425_a01.Models
     }
 
     
-    internal sealed class QuestionMap : ClassMap<Question>
+    internal sealed class QuestionMap : ClassMap<Question.Question>
     {
         public QuestionMap() {
             Map(q => q.Id).Name("id");
@@ -119,7 +121,7 @@ namespace prid_2425_a01.Models
     }
 
 
-    internal sealed class OptionListMap : ClassMap<OptionList>
+    internal sealed class OptionListMap : ClassMap<OptionList.OptionList>
     {
         public OptionListMap() {
             Map(o => o.Id).Name("id");
@@ -129,7 +131,7 @@ namespace prid_2425_a01.Models
     }
 
 
-    internal sealed class OptionValueMap : ClassMap<OptionValue>
+    internal sealed class OptionValueMap : ClassMap<OptionValue.OptionValue>
     {
         public OptionValueMap() {
             Map(o => o.Idx).Name("idx");

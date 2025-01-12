@@ -1,8 +1,7 @@
-﻿using Microsoft.AspNetCore.Mvc;
-using System.ComponentModel.DataAnnotations;
+﻿using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
-namespace prid_2425_a01.Models;
+namespace prid_2425_a01.Models.User;
 
 public enum Role
 {
@@ -34,10 +33,10 @@ public class User {
     }
     
     //prévilégie les HashSet par la suite. plus adapté que les List standard.
-    public ICollection<Form> ListForms{ get; set; } = new HashSet<Form>();
-    public ICollection<Instance> ListInstances{ get; set; } = new HashSet<Instance>();
+    public ICollection<Form.Form> ListForms{ get; set; } = new HashSet<Form.Form>();
+    public ICollection<Instance.Instance> ListInstances{ get; set; } = new HashSet<Instance.Instance>();
     public ICollection<UserFormAccess> ListUserFormAccesses { get; set; } = new HashSet<UserFormAccess>();
-    public ICollection<OptionList> ListOptionLists{ get; set; } = new HashSet<OptionList>();
+    public ICollection<OptionList.OptionList> ListOptionLists{ get; set; } = new HashSet<OptionList.OptionList>();
 
 
     public bool IsInRole(Role role){

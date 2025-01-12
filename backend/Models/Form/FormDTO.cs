@@ -1,4 +1,8 @@
-namespace prid_2425_a01.Models.form;
+using prid_2425_a01.Models.Instance;
+using prid_2425_a01.Models.Question;
+using prid_2425_a01.Models.User;
+
+namespace prid_2425_a01.Models.Form;
 
 
 public class FormDTO {

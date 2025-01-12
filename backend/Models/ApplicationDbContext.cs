@@ -1,4 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using prid_2425_a01.Models.User;
 
 namespace prid_2425_a01.Models;
 public class ApplicationDbContext : DbContext
@@ -10,10 +11,10 @@ public class ApplicationDbContext : DbContext
     protected override void OnModelCreating(ModelBuilder modelBuilder) {
         base.OnModelCreating(modelBuilder);
 
-        modelBuilder.Entity<OptionValue>()
+        modelBuilder.Entity<OptionValue.OptionValue>()
             .HasKey(o => new { o.Idx, o.OptionListId });
 
-        modelBuilder.Entity<Answer>()
+        modelBuilder.Entity<Answer.Answer>()
             .HasKey(a => new { a.InstanceId, a.QuestionId, Idx = a.Idx });
             
         //liaison des composite Key pour le model UserFormAccess
@@ -33,7 +34,7 @@ public class ApplicationDbContext : DbContext
         });
 
         //liaison entre Form.
-        modelBuilder.Entity<Form>(f => {
+        modelBuilder.Entity<Form.Form>(f => {
             f.HasOne(f => f.Owner)               //Un form possède un User
                 .WithMany(u => u.ListForms)         //Un user possède plusieur Form
                 .HasForeignKey(f => f.OwnerId)      //indique que la clé étrangère est représenté par Owner dans Form
@@ -53,7 +54,7 @@ public class ApplicationDbContext : DbContext
         });
             
         //liaisons Instance
-        modelBuilder.Entity<Instance>(i => {
+        modelBuilder.Entity<Instance.Instance>(i => {
             i.HasOne(i => i.Form)
                 .WithMany(f => f.ListInstances)
                 .HasForeignKey(i => i.FormId)
@@ -72,14 +73,14 @@ public class ApplicationDbContext : DbContext
         });
 
         //liaisons OptionValue
-        modelBuilder.Entity<OptionValue>(ov => {
+        modelBuilder.Entity<OptionValue.OptionValue>(ov => {
             ov.HasOne(ov => ov.OptionList)
                 .WithMany(ol => ol.ListOptionValues)
                 .HasForeignKey(ol => ol.OptionListId)
                 .OnDelete(DeleteBehavior.Cascade);
         });
 
-        modelBuilder.Entity<Question>()
+        modelBuilder.Entity<Question.Question>()
             .HasMany(q => q.ListAnswers)
             .WithOne(a => a.Question)
             .OnDelete(DeleteBehavior.Cascade);
@@ -92,12 +93,12 @@ public class ApplicationDbContext : DbContext
     }
     //permet le mapping entre la backend et la DB (liaison)
     //sans ça impossible de manipuler les objets de la DB "CRUD".
-    public DbSet<User> Users => Set<User>();
-    public DbSet<Form> Forms => Set<Form>();
-    public DbSet<Instance> Instances => Set<Instance>();
-    public DbSet<Answer> Answers => Set<Answer>();
-    public DbSet<Question> Questions => Set<Question>();
+    public DbSet<User.User> Users => Set<User.User>();
+    public DbSet<Form.Form> Forms => Set<Form.Form>();
+    public DbSet<Instance.Instance> Instances => Set<Instance.Instance>();
+    public DbSet<Answer.Answer> Answers => Set<Answer.Answer>();
+    public DbSet<Question.Question> Questions => Set<Question.Question>();
     public DbSet<UserFormAccess> UserFormAccesses => Set<UserFormAccess>(); 
-    public DbSet<OptionList> OptionLists => Set<OptionList>(); 
-    public DbSet<OptionValue> OptionValues => Set<OptionValue>();
+    public DbSet<OptionList.OptionList> OptionLists => Set<OptionList.OptionList>(); 
+    public DbSet<OptionValue.OptionValue> OptionValues => Set<OptionValue.OptionValue>();
 }

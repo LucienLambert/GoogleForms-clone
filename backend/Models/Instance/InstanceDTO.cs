@@ -1,6 +1,8 @@
-using prid_2425_a01.Models.form;
+using prid_2425_a01.Models.Answer;
+using prid_2425_a01.Models.Form;
+using prid_2425_a01.Models.User;
 
-namespace prid_2425_a01.Models;
+namespace prid_2425_a01.Models.Instance;
 
 public class InstanceDTO {
 

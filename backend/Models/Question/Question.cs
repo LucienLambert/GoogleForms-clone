@@ -1,7 +1,7 @@
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
-namespace prid_2425_a01.Models;
+namespace prid_2425_a01.Models.Question;
 
 public enum QuestionType {
     Short,  
@@ -40,14 +40,14 @@ public class Question {
     
 
     [ForeignKey(nameof(FormId))]
-    public Form Form { get; set; } = null!;
+    public Form.Form Form { get; set; } = null!;
 
     [ForeignKey(nameof(OptionListId))]
-    public OptionList? OptionList { get; set; }
+    public OptionList.OptionList? OptionList { get; set; }
 
 
 
-    public ICollection<Answer> ListAnswers { get; set; } = new HashSet<Answer>();
+    public ICollection<Answer.Answer> ListAnswers { get; set; } = new HashSet<Answer.Answer>();
 
     public override string ToString() {
         return $"Question {{ " +

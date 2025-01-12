@@ -1,6 +1,6 @@
 using FluentValidation;
 
-namespace prid_2425_a01.Models
+namespace prid_2425_a01.Models.OptionValue
 {
     public class OptionValueValidation : AbstractValidator<OptionValue> {
 
@@ -11,11 +11,11 @@ namespace prid_2425_a01.Models
                 .MinimumLength(3).WithMessage("Name must be at least 3 characters long");
         }
         
-        public async Task<FluentValidation.Results.ValidationResult> ValidateOnCreate(OptionValue optionValue) {
+        public async Task<FluentValidation.Results.ValidationResult> ValidateOnCreate(Models.OptionValue.OptionValue optionValue) {
             return await this.ValidateAsync(optionValue, o => o.IncludeRuleSets("default", "create"));
         }
         
-        public async Task<FluentValidation.Results.ValidationResult> ValidateOnCreate(IEnumerable<OptionValue> optionValues) 
+        public async Task<FluentValidation.Results.ValidationResult> ValidateOnCreate(IEnumerable<Models.OptionValue.OptionValue> optionValues) 
         {
             var aggregatedResult = new FluentValidation.Results.ValidationResult();
 

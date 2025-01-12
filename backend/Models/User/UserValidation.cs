@@ -1,9 +1,8 @@
 using FluentValidation;
 using Microsoft.EntityFrameworkCore;
 using prid_2425_a01.Helpers;
-using prid_2425_a01.Models;
 
-namespace prid_2425_a01.Models;
+namespace prid_2425_a01.Models.User;
 
 public class UserValidation : AbstractValidator<User>
 {
@@ -81,12 +80,12 @@ public class UserValidation : AbstractValidator<User>
             !await _context.Users.AnyAsync(u => u.FirstName == firstName && u.LastName == lastName, token);
     }
 
-    public async Task<FluentValidation.Results.ValidationResult> ValidateForAuthenticate(User? user) {
+    public async Task<FluentValidation.Results.ValidationResult> ValidateForAuthenticate(Models.User.User? user) {
         if (user == null)
             return ValidatorHelper.CustomError("User not found", "Email");
         return await this.ValidateAsync(user, o => o.IncludeRuleSets("authenticate"));
     }
-    public async Task<FluentValidation.Results.ValidationResult> ValidateOnCreate(User? user) {
+    public async Task<FluentValidation.Results.ValidationResult> ValidateOnCreate(Models.User.User? user) {
         if (user == null)
             return ValidatorHelper.CustomError("User not found", "Email");
         return await this.ValidateAsync(user, o => o.IncludeRuleSets("create"));
