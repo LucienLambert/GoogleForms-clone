@@ -13,10 +13,11 @@ import {
 import {ActivatedRoute, Router} from "@angular/router";
 import {AuthenticationService} from "../../services/authentication.service";
 import {UserService} from "../../services/user.service";
-import {BehaviorSubject, Observable, tap} from "rxjs";
+import {BehaviorSubject, Observable, of, switchMap, take, tap} from "rxjs";
 import {Role, User} from "../../models/user";
 import {OptionValue} from "../../models/optionValue";
 import {CdkDragDrop, moveItemInArray} from "@angular/cdk/drag-drop";
+import {catchError, filter, map} from "rxjs/operators";
 
 @Component({
   selector: 'app-add-edit-option-list',
@@ -52,6 +53,7 @@ export class AddEditOptionListComponent implements OnInit {
         this.LoadOptionList();
         this.SaveDisablingLogic();
         this.Admin();
+        this.userService.getUserOptionLists(this.owner!.id);
       },
       error: (err) => {
         console.error('Error fetching owner data:', err);
@@ -86,7 +88,7 @@ export class AddEditOptionListComponent implements OnInit {
 
     this.form = this.formBuilder.group({
       id: [this.optionList.id],
-      name: [this.optionList.name, [Validators.required, Validators.minLength(3)]],
+      name: [this.optionList.name, [Validators.required, Validators.minLength(3)], [this.uniqueTitleValidator.bind(this)]],
       ownerId: [this.optionList.ownerId],
       optionValues: this.formBuilder.array(
           this.optionList.listOptionValues!.map(() => 
@@ -153,6 +155,18 @@ export class AddEditOptionListComponent implements OnInit {
           }
         }
       });
+    });
+    
+    if (this.optionList?.id == 0) {
+      this.optionList.ownerId = this.owner?.id;
+      this.form.get('name')?.updateValueAndValidity();
+    }
+
+    this.form.get('isSystem')?.valueChanges.subscribe(isChecked => {
+      // Now you know each time the checkbox is toggled
+      this.optionList!.ownerId = isChecked ? undefined : this.owner?.id;
+
+      this.form.get('name')?.updateValueAndValidity();
     });
   }
 
@@ -221,7 +235,7 @@ export class AddEditOptionListComponent implements OnInit {
             this.router.navigate(['/create-edit-question'], {
               state: { redirectObject : history.state.redirectObject }
             });
-          }else {
+          } else {
             this.router.navigate(['/manage-option-lists'], {
               state: { previousUrl : '/home' }
             });
@@ -229,6 +243,11 @@ export class AddEditOptionListComponent implements OnInit {
         },
         error: (err) => {
           this.isLoading = false;
+          // if(history.state?.previousUrl == '/create-edit-question'){
+          //   this.router.navigate(['/create-edit-question'], {
+          //     state: { redirectObject : history.state.redirectObject }
+          //   });
+          // }
           console.error('Error saving:', err);
         }
       });
@@ -244,7 +263,8 @@ export class AddEditOptionListComponent implements OnInit {
 
   onCancel(){
     // Restore the original option list
-    this.optionList = JSON.parse(JSON.stringify(this.originalOptionList));
+    if (this.originalOptionList != undefined) 
+      this.optionList = JSON.parse(JSON.stringify(this.originalOptionList));
 
     // Clear and reinitialize the FormArray
     const optionArray = this.form.get('optionValues') as FormArray;
@@ -382,5 +402,27 @@ export class AddEditOptionListComponent implements OnInit {
     } else {
       this.addOptionDisabled = true;
     }
+  }
+
+  uniqueTitleValidator(control: AbstractControl): Observable<ValidationErrors | null> {
+    if (!control.value) {
+      return of(null);
+    }
+
+    return this.userService.optionLists.pipe(
+        /**
+         * If you're only interested in the current (most recent) value and then want to complete,
+         * you can use `take(1)` to automatically unsubscribe after the first emission.
+         */
+        take(1),
+        map((lists: OptionList[]) => {
+          const nameControlValue   = control.value;
+          // Check if there is a match
+          const foundMatch = lists.some(list =>
+              list.name === nameControlValue && list.id !== this.optionList?.id && list.ownerId == this.optionList?.ownerId
+          );
+          return foundMatch ? { unique: true } : null;
+        })
+    );
   }
 }

@@ -76,7 +76,7 @@ export class NavBarComponent {
                 ///ce base sur le chemin précisé
                 this.router.navigate([this.previousUrl]);
             } else {
-                //ce base sur l'historique de naviagation
+                //ce base sur l'historique de navigation
                 this._location.back();
             }
         }
@@ -92,8 +92,11 @@ export class NavBarComponent {
             }
         });
         dialogRef.afterClosed().subscribe((result: boolean) => {
-            if (result) { this.saveEvent.emit(); }
-            this._location.back();
+            if (result) { 
+                this.saveEvent.emit(); 
+            } 
+                this._location.back();
+            
         });
     }
 
