@@ -53,6 +53,8 @@ export class CreateEditQuestionComponent implements OnInit {
         // récup l'objet passer par le navigate "state"
         if (state && (state.question || state.redirectObject)) {
             if(state.redirectObject){
+                //permet de update le bouton editOptionList si on vient de add-edit-option-list
+                this.isDisableButtonOl = state.redirectObject.optionList.notReferenced;
                 this.question = state.redirectObject;
                 if(this.question.id == 0){
                     this.navBarTitle = 'Add a new Question';
@@ -65,7 +67,7 @@ export class CreateEditQuestionComponent implements OnInit {
             }
             
             this.isSaveDisabled = false;
-            //passe à true visible optionList si type === check or combo
+            //passe à true visible optionList si type === check or combo or radio
             this.showOptionList = ['Combo', 'Check', 'Radio'].includes(this.question.questionType.toString());
             this.form = this.question.form;
         } else {
@@ -132,7 +134,7 @@ export class CreateEditQuestionComponent implements OnInit {
             optionListControl?.updateValueAndValidity();
         });
         //permet de passer le bouton save visible si le questionForm est complet
-        //permet également de gèrer le boolean du bouton edit en fonction de si l'optionList est référencé.
+        //permet également de gèrer le boolean du bouton edit en fonction de si l'optionList est référencé
         this.questionForm.statusChanges.subscribe((status) => {
             this.isDisableButtonOl = this.questionForm.get('optionList')?.value?.notReferenced;
             this.isSaveDisabled = status !== 'VALID';
