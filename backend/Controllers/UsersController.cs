@@ -363,12 +363,15 @@ public class UsersController : ControllerBase {
             return BadRequest(result);
         
         
-        var optionValueValidation = new OptionValueValidation(_context);
+        var optionValueValidation = new OptionValueValidation();
         var optionValueValidationResult = await optionValueValidation.ValidateOnCreate(optionList.ListOptionValues);
 
         if (!optionValueValidationResult.IsValid) {
             return BadRequest(optionValueValidationResult.Errors);
         }
+        
+        bool hasDuplicates = optionList.ListOptionValues.GroupBy(x => x.Value).Any(g => g.Count() > 1);
+        if (hasDuplicates) { return BadRequest(result); }
         
         var lastIdx = optionList.ListOptionValues.Any()
             ? optionList.ListOptionValues.Max(v => v.Idx) + 1 : 1; 
@@ -414,12 +417,15 @@ public class UsersController : ControllerBase {
         if (!result.IsValid)
             return BadRequest(result);
         
-        var optionValueValidation = new OptionValueValidation(_context);
+        var optionValueValidation = new OptionValueValidation();
         var optionValueValidationResult = await optionValueValidation.ValidateOnCreate(existingOptionList.ListOptionValues);
 
         if (!optionValueValidationResult.IsValid) {
             return BadRequest(optionValueValidationResult.Errors);
         }
+        
+        bool hasDuplicates = existingOptionList.ListOptionValues.GroupBy(x => x.Value).Any(g => g.Count() > 1);
+        if (hasDuplicates) { return BadRequest(result); }
 
         var lastIdx = existingOptionList.ListOptionValues.Any()
             ? existingOptionList.ListOptionValues.Max(v => v.Idx) + 1 : 1; 
