@@ -56,7 +56,7 @@ export class ManageSharesComponent implements OnInit {
         })
     }
     private fetchUsers(formId:number) {
-        this.userService.getAllWithFormAccess(formId).subscribe({
+        this.userService.getAllWithFormAccessNoOwner(formId).subscribe({
             next: data => {
                 this.users = data.filter(user => this.form?.ownerId !== user.id && user.role == Role.User);
                 this.updateUsersAccessList();

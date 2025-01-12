@@ -84,8 +84,8 @@ export class UserService {
             return this.createOptionList(optionList);
         }
     }
-    getAllWithFormAccess(formId: number): Observable<User[]> {
-        return this.http.get<any[]>(`${this.baseUrl}api/users/all/with_form_accesses/${formId}`).pipe(
+    getAllWithFormAccessNoOwner(formId: number): Observable<User[]> {
+        return this.http.get<any[]>(`${this.baseUrl}api/users/all/with_form_accesses/${formId}/no_owner`).pipe(
             map((res: any[]) => res.map(user => new User(user)))
         );
     }
