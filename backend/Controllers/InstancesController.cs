@@ -64,7 +64,7 @@ public class InstancesController : ControllerBase
         
         if (instance == null)
             return NotFound();
-        if (user.Id != instance.UserId && user.Id != instance.Form.OwnerId)
+        if (user.Id != instance.UserId && user.Id != instance.Form.OwnerId && !user.IsInRole(Role.Admin))
             return Unauthorized();
         
         return Ok(_mapper.Map<Instance_With_Answers_And_Form_With_Questions_CompleteDTO>(instance));
@@ -395,7 +395,7 @@ public class InstancesController : ControllerBase
                                                         .Select(ufa=>ufa.UserId)
                                                         .ToList();
         
-        if (currentUser.Id != instancesToRemove[0].Form.OwnerId || editorIds.Contains(currentUser.Id))
+        if ((currentUser.Id != instancesToRemove[0].Form.OwnerId || editorIds.Contains(currentUser.Id) )&& !currentUser.IsInRole(Role.Admin))
             return Unauthorized();
 
         

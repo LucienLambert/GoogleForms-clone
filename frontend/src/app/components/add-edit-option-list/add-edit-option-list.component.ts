@@ -230,12 +230,12 @@ export class AddEditOptionListComponent implements OnInit {
         next: (data) => {
           this.isLoading = false;
           if(history.state?.previousUrl == '/create-edit-question'){
+            data.notReferenced = true;
             history.state.redirectObject.optionList = data;
-            
             this.router.navigate(['/create-edit-question'], {
               state: { redirectObject : history.state.redirectObject }
             });
-          }else {
+          } else {
             this.router.navigate(['/manage-option-lists'], {
               state: { previousUrl : '/home' }
             });
@@ -243,6 +243,11 @@ export class AddEditOptionListComponent implements OnInit {
         },
         error: (err) => {
           this.isLoading = false;
+          // if(history.state?.previousUrl == '/create-edit-question'){
+          //   this.router.navigate(['/create-edit-question'], {
+          //     state: { redirectObject : history.state.redirectObject }
+          //   });
+          // }
           console.error('Error saving:', err);
         }
       });
