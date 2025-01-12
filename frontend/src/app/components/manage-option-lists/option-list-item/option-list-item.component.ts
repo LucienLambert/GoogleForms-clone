@@ -29,8 +29,10 @@ export class OptionListItemComponent {
   }
 
   private updateDisabledState() {
-    if (this.owner?.role === Role.Admin && this.optionList.ownerId === null && this.optionList.notReferenced ||
-        this.owner?.role === Role.User && this.optionList.ownerId === this.owner.id && this.optionList.notReferenced) {
+    if (this.optionList.notReferenced && (
+        (this.owner?.role === Role.Admin && (this.optionList.ownerId === null || this.optionList.ownerId === this.owner.id)) ||
+        (this.owner?.role === Role.User && this.optionList.ownerId === this.owner.id))
+    ) {
       this.activateEditAndDelete();
     }
   }
