@@ -92,8 +92,10 @@ export class CreateEditFormComponent implements OnInit {
             tap(owner => {
                 this.owner = owner;
                 this.ownerLoaded.next(owner);
-                this.form.patchValue({ owner: `${owner.firstName} ${owner.lastName}` });
+                const ownerName = owner.firstName && owner.lastName ? `${owner.firstName} ${owner.lastName}` : owner.email;
+                this.form.patchValue({ owner: ownerName });
             })
+
         );
     }
 

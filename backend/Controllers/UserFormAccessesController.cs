@@ -38,8 +38,8 @@ public class UserFormAccessesController : ControllerBase {
             return Unauthorized();
         }
         
-        if (!_context.UserFormAccesses.Any(uf=>uf.UserId == currentUser.Id && uf.AccessType == AccessType.Editor)&& !currentUser.IsInRole(Role.Admin))
-            return NotFound();
+        // if (!_context.UserFormAccesses.Any(uf=>uf.UserId == currentUser.Id && uf.AccessType == AccessType.Editor)&& !currentUser.IsInRole(Role.Admin))
+        //     return NotFound();
         
         var formAccessToChange = _context.UserFormAccesses.FirstOrDefault(f => f.FormId == userFormAccessDTO.FormId && f.UserId == userFormAccessDTO.UserId);
 
