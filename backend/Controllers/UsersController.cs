@@ -94,16 +94,17 @@ public class UsersController : ControllerBase {
             return Unauthorized();
 
         var users = _context.Users
-            .Include(u => u.ListUserFormAccesses)
+            .Where(u => u.Id != form.OwnerId && u.Role == Role.User)
+            .Include(u => u.ListUserFormAccesses.Where(uf => uf.FormId == formId))
             .ToList();
         
         var listuserFormAccessDTO = users
             .Select(u => 
             {
                 // Filtrer les UserFormAccess pour ne garder que ceux avec le FormId spécifié
-                u.ListUserFormAccesses = u.ListUserFormAccesses
-                    .Where(uf => uf.FormId == formId && uf.UserId != form.OwnerId)
-                    .ToList();
+                // u.ListUserFormAccesses = u.ListUserFormAccesses
+                //     .Where(uf => uf.FormId == formId)
+                //     .ToList();
         
                 // Mapper l'utilisateur avec la liste filtrée et inclure le mappage des UserFormAccess
                 var userDTO = _mapper.Map<User_Base_With_FormAccessesDTO>(u);
