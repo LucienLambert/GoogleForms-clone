@@ -107,12 +107,15 @@ export class CreateEditFormComponent implements OnInit {
                     const formData: Form = this.form.value;
                     formData.owner = this.owner!;
                     formData.ownerId = this.owner!.id;
-                    const stateIsPublic = formData.isPublic;
-                    formData.isPublic = !stateIsPublic
-
+                    if (this.formSave?.id != undefined) {
+                        const stateIsPublic = formData.isPublic;
+                        formData.isPublic = !stateIsPublic
+                    }
                     this.formService.saveForm(formData).subscribe({
                         next: (response) => {
-                            this.formService.isPublicFormChange(this.formSave?.id!).subscribe();
+                            if (this.formSave?.id != undefined) {
+                                this.formService.isPublicFormChange(this.formSave?.id!).subscribe();
+                            }
                             this.form.patchValue(response);
                             this.navBarTitle = response.title || 'New Form';
                             this.showSuccessMessage = true;
