@@ -87,7 +87,7 @@ export class NavBarComponent {
             disableClose: true,
             data: {
                 title: 'Unsaved Changes',
-                message: 'You have unsaved changes. Are you sure you want to leave?',
+                message: 'You have unsaved changes. Would you like to keep the changes ?',
                 context : 'editForm'
             }
         });

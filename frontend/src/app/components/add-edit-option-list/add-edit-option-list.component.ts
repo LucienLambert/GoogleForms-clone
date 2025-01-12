@@ -150,6 +150,10 @@ export class AddEditOptionListComponent implements OnInit {
                   this.form.patchValue({ ownerId: this.owner!.id })
                   this.optionList.ownerId = this.owner!.id;
                 }
+                this.originalOptionList = undefined;
+                const nameControl = this.form.get('name');
+                nameControl?.markAsDirty();
+                nameControl?.updateValueAndValidity();
               }
             });
           }
