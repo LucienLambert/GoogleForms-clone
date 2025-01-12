@@ -94,9 +94,9 @@ export class NavBarComponent {
         dialogRef.afterClosed().subscribe((result: boolean) => {
             if (result) { 
                 this.saveEvent.emit(); 
-            } 
+            } else {
                 this._location.back();
-            
+            }
         });
     }
 
